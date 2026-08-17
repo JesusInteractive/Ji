@@ -1,0 +1,373 @@
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type {
+  ChatMessage,
+  FavoriteItem,
+  JournalEntry,
+  PlanId,
+  PrayerNote,
+} from '../types';
+import { PLANS } from '../constants/pricing';
+
+const STORAGE_KEYS = {
+  onboarding: 'ji_onboarding_v2',
+  plan: 'ji_plan_v2',
+  tokens: 'ji_tokens_v2',
+  messages: 'ji_messages_v2',
+  journal: 'ji_journal_v2',
+  favorites: 'ji_favorites_v2',
+  prayers: 'ji_prayers_v2',
+  profile: 'ji_profile_v1',
+};
+
+interface AppContextValue {
+  // Onboarding
+  hasSelectedLanguage: boolean;
+  markLanguageSelected: () => void;
+  hasAcceptedDisclosure: boolean;
+  acceptDisclosure: () => void;
+  hasAcceptedAgreement: boolean;
+  acceptAgreement: () => void;
+  hasSeenEntrance: boolean;
+  markEntranceSeen: () => void;
+  hasSelectedPlan: boolean;
+  plan: PlanId;
+  selectPlan: (planId: PlanId) => void;
+  onboardingComplete: boolean;
+
+  // Usage / tokens
+  remainingQuestionsToday: number;
+  setRemainingQuestionsToday: (n: number) => void;
+  tokenBalance: number;
+  addTokens: (n: number) => void;
+  spendToken: () => boolean;
+
+  // Chat
+  messages: ChatMessage[];
+  addMessage: (m: ChatMessage) => void;
+  clearMessages: () => void;
+
+  // Journal
+  journalEntries: JournalEntry[];
+  addJournalEntry: (e: JournalEntry) => void;
+  removeJournalEntry: (id: string) => void;
+
+  // Favorites
+  favorites: FavoriteItem[];
+  addFavorite: (f: FavoriteItem) => void;
+  removeFavorite: (id: string) => void;
+
+  // Prayer wall (local-first; see PrayerWallScreen for the privacy model)
+  prayerNotes: PrayerNote[];
+  addPrayerNote: (n: PrayerNote) => void;
+
+  // Full local wipe: messages, journal, favorites, prayers, tokens, plan,
+  // and onboarding state, resetting the app to first-launch. Used by
+  // Settings > "Delete my account and all data" (spec requirement:
+  // one-tap deletion that actually works). The backend deletion call
+  // (services/api.ts deleteAccountAndAllData) must run alongside this in
+  // production -- this only guarantees the ON-DEVICE half is complete.
+  wipeAllLocalData: () => Promise<void>;
+
+  // Preferences
+  ageAppropriateMode: boolean;
+  setAgeAppropriateMode: (v: boolean) => void;
+  offlineMode: boolean;
+  setOfflineMode: (v: boolean) => void;
+
+  // Profile -- purely local (device storage), same "no real user/session
+  // system yet" caveat as backendAuth.ts's shared-secret auth. The photo
+  // and name shown here live only on this device, not on any server.
+  displayName: string;
+  setDisplayName: (name: string) => void;
+  profilePhotoUri: string | null;
+  setProfilePhotoUri: (uri: string | null) => void;
+
+  ready: boolean;
+}
+
+const AppContext = createContext<AppContextValue | undefined>(undefined);
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [hasSelectedLanguage, setHasSelectedLanguage] = useState(false);
+  const [hasAcceptedDisclosure, setHasAcceptedDisclosure] = useState(false);
+  const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false);
+  const [hasSeenEntrance, setHasSeenEntrance] = useState(false);
+  const [plan, setPlan] = useState<PlanId | null>(null);
+  const [tokenBalance, setTokenBalance] = useState(0);
+  const [remainingQuestionsToday, setRemainingQuestionsToday] = useState(5);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [prayerNotes, setPrayerNotes] = useState<PrayerNote[]>([]);
+  const [ageAppropriateMode, setAgeAppropriateMode] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [displayName, setDisplayNameState] = useState('');
+  const [profilePhotoUri, setProfilePhotoUriState] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [onboardingRaw, planRaw, tokensRaw, messagesRaw, journalRaw, favRaw, prayersRaw, profileRaw] =
+          await Promise.all([
+            AsyncStorage.getItem(STORAGE_KEYS.onboarding),
+            AsyncStorage.getItem(STORAGE_KEYS.plan),
+            AsyncStorage.getItem(STORAGE_KEYS.tokens),
+            AsyncStorage.getItem(STORAGE_KEYS.messages),
+            AsyncStorage.getItem(STORAGE_KEYS.journal),
+            AsyncStorage.getItem(STORAGE_KEYS.favorites),
+            AsyncStorage.getItem(STORAGE_KEYS.prayers),
+            AsyncStorage.getItem(STORAGE_KEYS.profile),
+          ]);
+
+        if (onboardingRaw) {
+          const parsed = JSON.parse(onboardingRaw);
+          setHasSelectedLanguage(!!parsed.hasSelectedLanguage);
+          setHasAcceptedDisclosure(!!parsed.hasAcceptedDisclosure);
+          setHasAcceptedAgreement(!!parsed.hasAcceptedAgreement);
+          setHasSeenEntrance(!!parsed.hasSeenEntrance);
+        }
+        if (planRaw) {
+          setPlan(planRaw as PlanId);
+          // Restoring `plan` alone left remainingQuestionsToday stuck at
+          // its hardcoded initial value (5, the free-tier default) on
+          // every app restart, regardless of which plan was actually
+          // restored -- e.g. Platinum's unlimited access silently
+          // reverted to "5 questions left" until selectPlan() was called
+          // again in that session. Recompute it from the restored plan
+          // the same way selectPlan() itself does.
+          const restoredPlan = PLANS.find((p) => p.id === planRaw);
+          setRemainingQuestionsToday(restoredPlan?.dailyQuestionLimit ?? Infinity);
+        }
+        if (tokensRaw) setTokenBalance(Number(tokensRaw) || 0);
+        if (messagesRaw) setMessages(JSON.parse(messagesRaw));
+        if (journalRaw) setJournalEntries(JSON.parse(journalRaw));
+        if (favRaw) setFavorites(JSON.parse(favRaw));
+        if (profileRaw) {
+          const parsed = JSON.parse(profileRaw);
+          setDisplayNameState(parsed.displayName ?? '');
+          setProfilePhotoUriState(parsed.profilePhotoUri ?? null);
+        }
+        if (prayersRaw) setPrayerNotes(JSON.parse(prayersRaw));
+      } finally {
+        setReady(true);
+      }
+    })();
+  }, []);
+
+  const persistOnboarding = useCallback(
+    (patch: Partial<{ hasSelectedLanguage: boolean; hasAcceptedDisclosure: boolean; hasAcceptedAgreement: boolean; hasSeenEntrance: boolean }>) => {
+      AsyncStorage.setItem(
+        STORAGE_KEYS.onboarding,
+        JSON.stringify({ hasSelectedLanguage, hasAcceptedDisclosure, hasAcceptedAgreement, hasSeenEntrance, ...patch })
+      ).catch(() => {});
+    },
+    [hasSelectedLanguage, hasAcceptedDisclosure, hasAcceptedAgreement, hasSeenEntrance]
+  );
+
+  const markLanguageSelected = useCallback(() => {
+    setHasSelectedLanguage(true);
+    persistOnboarding({ hasSelectedLanguage: true });
+  }, [persistOnboarding]);
+
+  const acceptDisclosure = useCallback(() => {
+    setHasAcceptedDisclosure(true);
+    persistOnboarding({ hasAcceptedDisclosure: true });
+  }, [persistOnboarding]);
+
+  const acceptAgreement = useCallback(() => {
+    setHasAcceptedAgreement(true);
+    persistOnboarding({ hasAcceptedAgreement: true });
+  }, [persistOnboarding]);
+
+  const markEntranceSeen = useCallback(() => {
+    setHasSeenEntrance(true);
+    persistOnboarding({ hasSeenEntrance: true });
+  }, [persistOnboarding]);
+
+  const selectPlan = useCallback((planId: PlanId) => {
+    setPlan(planId);
+    AsyncStorage.setItem(STORAGE_KEYS.plan, planId).catch(() => {});
+    const found = PLANS.find((p) => p.id === planId);
+    setRemainingQuestionsToday(found?.dailyQuestionLimit ?? Infinity);
+  }, []);
+
+  const addTokens = useCallback((n: number) => {
+    setTokenBalance((prev) => {
+      const next = prev + n;
+      AsyncStorage.setItem(STORAGE_KEYS.tokens, String(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const spendToken = useCallback((): boolean => {
+    let didSpend = false;
+    setTokenBalance((prev) => {
+      if (prev <= 0) return prev;
+      didSpend = true;
+      const next = prev - 1;
+      AsyncStorage.setItem(STORAGE_KEYS.tokens, String(next)).catch(() => {});
+      return next;
+    });
+    return didSpend;
+  }, []);
+
+  const addMessage = useCallback((m: ChatMessage) => {
+    setMessages((prev) => {
+      const next = [...prev, m];
+      AsyncStorage.setItem(STORAGE_KEYS.messages, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+    AsyncStorage.removeItem(STORAGE_KEYS.messages).catch(() => {});
+  }, []);
+
+  const addJournalEntry = useCallback((e: JournalEntry) => {
+    setJournalEntries((prev) => {
+      const next = [e, ...prev];
+      AsyncStorage.setItem(STORAGE_KEYS.journal, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const removeJournalEntry = useCallback((id: string) => {
+    setJournalEntries((prev) => {
+      const next = prev.filter((e) => e.id !== id);
+      AsyncStorage.setItem(STORAGE_KEYS.journal, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const addFavorite = useCallback((f: FavoriteItem) => {
+    setFavorites((prev) => {
+      const next = [f, ...prev];
+      AsyncStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const removeFavorite = useCallback((id: string) => {
+    setFavorites((prev) => {
+      const next = prev.filter((f) => f.id !== id);
+      AsyncStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const addPrayerNote = useCallback((n: PrayerNote) => {
+    setPrayerNotes((prev) => {
+      const next = [n, ...prev];
+      AsyncStorage.setItem(STORAGE_KEYS.prayers, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  // Profile is purely local (see AppContextValue's own comment) -- both
+  // fields persisted together under one key.
+  const persistProfile = useCallback(
+    (patch: Partial<{ displayName: string; profilePhotoUri: string | null }>) => {
+      AsyncStorage.setItem(
+        STORAGE_KEYS.profile,
+        JSON.stringify({ displayName, profilePhotoUri, ...patch })
+      ).catch(() => {});
+    },
+    [displayName, profilePhotoUri]
+  );
+
+  const setDisplayName = useCallback(
+    (name: string) => {
+      setDisplayNameState(name);
+      persistProfile({ displayName: name });
+    },
+    [persistProfile]
+  );
+
+  const setProfilePhotoUri = useCallback(
+    (uri: string | null) => {
+      setProfilePhotoUriState(uri);
+      persistProfile({ profilePhotoUri: uri });
+    },
+    [persistProfile]
+  );
+
+  const wipeAllLocalData = useCallback(async () => {
+    await AsyncStorage.multiRemove(Object.values(STORAGE_KEYS));
+    setHasSelectedLanguage(false);
+    setHasAcceptedDisclosure(false);
+    setHasAcceptedAgreement(false);
+    setHasSeenEntrance(false);
+    setPlan(null);
+    setTokenBalance(0);
+    setRemainingQuestionsToday(5);
+    setMessages([]);
+    setJournalEntries([]);
+    setFavorites([]);
+    setPrayerNotes([]);
+    setDisplayNameState('');
+    setProfilePhotoUriState(null);
+  }, []);
+
+  const value = useMemo<AppContextValue>(
+    () => ({
+      hasSelectedLanguage,
+      markLanguageSelected,
+      hasAcceptedDisclosure,
+      acceptDisclosure,
+      hasAcceptedAgreement,
+      acceptAgreement,
+      hasSeenEntrance,
+      markEntranceSeen,
+      hasSelectedPlan: plan !== null,
+      plan: plan ?? 'free',
+      selectPlan,
+      onboardingComplete:
+        hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasSeenEntrance && plan !== null,
+      remainingQuestionsToday,
+      setRemainingQuestionsToday,
+      tokenBalance,
+      addTokens,
+      spendToken,
+      messages,
+      addMessage,
+      clearMessages,
+      journalEntries,
+      addJournalEntry,
+      removeJournalEntry,
+      favorites,
+      addFavorite,
+      removeFavorite,
+      prayerNotes,
+      addPrayerNote,
+      wipeAllLocalData,
+      ageAppropriateMode,
+      setAgeAppropriateMode,
+      offlineMode,
+      setOfflineMode,
+      displayName,
+      setDisplayName,
+      profilePhotoUri,
+      setProfilePhotoUri,
+      ready,
+    }),
+    [
+      hasSelectedLanguage, markLanguageSelected, hasAcceptedDisclosure, acceptDisclosure,
+      hasAcceptedAgreement, acceptAgreement, hasSeenEntrance, markEntranceSeen, plan, selectPlan,
+      remainingQuestionsToday, tokenBalance, addTokens, spendToken, messages, addMessage, clearMessages,
+      journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
+      prayerNotes, addPrayerNote, wipeAllLocalData, ageAppropriateMode, offlineMode,
+      displayName, setDisplayName, profilePhotoUri, setProfilePhotoUri, ready,
+    ]
+  );
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+export function useApp(): AppContextValue {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error('useApp must be used within an AppProvider');
+  return ctx;
+}

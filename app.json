@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "(Ji) Jesus Interactive",
+    "slug": "jesus-me-inc-ji",
+    "owner": "ajames0624",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "jesusinteractive",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jesusinteractive.app",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Used only when you tap the microphone button to send a voice message in chat. Audio is transcribed to text and discarded; nothing is stored without your consent."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D1B4C"
+      },
+      "package": "com.jesusinteractive.app",
+      "permissions": [
+        "android.permission.NOTIFICATIONS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#0D1B4C"
+        }
+      ],
+      "expo-localization",
+      "expo-secure-store",
+      "expo-status-bar",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0D1B4C"
+        }
+      ],
+      "expo-font",
+      "expo-audio",
+      "expo-video",
+      "expo-asset",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Used only if you choose to upload a profile photo. Stored on this device only, never uploaded anywhere."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8bb73dff-4d43-4134-9df8-6757a3111333"
+      }
+    }
+  }
+}
