@@ -15,7 +15,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.jesusinteractive.app",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Used only when you tap the microphone button to send a voice message in chat. Audio is transcribed to text and discarded; nothing is stored without your consent."
+        "NSMicrophoneUsageDescription": "Used only when you tap the microphone button to send a voice message in chat. Audio is transcribed to text and discarded; nothing is stored without your consent.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
