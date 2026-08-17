@@ -11,7 +11,7 @@ import type { OnboardingStackParamList } from '../../navigation/RootNavigator';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'UserAgreement'>;
 
-// User Agreement + Indemnity, clearly protecting Jesus & Me, Inc.
+// Terms of Service + Indemnity, clearly protecting Jesus Interactive
 // (spec section 3). Users must sign off before using or purchasing.
 export default function UserAgreementScreen({ navigation }: Props) {
   const { t } = useI18n();

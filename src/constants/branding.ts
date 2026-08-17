@@ -20,7 +20,7 @@ export const SUBTITLE_OPTIONS = [
 // be clearly disclosed.
 export const STORE_DESCRIPTION = [
   'Jesus Interactive is a quiet place to bring your questions, your gratitude, and your heaviest days -- and talk them through in the voice of Jesus, grounded in Scripture. Ask about faith, doubt, suffering, relationships, or anything on your mind, place a prayer on a Prayer Wall modeled after the Western Wall in Jerusalem, read the Bible, or simply sit with the daily verse. It is built to be reverent and warm, never gimmicky.',
-  'This is an AI companion, not a replacement for your own prayer life, Scripture reading, or church community -- it says so, gently, along the way. Free to start, with optional plans for deeper conversation history and priority access, plus a token system so you can gift access to someone who can\'t afford it. Jesus Interactive is made by Jesus & Me, Inc.',
+  'This is an AI companion, not a replacement for your own prayer life, Scripture reading, or church community -- it says so, gently, along the way. Free to start, with optional plans for deeper conversation history and priority access, plus a token system so you can gift access to someone who can\'t afford it.',
 ].join('\n\n');
 
 export const STORE_DESCRIPTION_SHORT =

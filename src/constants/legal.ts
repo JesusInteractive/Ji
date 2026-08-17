@@ -1,10 +1,7 @@
 // Legal copy shown during onboarding (Disclaimer screen, User Agreement
 // screen) and linked from Settings. Finalized text provided by the app
-// owner (August 16, 2026) -- operating entity is "Jesus Interactive" per
-// that finalized copy, distinct from the corporate name "Jesus & Me,
-// Inc." used elsewhere in the app (persona.ts, About screen). If that's
-// not intentional, reconcile the two before shipping; otherwise leave as
-// provided.
+// owner (August 16, 2026) -- operating entity is "Jesus Interactive"
+// throughout the app (no separate corporate entity name is used).
 
 export const AI_DISCLOSURE = {
   title: 'AI Disclosure & User Acknowledgment',
