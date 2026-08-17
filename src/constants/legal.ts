@@ -1,13 +1,16 @@
 // Legal copy shown during onboarding (Disclaimer screen, User Agreement
 // screen) and linked from Settings. Finalized text provided by the app
-// owner (August 16, 2026) -- operating entity is "Jesus Interactive"
-// throughout the app (no separate corporate entity name is used).
+// owner (August 16, 2026). The Apple/Google developer account is
+// enrolled as an individual (Alizabeth James), not a formed company, so
+// the legal documents name her as the actual contracting party, doing
+// business as "Jesus Interactive" -- the brand/app name used everywhere
+// else (persona, UI, App Store listing name) is unaffected.
 
 export const AI_DISCLOSURE = {
   title: 'AI Disclosure & User Acknowledgment',
   lastUpdated: 'August 16, 2026',
   intro:
-    'Jesus Interactive uses artificial intelligence to generate conversational responses, sermon drafts, reflections, and other content. This Disclosure explains the nature of that technology, its limitations, and the legal agreement you accept by using the AI features.\n\nBy tapping "I Understand and Agree," creating an account, or continuing to use any AI-powered feature of the App, you acknowledge that you have read, understood, and agree to every part of this AI Disclosure and User Acknowledgment.',
+    'Jesus Interactive is operated by Alizabeth James, an individual doing business as Jesus Interactive ("we," "us," "our," or "Jesus Interactive"). Jesus Interactive uses artificial intelligence to generate conversational responses, sermon drafts, reflections, and other content. This Disclosure explains the nature of that technology, its limitations, and the legal agreement you accept by using the AI features.\n\nBy tapping "I Understand and Agree," creating an account, or continuing to use any AI-powered feature of the App, you acknowledge that you have read, understood, and agree to every part of this AI Disclosure and User Acknowledgment.',
   sections: [
     {
       heading: '1. Nature of the AI',
@@ -57,7 +60,7 @@ export const AI_DISCLOSURE = {
     {
       heading: '10. Contact',
       body:
-        'If you have questions about this AI Disclosure or the AI features of Jesus Interactive, please contact us at:\n\nJesus Interactive\nEmail: Ajames@jesusinteractive.com\nCathedral City, California, United States\n© 2026 Jesus Interactive',
+        'If you have questions about this AI Disclosure or the AI features of Jesus Interactive, please contact us at:\n\nAlizabeth James, doing business as Jesus Interactive\nEmail: Ajames@jesusinteractive.com\nCathedral City, California, United States\n© 2026 Jesus Interactive',
     },
   ],
   closing:
@@ -72,7 +75,7 @@ export const USER_AGREEMENT = {
   title: 'Terms of Service',
   lastUpdated: 'August 16, 2026',
   intro:
-    'These Terms of Service ("Terms") constitute a legally binding agreement between you ("you," "user," or "User") and Jesus Interactive ("we," "us," or "our") governing your access to and use of the Jesus Interactive mobile application and related services (collectively, the "App" or "Service").\n\nBy downloading, accessing, or using the App, you agree to be bound by these Terms and our Privacy Policy and AI Disclosure & User Acknowledgment (incorporated by reference). If you do not agree, do not use the App.',
+    'These Terms of Service ("Terms") constitute a legally binding agreement between you ("you," "user," or "User") and Alizabeth James, an individual doing business as Jesus Interactive ("we," "us," "our," or "Jesus Interactive"), governing your access to and use of the Jesus Interactive mobile application and related services (collectively, the "App" or "Service").\n\nBy downloading, accessing, or using the App, you agree to be bound by these Terms and our Privacy Policy and AI Disclosure & User Acknowledgment (incorporated by reference). If you do not agree, do not use the App.',
   sections: [
     {
       heading: '1. Eligibility',
@@ -162,7 +165,7 @@ export const USER_AGREEMENT = {
     {
       heading: '18. Contact Information',
       body:
-        'For questions about these Terms, please contact:\n\nJesus Interactive\nCathedral City, California, United States\nEmail: Ajames@jesusinteractive.com\n© 2026 Jesus Interactive',
+        'For questions about these Terms, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: Ajames@jesusinteractive.com\n© 2026 Jesus Interactive',
     },
   ],
   closing:
@@ -174,7 +177,7 @@ export const PRIVACY_POLICY = {
   lastUpdated: 'August 16, 2026',
   effectiveDate: 'August 16, 2026',
   intro:
-    'Jesus Interactive ("we," "us," or "our") operates the mobile application Jesus Interactive (the "App" or "Service"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use the App.\n\nPlease read this Privacy Policy carefully. By accessing or using the App, you agree to the collection and use of information in accordance with this policy. If you do not agree, do not use the App.',
+    'Alizabeth James, an individual doing business as Jesus Interactive ("we," "us," "our," or "Jesus Interactive"), operates the mobile application Jesus Interactive (the "App" or "Service"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use the App.\n\nPlease read this Privacy Policy carefully. By accessing or using the App, you agree to the collection and use of information in accordance with this policy. If you do not agree, do not use the App.',
   sections: [
     {
       heading: '1. Information We Collect',
@@ -239,7 +242,7 @@ export const PRIVACY_POLICY = {
     {
       heading: '13. Contact Us',
       body:
-        'If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact:\n\nJesus Interactive\nCathedral City, California, United States\nEmail: Ajames@jesusinteractive.com\n\nFor privacy-specific requests, please include "Privacy Request" in the subject line and sufficient information for us to verify your identity and respond.',
+        'If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: Ajames@jesusinteractive.com\n\nFor privacy-specific requests, please include "Privacy Request" in the subject line and sufficient information for us to verify your identity and respond.',
     },
   ],
 };
