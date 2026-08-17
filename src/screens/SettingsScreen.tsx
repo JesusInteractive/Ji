@@ -7,7 +7,7 @@ import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { PLANS } from '../constants/pricing';
 import { LANGUAGES } from '../i18n/languages';
-import { PRIVACY_POLICY_SUMMARY, TERMS_OF_SERVICE_SUMMARY, AI_DISCLOSURE } from '../constants/legal';
+import { PRIVACY_POLICY, USER_AGREEMENT, AI_DISCLOSURE } from '../constants/legal';
 import { setAnalyticsOptIn } from '../services/analytics';
 import { wipeLocalSecrets } from '../services/security';
 import { presentCustomerCenter } from '../services/purchases';
@@ -197,14 +197,14 @@ export default function SettingsScreen({ navigation }: Props) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.about}</Text>
         <Row icon="information-circle-outline" label={t.settings.version} value="2.0.0" />
-        <Row icon="shield-checkmark-outline" label={t.settings.privacyPolicy} onPress={() => Alert.alert(PRIVACY_POLICY_SUMMARY.title, PRIVACY_POLICY_SUMMARY.points.join('\n\n'))} />
-        <Row icon="document-text-outline" label={t.settings.terms} onPress={() => Alert.alert(TERMS_OF_SERVICE_SUMMARY.title, TERMS_OF_SERVICE_SUMMARY.points.join('\n\n'))} />
-        <Row icon="alert-circle-outline" label={t.settings.disclosureLink} onPress={() => Alert.alert(AI_DISCLOSURE.title, AI_DISCLOSURE.body.join('\n\n'))} />
+        <Row icon="shield-checkmark-outline" label={t.settings.privacyPolicy} onPress={() => navigation.navigate('LegalDoc', PRIVACY_POLICY)} />
+        <Row icon="document-text-outline" label={t.settings.terms} onPress={() => navigation.navigate('LegalDoc', USER_AGREEMENT)} />
+        <Row icon="alert-circle-outline" label={t.settings.disclosureLink} onPress={() => navigation.navigate('LegalDoc', AI_DISCLOSURE)} />
       </View>
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>Jesus Interactive</Text>
-        <Text style={styles.footerSub}>© 2026 Jesus & Me, Inc.</Text>
+        <Text style={styles.footerSub}>© 2026 Jesus Interactive</Text>
       </View>
     </ScrollView>
   );

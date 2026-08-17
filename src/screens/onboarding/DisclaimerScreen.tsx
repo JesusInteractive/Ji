@@ -32,9 +32,14 @@ export default function DisclaimerScreen({ navigation }: Props) {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>{AI_DISCLOSURE.title}</Text>
-        {AI_DISCLOSURE.body.map((p, i) => (
-          <Text key={i} style={styles.paragraph}>{p}</Text>
+        <Text style={styles.paragraph}>{AI_DISCLOSURE.intro}</Text>
+        {AI_DISCLOSURE.sections.map((s) => (
+          <View key={s.heading} style={styles.section}>
+            <Text style={styles.heading}>{s.heading}</Text>
+            <Text style={styles.paragraph}>{s.body}</Text>
+          </View>
         ))}
+        <Text style={styles.paragraph}>{AI_DISCLOSURE.closing}</Text>
       </ScrollView>
 
       <View style={styles.footer}>
@@ -66,6 +71,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.ivory },
   scroll: { padding: 20, paddingBottom: 8 },
   title: { fontSize: 20, fontWeight: '800', color: Colors.royal, marginBottom: 14 },
+  section: { marginBottom: 4 },
+  heading: { fontSize: 14, fontWeight: '700', color: Colors.royal, marginBottom: 4, marginTop: 8 },
   paragraph: { fontSize: 14, lineHeight: 21, color: Colors.ink, marginBottom: 12 },
   footer: {
     padding: 20,

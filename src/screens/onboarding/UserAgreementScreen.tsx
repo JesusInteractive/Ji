@@ -32,15 +32,14 @@ export default function UserAgreementScreen({ navigation }: Props) {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>{USER_AGREEMENT.title}</Text>
+        <Text style={styles.body}>{USER_AGREEMENT.intro}</Text>
         {USER_AGREEMENT.sections.map((s) => (
           <View key={s.heading} style={styles.section}>
             <Text style={styles.heading}>{s.heading}</Text>
             <Text style={styles.body}>{s.body}</Text>
           </View>
         ))}
-        <Text style={styles.disclaimer}>
-          This is draft product copy, not legal advice -- it will be finalized with counsel before launch.
-        </Text>
+        <Text style={styles.body}>{USER_AGREEMENT.closing}</Text>
       </ScrollView>
 
       <View style={styles.footer}>
@@ -74,8 +73,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '800', color: Colors.royal, marginBottom: 14 },
   section: { marginBottom: 14 },
   heading: { fontSize: 14, fontWeight: '700', color: Colors.royal, marginBottom: 4 },
-  body: { fontSize: 13.5, lineHeight: 20, color: Colors.ink },
-  disclaimer: { fontSize: 11, color: '#8A8474', fontStyle: 'italic', marginTop: 4, marginBottom: 16 },
+  body: { fontSize: 13.5, lineHeight: 20, color: Colors.ink, marginBottom: 12 },
   footer: { padding: 20, borderTopWidth: 1, borderTopColor: '#E5DCC3', backgroundColor: Colors.ivory },
   checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   checkboxLabel: { flex: 1, fontSize: 13.5, color: Colors.ink, lineHeight: 19 },
