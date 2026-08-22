@@ -31,6 +31,7 @@ import Colors from '../theme/colors';
 import ChatBubble from '../components/ChatBubble';
 import TipBanner from '../components/TipBanner';
 import JesusAvatar, { type JesusAvatarHandle } from '../components/JesusAvatar';
+import MagnifyButton from '../components/MagnifyButton';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { getSafetyReply, buildJesusMessage, maybeBridgeReminder, PEACEFUL_FAREWELL_TEXT } from '../services/demoReplyEngine';
@@ -59,6 +60,7 @@ export default function ChatScreen() {
     addFavorite,
     ageAppropriateMode,
     clearMessages,
+    textZoom,
   } = useApp();
   const [input, setInput] = useState('');
   const [sendError, setSendError] = useState<{ text: string } | null>(null);
@@ -79,6 +81,10 @@ export default function ChatScreen() {
   const audioRecorder = useAudioRecorder({ ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true });
   const recorderState = useAudioRecorderState(audioRecorder, 200);
   const listRef = useRef<FlatList>(null);
+  // Shows a "scroll to bottom" button once the user has scrolled up away
+  // from the newest messages -- without this there was no way back down
+  // except manually dragging, easy to miss once the history gets long.
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const avatarRef = useRef<JesusAvatarHandle>(null);
   const currentStopRef = useRef<(() => Promise<void>) | null>(null);
   // "Conversation mode": once a question was asked by voice, keep
@@ -617,17 +623,35 @@ export default function ChatScreen() {
           isn't lost, but intentionally smaller than the avatar stage above
           and without a per-bubble avatar (showAvatar={false}), since the
           one large avatar above already carries that role. */}
-      <FlatList
-        ref={listRef}
-        data={messages}
-        keyExtractor={(m) => m.id}
-        renderItem={({ item }) => (
-          <ChatBubble message={item} onLongPressReport={handleReport} onFavorite={handleFavorite} showAvatar={false} />
+      <View style={{ flex: 1, transform: [{ scale: textZoom }] }}>
+        <FlatList
+          ref={listRef}
+          data={messages}
+          keyExtractor={(m) => m.id}
+          renderItem={({ item }) => (
+            <ChatBubble message={item} onLongPressReport={handleReport} onFavorite={handleFavorite} showAvatar={false} />
+          )}
+          contentContainerStyle={styles.list}
+          style={styles.historyList}
+          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
+          onScroll={({ nativeEvent }) => {
+            const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+            const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+            setShowScrollToBottom(distanceFromBottom > 200);
+          }}
+          scrollEventThrottle={100}
+        />
+        {showScrollToBottom && (
+          <TouchableOpacity
+            style={styles.scrollToBottomBtn}
+            onPress={() => listRef.current?.scrollToEnd({ animated: true })}
+            accessibilityLabel="Scroll to latest message"
+          >
+            <Ionicons name="arrow-down" size={20} color={Colors.white} />
+          </TouchableOpacity>
         )}
-        contentContainerStyle={styles.list}
-        style={styles.historyList}
-        onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
-      />
+      </View>
+      <MagnifyButton />
 
       <Text style={styles.quotaText}>
         {remainingQuestionsToday === Infinity
@@ -710,6 +734,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headerIcons: { flexDirection: 'row', gap: 16 },
+  scrollToBottomBtn: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.royal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    zIndex: 50,
+  },
   topBarTitle: { color: Colors.ivory, fontSize: 15, fontWeight: '700' },
   avatarStage: {
     flex: 2,

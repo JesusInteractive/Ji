@@ -107,6 +107,14 @@ interface AppContextValue {
   offlineMode: boolean;
   setOfflineMode: (v: boolean) => void;
 
+  // Accessibility zoom for reading-heavy screens (Scripture, Chat, Study
+  // Tools) -- a visual scale multiplier applied via a transform on those
+  // screens' content, cycled by the shared MagnifyButton component rather
+  // than a per-screen font size. 1 = normal; the button cycles upward
+  // (1 -> 1.2 -> 1.4 -> 1.6 -> back to 1).
+  textZoom: number;
+  setTextZoom: (v: number) => void;
+
   // Profile -- purely local (device storage), same "no real user/session
   // system yet" caveat as backendAuth.ts's shared-secret auth. The photo
   // and name shown here live only on this device, not on any server.
@@ -134,6 +142,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [prayerNotes, setPrayerNotes] = useState<PrayerNote[]>([]);
   const [ageAppropriateMode, setAgeAppropriateMode] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
+  const [textZoom, setTextZoom] = useState(1);
   const [displayName, setDisplayNameState] = useState('');
   const [profilePhotoUri, setProfilePhotoUriState] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -381,6 +390,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setAgeAppropriateMode,
       offlineMode,
       setOfflineMode,
+      textZoom,
+      setTextZoom,
       displayName,
       setDisplayName,
       profilePhotoUri,
@@ -393,6 +404,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       remainingQuestionsToday, tokenBalance, addTokens, spendToken, messages, addMessage, clearMessages,
       journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
       prayerNotes, addPrayerNote, wipeAllLocalData, ageAppropriateMode, offlineMode,
+      textZoom, setTextZoom,
       displayName, setDisplayName, profilePhotoUri, setProfilePhotoUri, ready,
     ]
   );

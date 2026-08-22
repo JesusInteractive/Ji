@@ -22,6 +22,7 @@ import {
   type BibleTranslation,
 } from '../services/bibleApi';
 import { useApp } from '../context/AppContext';
+import MagnifyButton from '../components/MagnifyButton';
 
 const DEFAULT_TRANSLATION_ID = 'BSB';
 
@@ -32,7 +33,7 @@ type Filter = 'all' | 'torah';
 // Bible API this screen uses -- see the note in services/bibleApi.ts for
 // how to add a Sefaria-backed Talmud tab alongside this one.
 export default function ScriptureSearchScreen() {
-  const { addFavorite } = useApp();
+  const { addFavorite, textZoom } = useApp();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -133,6 +134,7 @@ export default function ScriptureSearchScreen() {
   if (selectedBook) {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, transform: [{ scale: textZoom }] }}>
         <View style={styles.backRow}>
           <TouchableOpacity style={styles.backRowLeft} onPress={() => setSelectedBook(null)}>
             <Ionicons name="arrow-back" size={22} color={Colors.gold} />
@@ -192,6 +194,8 @@ export default function ScriptureSearchScreen() {
           />
         )}
         {translationModal}
+        </View>
+        <MagnifyButton />
       </SafeAreaView>
     );
   }
