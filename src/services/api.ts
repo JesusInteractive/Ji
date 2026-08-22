@@ -110,6 +110,13 @@ export async function deleteAccountAndAllData(authToken: string): Promise<{ ok: 
   });
 }
 
+// Not currently called anywhere in the app -- backend/server.js's
+// POST /v1/account/export deliberately returns 501 (there's no
+// server-side user data to export yet), so SettingsScreen.tsx's
+// "Download my data" uses services/dataExport.ts's on-device export
+// instead, which actually works today. Kept here, matching that route's
+// shape, for whenever server-side user data exists and this becomes the
+// real path (see that route's own comment in server.js).
 export async function requestDataExport(authToken: string): Promise<{ downloadUrl: string }> {
   return request('/v1/account/export', {
     method: 'POST',

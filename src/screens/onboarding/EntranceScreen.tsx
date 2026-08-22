@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../../theme/colors';
@@ -14,6 +15,7 @@ type Props = NativeStackScreenProps<OnboardingStackParamList, 'Entrance'>;
 export default function EntranceScreen({ navigation }: Props) {
   const { t, language } = useI18n();
   const { markEntranceSeen } = useApp();
+  const insets = useSafeAreaInsets();
   const splashRef = useRef<GlorySplashHandle>(null);
   const [musicLevel, setMusicLevel] = useState<MusicLevel>('full');
 
@@ -39,7 +41,7 @@ export default function EntranceScreen({ navigation }: Props) {
         languageCode={language}
       />
 
-      <View style={styles.topIcons}>
+      <View style={[styles.topIcons, { top: insets.top + 12 }]}>
         <TouchableOpacity
           style={styles.iconBtn}
           onPress={() => splashRef.current?.replay()}
@@ -79,7 +81,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.royal },
   topIcons: {
     position: 'absolute',
-    top: 56,
     right: 20,
     flexDirection: 'row',
     gap: 14,

@@ -65,7 +65,8 @@
         {
           "photosPermission": "Used only if you choose to upload a profile photo. Stored on this device only, never uploaded anywhere."
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "extra": {
       "eas": {

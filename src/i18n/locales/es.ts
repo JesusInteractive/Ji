@@ -58,6 +58,7 @@ const es: TranslationShape = {
     settings: 'Ajustes',
     studyTools: 'Herramientas de estudio',
     profile: 'Perfil',
+    devotions: 'Devocionales diarios',
   },
   chat: {
     inputPlaceholder: 'Haz una pregunta u oración',

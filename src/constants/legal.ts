@@ -60,7 +60,7 @@ export const AI_DISCLOSURE = {
     {
       heading: '10. Contact',
       body:
-        'If you have questions about this AI Disclosure or the AI features of Jesus Interactive, please contact us at:\n\nAlizabeth James, doing business as Jesus Interactive\nEmail: Ajames@jesusinteractive.com\nCathedral City, California, United States\n© 2026 Jesus Interactive',
+        'If you have questions about this AI Disclosure or the AI features of Jesus Interactive, please contact us at:\n\nAlizabeth James, doing business as Jesus Interactive\nEmail: support@jesusinteractive.com\nCathedral City, California, United States\n© 2026 Jesus Interactive\n\nWe aim to respond within a few business days. If you are in crisis, please use the emergency resources in Section 4 above rather than waiting for a reply here.',
     },
   ],
   closing:
@@ -165,7 +165,7 @@ export const USER_AGREEMENT = {
     {
       heading: '18. Contact Information',
       body:
-        'For questions about these Terms, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: Ajames@jesusinteractive.com\n© 2026 Jesus Interactive',
+        'For questions about these Terms, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: support@jesusinteractive.com\n© 2026 Jesus Interactive\n\nWe aim to respond within a few business days. If you are in crisis, please see our AI Disclosure for emergency resources rather than waiting for a reply here.',
     },
   ],
   closing:
@@ -242,7 +242,7 @@ export const PRIVACY_POLICY = {
     {
       heading: '13. Contact Us',
       body:
-        'If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: Ajames@jesusinteractive.com\n\nFor privacy-specific requests, please include "Privacy Request" in the subject line and sufficient information for us to verify your identity and respond.',
+        'If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: support@jesusinteractive.com\n\nFor privacy-specific requests, please include "Privacy Request" in the subject line and sufficient information for us to verify your identity and respond.\n\nWe aim to respond within a few business days. If you are in crisis, please see our AI Disclosure for emergency resources rather than waiting for a reply here.',
     },
   ],
 };

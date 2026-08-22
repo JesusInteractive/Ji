@@ -58,6 +58,7 @@ const hi: TranslationShape = {
     settings: 'सेटिंग्स',
     studyTools: 'अध्ययन उपकरण',
     profile: 'प्रोफ़ाइल',
+    devotions: 'दैनिक भक्ति',
   },
   chat: {
     inputPlaceholder: 'एक प्रश्न या प्रार्थना पूछें',

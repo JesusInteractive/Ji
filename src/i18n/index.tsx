@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { I18nManager } from 'react-native';
 
 import en from './locales/en';
+import el from './locales/el';
+import he from './locales/he';
 import es from './locales/es';
 import fr from './locales/fr';
 import pt from './locales/pt';
@@ -13,7 +15,7 @@ import type { TranslationShape } from './locales/en';
 import type { LanguageCode } from '../types';
 import { DEFAULT_LANGUAGE, LANGUAGES } from './languages';
 
-const CATALOG: Record<LanguageCode, TranslationShape> = { en, es, fr, pt, ar, hi };
+const CATALOG: Record<LanguageCode, TranslationShape> = { en, el, he, es, fr, pt, ar, hi };
 const STORAGE_KEY = 'ji_language';
 
 interface I18nContextValue {

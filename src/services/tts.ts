@@ -5,11 +5,10 @@
 //
 // SECURITY: same rule as api.ts's model API key -- ELEVENLABS_API_KEY
 // never touches this app; it lives only in backend/server.js's own env.
-// `synthesizeSpeech` below authenticates with a shared-secret Bearer
-// token (EXPO_PUBLIC_BACKEND_SECRET, matching the backend's
-// BACKEND_SECRET) -- see backend/server.js's requireAuth for why this is
-// a real improvement over no check at all, but still not real per-user
-// auth (EXPO_PUBLIC_ values are inlined into the client bundle).
+// `synthesizeSpeech` below authenticates with a short-lived session
+// token (see services/backendAuth.ts and backend/server.js's requireAuth)
+// -- not real per-user auth, but no long-lived secret ships in the app
+// binary anymore either.
 //
 // STREAMING: backend/server.js streams the raw audio/mpeg bytes back as
 // the POST response body (no server-side storage) rather than returning

@@ -9,6 +9,8 @@ import type { LanguageOption } from '../types';
 // language that reads as broken or disrespectful of the source text.
 export const LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'English', nativeLabel: 'English' },
+  { code: 'he', label: 'Hebrew', nativeLabel: 'עברית', rtl: true },
+  { code: 'el', label: 'Greek', nativeLabel: 'Ελληνικά' },
   { code: 'es', label: 'Spanish', nativeLabel: 'Español' },
   { code: 'fr', label: 'French', nativeLabel: 'Français' },
   { code: 'pt', label: 'Portuguese', nativeLabel: 'Português' },

@@ -58,6 +58,7 @@ const en = {
     settings: 'Settings',
     studyTools: 'Study Tools',
     profile: 'Profile',
+    devotions: 'Daily Devotions',
   },
   chat: {
     inputPlaceholder: 'Ask a question or prayer',

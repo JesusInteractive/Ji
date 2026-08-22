@@ -5,27 +5,48 @@ import Colors from '../theme/colors';
 import { TOKEN_PACKS, MONETIZATION_EXPLAINER } from '../constants/pricing';
 import { useApp } from '../context/AppContext';
 import { generateGiftCodeLocally, redeemGiftCode } from '../services/tokenGifting';
-import { isFounderCode } from '../services/founderAccess';
+import { isFounderCode, isFamilyCode } from '../services/founderAccess';
+import { purchaseTokenPack } from '../services/purchases';
 
 // Token / gift code system (spec sections 2 & 7): buy access, gift it to
-// someone who can't afford it. Purchases here are DEMO-only (no real
-// payment) -- wire src/services/api.ts's purchaseTokenPack /
-// createGiftCode to a real store purchase flow before shipping.
+// someone who can't afford it. Both buy and gift purchase a real token
+// pack via RevenueCat (see services/purchases.ts) before touching local
+// state -- REVENUECAT_TOKEN_PACK_IDS still needs real product ids from
+// App Store Connect / Play Console before this can charge anyone.
 export default function TokenGiftScreen() {
   const { addTokens, tokenBalance, selectPlan } = useApp();
   const [redeemInput, setRedeemInput] = useState('');
   const [lastGiftCode, setLastGiftCode] = useState<string | null>(null);
+  const [purchasingPackId, setPurchasingPackId] = useState<string | null>(null);
 
-  const handleBuy = (packId: string, tokens: number) => {
+  const handleBuy = async (packId: string, tokens: number) => {
+    setPurchasingPackId(packId);
+    const result = await purchaseTokenPack(packId);
+    setPurchasingPackId(null);
+
+    if (result.userCancelled) return;
+    if (!result.success) {
+      Alert.alert('Couldn\'t complete purchase', result.error ?? 'Please try again.');
+      return;
+    }
     addTokens(tokens);
-    Alert.alert('Purchase complete (demo)', `${tokens} tokens added to your balance.`);
+    Alert.alert('Purchase complete', `${tokens} tokens added to your balance.`);
   };
 
-  const handleGift = (tokens: number) => {
+  const handleGift = async (packId: string, tokens: number) => {
+    setPurchasingPackId(packId);
+    const result = await purchaseTokenPack(packId);
+    setPurchasingPackId(null);
+
+    if (result.userCancelled) return;
+    if (!result.success) {
+      Alert.alert('Couldn\'t complete purchase', result.error ?? 'Please try again.');
+      return;
+    }
     const code = generateGiftCodeLocally();
     setLastGiftCode(code);
     Alert.alert(
-      'Gift code created (demo)',
+      'Gift code created',
       `Share this code with someone who needs it:\n\n${code}\n\nWorth ${tokens} questions.`
     );
   };
@@ -34,6 +55,13 @@ export default function TokenGiftScreen() {
     if (isFounderCode(redeemInput)) {
       selectPlan('platinum');
       Alert.alert('Welcome, founder', 'Platinum access unlocked -- no charge, no expiration.');
+      setRedeemInput('');
+      return;
+    }
+
+    if (isFamilyCode(redeemInput)) {
+      selectPlan('platinum');
+      Alert.alert('Welcome to the family', 'Platinum access unlocked -- no charge, no expiration.');
       setRedeemInput('');
       return;
     }
@@ -62,8 +90,14 @@ export default function TokenGiftScreen() {
             <Text style={styles.rowTitle}>{pack.tokens} questions</Text>
             <Text style={styles.rowSub}>{pack.description}</Text>
           </View>
-          <TouchableOpacity style={styles.buyBtn} onPress={() => handleBuy(pack.id, pack.tokens)}>
-            <Text style={styles.buyBtnText}>{pack.priceLabel}</Text>
+          <TouchableOpacity
+            style={styles.buyBtn}
+            onPress={() => handleBuy(pack.id, pack.tokens)}
+            disabled={purchasingPackId !== null}
+          >
+            <Text style={styles.buyBtnText}>
+              {purchasingPackId === pack.id ? 'Purchasing...' : pack.priceLabel}
+            </Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -78,9 +112,15 @@ export default function TokenGiftScreen() {
             <Text style={styles.rowTitle}>Gift {pack.tokens} questions</Text>
             <Text style={styles.rowSub}>{pack.priceLabel}</Text>
           </View>
-          <TouchableOpacity style={styles.giftBtn} onPress={() => handleGift(pack.tokens)}>
+          <TouchableOpacity
+            style={styles.giftBtn}
+            onPress={() => handleGift(pack.id, pack.tokens)}
+            disabled={purchasingPackId !== null}
+          >
             <Ionicons name="gift-outline" size={16} color={Colors.white} />
-            <Text style={styles.giftBtnText}>Gift</Text>
+            <Text style={styles.giftBtnText}>
+              {purchasingPackId === pack.id ? 'Purchasing...' : 'Gift'}
+            </Text>
           </TouchableOpacity>
         </View>
       ))}

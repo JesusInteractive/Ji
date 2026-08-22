@@ -113,8 +113,17 @@ export async function getTranslations(): Promise<BibleTranslation[]> {
 export async function getBooks(translation = DEFAULT_TRANSLATION): Promise<BibleBook[]> {
   const data = await cachedFetch<any>(`books_${translation}`, `${BASE}/${translation}/books.json`);
   const books = data.books || data;
-  return books.map((b: any, i: number) => ({
-    id: b.id || b.bookId || String(i + 1),
+  // Sort by the API's canonical `order` field (falling back to array position
+  // when absent) before mapping -- without this, book order is only as
+  // stable as the raw fetch/cache payload, and two getBooks() calls
+  // resolving out of order (e.g. mount + a translation-switch racing) can
+  // hand ScriptureSearchScreen's FlatList a differently-ordered array mid-
+  // gesture, swapping which book a tap on a given row actually opens.
+  const ordered = books
+    .map((b: any, i: number) => ({ raw: b, order: b.order ?? i }))
+    .sort((a: any, b: any) => a.order - b.order);
+  return ordered.map(({ raw: b, order }: any) => ({
+    id: b.id || b.bookId || String(order + 1),
     name: b.commonName || b.name || b.id,
     testament: b.order != null && b.order > 39 ? 'New Testament' : b.testament || 'Old Testament',
     chapters: b.numberOfChapters || b.chapters || b.chapterCount || 0,

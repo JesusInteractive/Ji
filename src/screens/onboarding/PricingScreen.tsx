@@ -7,7 +7,7 @@ import PlanCard from '../../components/PlanCard';
 import { PLANS, TOKEN_PACKS, MONETIZATION_EXPLAINER } from '../../constants/pricing';
 import { useI18n } from '../../i18n';
 import { useApp } from '../../context/AppContext';
-import { presentProPaywall } from '../../services/purchases';
+import { presentProPaywall, purchasePlan } from '../../services/purchases';
 import type { PlanId } from '../../types';
 import type { OnboardingStackParamList } from '../../navigation/RootNavigator';
 
@@ -20,41 +20,55 @@ export default function PricingScreen({ navigation }: Props) {
   const [error, setError] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
 
-  // Free/Basic/Pro just record a local choice (see AppContext.selectPlan
-  // -- no real product behind those yet, see constants/pricing.ts).
-  // Platinum is the one tier with real RevenueCat products
-  // (PRO_PRODUCT_IDS: monthly/yearly/lifetime, all granting
-  // PRO_ENTITLEMENT_ID), so selecting it launches the real paywall right
-  // here rather than deferring the purchase moment to later.
+  // Free just records a local choice -- nothing to purchase. Basic/Pro
+  // buy their single monthly product directly via purchasePlan().
+  // Platinum has three durations (monthly/yearly/lifetime) bundled into
+  // one RevenueCat offering, so it launches the prebuilt paywall instead
+  // of a single purchasePlan() call, letting the user pick a duration
+  // there. REVENUECAT_PRODUCT_IDS/PRO_PRODUCT_IDS still need real
+  // product ids from App Store Connect / Play Console before any of
+  // this can charge anyone -- see services/purchases.ts.
   const handleContinue = async () => {
-    if (selected !== 'platinum') {
-      selectPlan(selected);
+    if (selected === 'free') {
+      selectPlan('free');
       return;
     }
 
     setPurchasing(true);
-    const outcome = await presentProPaywall();
-    setPurchasing(false);
+    if (selected === 'platinum') {
+      const outcome = await presentProPaywall();
+      setPurchasing(false);
 
-    switch (outcome) {
-      case 'purchased':
-      case 'restored':
-      case 'not_presented':
-        // not_presented covers two real cases: the entitlement is
-        // already active (e.g. the founder code already granted it --
-        // see services/founderAccess.ts), or this is Expo Go, where
-        // purchases.ts no-ops entirely (see its own top comment) --
-        // either way, proceeding locally is correct, not a bug.
-        selectPlan('platinum');
-        break;
-      case 'cancelled':
-        // Stay on this screen -- they can pick a different tier or try
-        // again, no error needed for a plain cancel.
-        break;
-      case 'error':
-        Alert.alert('Something went wrong', 'Could not complete the purchase. Please try again.');
-        break;
+      switch (outcome) {
+        case 'purchased':
+        case 'restored':
+        case 'not_presented':
+          // not_presented covers two real cases: the entitlement is
+          // already active (e.g. the founder code already granted it --
+          // see services/founderAccess.ts), or this is Expo Go, where
+          // purchases.ts no-ops entirely (see its own top comment) --
+          // either way, proceeding locally is correct, not a bug.
+          selectPlan('platinum');
+          break;
+        case 'cancelled':
+          // Stay on this screen -- they can pick a different tier or try
+          // again, no error needed for a plain cancel.
+          break;
+        case 'error':
+          Alert.alert('Something went wrong', 'Could not complete the purchase. Please try again.');
+          break;
+      }
+      return;
     }
+
+    const result = await purchasePlan(selected);
+    setPurchasing(false);
+    if (result.userCancelled) return;
+    if (!result.success) {
+      Alert.alert('Something went wrong', result.error ?? 'Could not complete the purchase. Please try again.');
+      return;
+    }
+    selectPlan(selected);
     // Onboarding is complete once a plan is chosen; RootNavigator will
     // switch to the Main tab stack automatically once onboardingComplete
     // flips true in AppContext.

@@ -9,16 +9,19 @@ import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
 
 const QUICK_LINKS: {
-  tab: Exclude<keyof MainTabParamList, 'HomeTab'>;
+  tab: Exclude<keyof MainTabParamList, 'HomeTab' | 'Profile'>;
   icon: keyof typeof Ionicons.glyphMap;
-  labelKey: 'chat' | 'prayerWall' | 'bible' | 'journal' | 'studyTools' | 'profile';
+  labelKey: 'chat' | 'prayerWall' | 'bible' | 'journal' | 'studyTools' | 'devotions';
 }[] = [
   { tab: 'ChatTab', icon: 'chatbubble-ellipses', labelKey: 'chat' },
   { tab: 'PrayerWall', icon: 'hand-left', labelKey: 'prayerWall' },
   { tab: 'Bible', icon: 'book', labelKey: 'bible' },
   { tab: 'Journal', icon: 'journal', labelKey: 'journal' },
   { tab: 'StudyTools', icon: 'library', labelKey: 'studyTools' },
-  { tab: 'Profile', icon: 'person-circle', labelKey: 'profile' },
+  // Was Profile's grid spot -- Profile moved to a header icon (top-right,
+  // next to the title) so this spot could go to the planned devotional
+  // feature instead. See DailyDevotionsScreen.tsx.
+  { tab: 'DailyDevotions', icon: 'sunny', labelKey: 'devotions' },
 ];
 
 export default function HomeScreen() {
@@ -27,8 +30,20 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>{t.home.title}</Text>
-      <Text style={styles.subtitle}>{t.home.subtitle}</Text>
+      <View style={styles.headerRow}>
+        <View style={styles.headerText}>
+          <Text style={styles.title}>{t.home.title}</Text>
+          <Text style={styles.subtitle}>{t.home.subtitle}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.profileBtn}
+          onPress={() => navigation.navigate('Profile')}
+          accessibilityRole="button"
+          accessibilityLabel={t.tabs.profile}
+        >
+          <Ionicons name="person-circle" size={34} color={Colors.gold} />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.grid}>
         {QUICK_LINKS.map(({ tab, icon, labelKey }) => (
@@ -60,6 +75,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 24,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  headerText: {
+    flex: 1,
+  },
+  profileBtn: {
+    marginLeft: 12,
+    marginTop: 2,
+  },
   title: {
     fontSize: 28,
     fontWeight: '700',
@@ -69,7 +97,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.muted,
     marginTop: 6,
-    marginBottom: 24,
   },
   grid: {
     flexDirection: 'row',

@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import WesternWallBackground, { WALL_WIDTH, buildWall, mulberry32, hashStringToSeed } from '../components/WesternWallBackground';
 import PrayerNote, { NOTE_WIDTH } from '../components/PrayerNote';
@@ -68,7 +69,7 @@ export default function PrayerWallScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>{t.prayerWall.title}</Text>
         <Text style={styles.subtitle}>{t.prayerWall.subtitle}</Text>
@@ -127,7 +128,7 @@ export default function PrayerWallScreen() {
           <Text style={styles.placeBtnText}>Place prayer</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

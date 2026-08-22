@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
@@ -8,6 +9,13 @@ import { useApp } from '../context/AppContext';
 // locally today (AppContext -> AsyncStorage); a real build should also
 // sync them server-side, encrypted, for cross-device access -- see
 // services/security.ts's notes on what's realistic to E2E encrypt.
+
+// Decorative steno-pad ruling behind the body input. Spacing is a fixed
+// approximation of bodyInput's line-height, not baseline-locked, so it's
+// cosmetic only -- it won't stay pixel-aligned under larger Dynamic Type.
+const RULE_LINE_HEIGHT = 26;
+const RULE_LINES = Array.from({ length: 30 }, (_, i) => i);
+
 export default function JournalScreen() {
   const { journalEntries, addJournalEntry, removeJournalEntry } = useApp();
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,7 +45,7 @@ export default function JournalScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Journal</Text>
         <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
@@ -62,14 +70,21 @@ export default function JournalScreen() {
       <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modal}>
           <TextInput style={styles.titleInput} placeholder="Title" value={title} onChangeText={setTitle} />
-          <TextInput
-            style={styles.bodyInput}
-            placeholder="Write freely..."
-            value={body}
-            onChangeText={setBody}
-            multiline
-            textAlignVertical="top"
-          />
+          <View style={styles.bodyWrap}>
+            <View style={styles.lines} pointerEvents="none">
+              {RULE_LINES.map((i) => (
+                <View key={i} style={styles.ruleLine} />
+              ))}
+            </View>
+            <TextInput
+              style={styles.bodyInput}
+              placeholder="Write freely..."
+              value={body}
+              onChangeText={setBody}
+              multiline
+              textAlignVertical="top"
+            />
+          </View>
           <View style={styles.modalActions}>
             <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
               <Text style={styles.cancelText}>Cancel</Text>
@@ -80,7 +95,7 @@ export default function JournalScreen() {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -97,7 +112,10 @@ const styles = StyleSheet.create({
   cardDate: { fontSize: 11, color: '#A0AEC0', marginTop: 8 },
   modal: { flex: 1, padding: 20, paddingTop: 60, backgroundColor: '#fff' },
   titleInput: { fontSize: 18, fontWeight: '700', borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingBottom: 10, marginBottom: 14, color: Colors.ink },
-  bodyInput: { flex: 1, fontSize: 15, lineHeight: 22, color: Colors.ink },
+  bodyWrap: { flex: 1 },
+  lines: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  ruleLine: { height: RULE_LINE_HEIGHT, borderBottomWidth: 1, borderBottomColor: '#E9EDF3' },
+  bodyInput: { flex: 1, fontSize: 15, lineHeight: RULE_LINE_HEIGHT, color: Colors.ink, backgroundColor: 'transparent' },
   modalActions: { flexDirection: 'row', gap: 12, marginTop: 16 },
   cancelBtn: { flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 22, backgroundColor: '#E2E8F0' },
   cancelText: { fontWeight: '700', color: '#4A5568' },

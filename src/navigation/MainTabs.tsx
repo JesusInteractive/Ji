@@ -11,6 +11,7 @@ import ScriptureSearchScreen from '../screens/ScriptureSearchScreen';
 import JournalScreen from '../screens/JournalScreen';
 import StudyToolsScreen from '../screens/StudyToolsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import DailyDevotionsScreen from '../screens/DailyDevotionsScreen';
 import SettingsStack, { type SettingsStackParamList } from './SettingsStack';
 import { withFadeIn } from './withFadeIn';
 
@@ -25,6 +26,7 @@ const FadedBible = withFadeIn(ScriptureSearchScreen);
 const FadedJournal = withFadeIn(JournalScreen);
 const FadedStudyTools = withFadeIn(StudyToolsScreen);
 const FadedProfile = withFadeIn(ProfileScreen);
+const FadedDailyDevotions = withFadeIn(DailyDevotionsScreen);
 const FadedSettingsStack = withFadeIn(SettingsStack);
 
 export type MainTabParamList = {
@@ -35,6 +37,7 @@ export type MainTabParamList = {
   Journal: undefined;
   StudyTools: undefined;
   Profile: undefined;
+  DailyDevotions: undefined;
   // Allows jumping directly into a screen nested inside the Settings
   // stack (e.g. ProfileScreen linking straight to TokenGift) from a
   // sibling tab, not just landing on the stack's own home screen.
@@ -51,6 +54,7 @@ const ICONS: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
   Journal: 'journal',
   StudyTools: 'library',
   Profile: 'person-circle',
+  DailyDevotions: 'sunny',
   SettingsTab: 'settings',
 };
 
@@ -89,6 +93,16 @@ export default function MainTabs() {
         component={FadedProfile}
         options={{
           title: t.tabs.profile,
+          headerShown: true,
+          headerTintColor: Colors.royal,
+          tabBarButton: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="DailyDevotions"
+        component={FadedDailyDevotions}
+        options={{
+          title: t.tabs.devotions,
           headerShown: true,
           headerTintColor: Colors.royal,
           tabBarButton: () => null,

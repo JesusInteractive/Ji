@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Colors from '../theme/colors';
 import {
   getBooks,
@@ -131,7 +132,7 @@ export default function ScriptureSearchScreen() {
 
   if (selectedBook) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.backRow}>
           <TouchableOpacity style={styles.backRowLeft} onPress={() => setSelectedBook(null)}>
             <Ionicons name="arrow-back" size={22} color={Colors.gold} />
@@ -191,12 +192,12 @@ export default function ScriptureSearchScreen() {
           />
         )}
         {translationModal}
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#718096" />
         <TextInput
@@ -258,7 +259,7 @@ export default function ScriptureSearchScreen() {
         />
       )}
       {translationModal}
-    </View>
+    </SafeAreaView>
   );
 }
 

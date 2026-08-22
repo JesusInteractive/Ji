@@ -1,6 +1,6 @@
 // Shared type definitions for the Jesus Interactive app.
 
-export type LanguageCode = 'en' | 'es' | 'fr' | 'pt' | 'ar' | 'hi';
+export type LanguageCode = 'en' | 'el' | 'he' | 'es' | 'fr' | 'pt' | 'ar' | 'hi';
 
 export interface LanguageOption {
   code: LanguageCode;

@@ -6,8 +6,8 @@
   "_watchman_note": "This key is present per project spec, but Metro/Expo CLI do not read package.json for this setting -- it has no runtime effect on its own. See README 'Troubleshooting: EMFILE / too many open files' for how to actually make Metro skip Watchman (uninstall the watchman binary so metro-file-map falls back to its Node crawler) plus the ulimit fix.",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx"
@@ -33,6 +33,7 @@
     "expo-localization": "~57.0.1",
     "expo-notifications": "~57.0.11",
     "expo-secure-store": "~57.0.1",
+    "expo-sharing": "~57.0.13",
     "expo-splash-screen": "~57.0.6",
     "expo-status-bar": "~57.0.1",
     "expo-video": "~57.0.2",
@@ -50,6 +51,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
+    "@expo/ngrok": "^4.1.3",
     "@types/react": "~19.2.4",
     "typescript": "~6.0.3"
   },

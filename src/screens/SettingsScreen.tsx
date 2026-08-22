@@ -11,6 +11,9 @@ import { PRIVACY_POLICY, USER_AGREEMENT, AI_DISCLOSURE } from '../constants/lega
 import { setAnalyticsOptIn } from '../services/analytics';
 import { wipeLocalSecrets } from '../services/security';
 import { presentCustomerCenter } from '../services/purchases';
+import { exportLocalDataAsFile } from '../services/dataExport';
+import { deleteAccountAndAllData } from '../services/api';
+import { getAuthToken } from '../services/backendAuth';
 import type { SettingsStackParamList } from '../navigation/SettingsStack';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsHome'>;
@@ -41,11 +44,12 @@ export default function SettingsScreen({ navigation }: Props) {
     setAnalyticsOptIn(value);
   };
 
-  const handleDownloadData = () => {
-    Alert.alert(
-      'Download my data',
-      'In production, this calls services/api.ts requestDataExport() and emails you a secure download link.'
-    );
+  const handleDownloadData = async () => {
+    try {
+      await exportLocalDataAsFile();
+    } catch (e) {
+      Alert.alert('Couldn\'t export your data', e instanceof Error ? e.message : 'Please try again.');
+    }
   };
 
   const handleClearChatHistory = () => {
@@ -76,13 +80,29 @@ export default function SettingsScreen({ navigation }: Props) {
           text: 'Delete everything',
           style: 'destructive',
           onPress: async () => {
-            // TODO: also call services/api.ts deleteAccountAndAllData(authToken)
-            // in production so server-side copies (billing records aside,
-            // per your retention policy) are removed too -- this call only
-            // guarantees the on-device half is complete.
+            // Server-side delete first -- see backend/server.js's
+            // DELETE /v1/account for why this is currently a no-op (no
+            // database yet, nothing server-side to remove). Its failure
+            // shouldn't block the on-device wipe below, which is the
+            // part that actually does something today; still surfaced
+            // to the user afterward so a real future failure isn't
+            // silent.
+            let serverDeleteFailed = false;
+            try {
+              const token = await getAuthToken();
+              await deleteAccountAndAllData(token);
+            } catch (e) {
+              serverDeleteFailed = true;
+              console.error('Server-side account delete failed:', e);
+            }
             await wipeLocalSecrets();
             await wipeAllLocalData();
-            Alert.alert('Deleted', 'All local data has been cleared.');
+            Alert.alert(
+              'Deleted',
+              serverDeleteFailed
+                ? 'All local data has been cleared. We couldn\'t reach the server to confirm the server-side delete -- try again later if you\'re on a spotty connection.'
+                : 'All local data has been cleared.'
+            );
           },
         },
       ]

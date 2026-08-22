@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   createAudioPlayer,
@@ -38,7 +39,7 @@ import { canSendNow } from '../services/cache';
 import { track } from '../services/analytics';
 import { synthesizeSpeech, playSpeech } from '../services/tts';
 import { transcribeSpeech } from '../services/stt';
-import { BACKEND_AUTH_TOKEN } from '../services/backendAuth';
+import { withAuthRetry } from '../services/backendAuth';
 import { playFadedWindCue } from '../services/audioFade';
 import type { ChatMessage, JesusMood } from '../types';
 import type { ChatStackParamList } from '../navigation/ChatStack';
@@ -202,7 +203,7 @@ export default function ChatScreen() {
     }
     const generation = ++speakGenerationRef.current;
     try {
-      const audioUrl = await synthesizeSpeech(BACKEND_AUTH_TOKEN, replyText, language);
+      const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, replyText, language));
       if (generation !== speakGenerationRef.current) return; // superseded while synthesizing
       currentStopRef.current = await playSpeech(audioUrl, {
         onStart: () => {
@@ -244,7 +245,7 @@ export default function ChatScreen() {
     const safetyReply = getSafetyReply(text, { ageAppropriate: ageAppropriateMode, regionCode: deviceRegion });
     if (safetyReply) return safetyReply;
 
-    const jesusMessage = await sendMessage(BACKEND_AUTH_TOKEN, conversationIdRef.current, text, language);
+    const jesusMessage = await withAuthRetry((token) => sendMessage(token, conversationIdRef.current, text, language));
     return { text: jesusMessage.text, mood: jesusMessage.mood ?? 'neutral' };
   }
 
@@ -420,7 +421,7 @@ export default function ChatScreen() {
       }
 
       setIsTranscribing(true);
-      const text = await transcribeSpeech(BACKEND_AUTH_TOKEN, uri);
+      const text = await withAuthRetry((token) => transcribeSpeech(token, uri));
       setIsTranscribing(false);
       console.log('Voice message transcribed:', JSON.stringify(text));
 
@@ -541,7 +542,7 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <View style={styles.topBar}>
+      <SafeAreaView edges={['top']} style={styles.topBar}>
         <Text style={styles.topBarTitle}>{t.tabs.chat}</Text>
         <View style={styles.headerIcons}>
           <TouchableOpacity onPress={playEntrance} accessibilityRole="button" accessibilityLabel="Replay Jesus's entrance">
@@ -563,7 +564,7 @@ export default function ChatScreen() {
             <Ionicons name="exit-outline" size={20} color={Colors.ivory} />
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
 
       {/* Jesus is the main thing on screen -- large, centered, face-to-face,
           rather than a small avatar riding along a text-chat list. The

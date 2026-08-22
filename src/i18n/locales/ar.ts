@@ -59,6 +59,7 @@ const ar: TranslationShape = {
     settings: 'الإعدادات',
     studyTools: 'أدوات الدراسة',
     profile: 'الملف الشخصي',
+    devotions: 'التأملات اليومية',
   },
   chat: {
     inputPlaceholder: 'اطرح سؤالاً أو صلاة',

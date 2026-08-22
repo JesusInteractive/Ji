@@ -5,7 +5,7 @@ import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Colors from '../theme/colors';
 import JesusAvatar, { type JesusAvatarHandle } from './JesusAvatar';
 import { synthesizeSpeech, playSpeech } from '../services/tts';
-import { BACKEND_AUTH_TOKEN } from '../services/backendAuth';
+import { withAuthRetry } from '../services/backendAuth';
 import { MUSIC_LEVEL_VOLUME, type MusicLevel } from '../services/musicLevel';
 import { playFadedWindCue } from '../services/audioFade';
 
@@ -134,7 +134,7 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
   // entrance and verse text are unaffected either way.
   async function speakGreeting() {
     try {
-      const audioUrl = await synthesizeSpeech(BACKEND_AUTH_TOKEN, greetingText, languageCode);
+      const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, greetingText, languageCode));
       currentStopRef.current = await playSpeech(audioUrl, {
         onStart: () => {
           avatarRef.current?.startSpeaking();

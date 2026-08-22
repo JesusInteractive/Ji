@@ -8,8 +8,12 @@ import type {
   PrayerNote,
 } from '../types';
 import { PLANS } from '../constants/pricing';
+import { encryptLocalText, decryptLocalText } from '../services/security';
 
-const STORAGE_KEYS = {
+// Exported so src/services/dataExport.ts can build a real on-device data
+// export from these same keys without duplicating (and risking drifting
+// out of sync with) this list.
+export const STORAGE_KEYS = {
   onboarding: 'ji_onboarding_v2',
   plan: 'ji_plan_v2',
   tokens: 'ji_tokens_v2',
@@ -19,6 +23,34 @@ const STORAGE_KEYS = {
   prayers: 'ji_prayers_v2',
   profile: 'ji_profile_v1',
 };
+
+// Journal entries and prayer notes are the two categories of genuinely
+// private, never-sent-to-the-model content this app stores (see
+// services/security.ts's module comment) -- these wrap that file's
+// AES-256-GCM primitives around the JSON <-> AsyncStorage round-trip
+// every add/remove callback below needs.
+async function writeEncryptedJson(key: string, value: unknown): Promise<void> {
+  const encrypted = await encryptLocalText(JSON.stringify(value));
+  await AsyncStorage.setItem(key, encrypted);
+}
+
+async function readEncryptedJson<T>(raw: string | null): Promise<T | null> {
+  if (!raw) return null;
+  try {
+    return JSON.parse(await decryptLocalText(raw)) as T;
+  } catch {
+    // Not our sealed-data format -- most likely plaintext JSON written
+    // before this encryption was wired up (this app predates it; see
+    // services/security.ts's history). Fall back to reading it as-is so
+    // existing local data isn't lost; the next add/remove re-saves it
+    // encrypted via writeEncryptedJson above.
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      return null;
+    }
+  }
+}
 
 interface AppContextValue {
   // Onboarding
@@ -142,14 +174,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
         if (tokensRaw) setTokenBalance(Number(tokensRaw) || 0);
         if (messagesRaw) setMessages(JSON.parse(messagesRaw));
-        if (journalRaw) setJournalEntries(JSON.parse(journalRaw));
+        const journal = await readEncryptedJson<JournalEntry[]>(journalRaw);
+        if (journal) setJournalEntries(journal);
         if (favRaw) setFavorites(JSON.parse(favRaw));
         if (profileRaw) {
           const parsed = JSON.parse(profileRaw);
           setDisplayNameState(parsed.displayName ?? '');
           setProfilePhotoUriState(parsed.profilePhotoUri ?? null);
         }
-        if (prayersRaw) setPrayerNotes(JSON.parse(prayersRaw));
+        const prayers = await readEncryptedJson<PrayerNote[]>(prayersRaw);
+        if (prayers) setPrayerNotes(prayers);
       } finally {
         setReady(true);
       }
@@ -229,7 +263,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const addJournalEntry = useCallback((e: JournalEntry) => {
     setJournalEntries((prev) => {
       const next = [e, ...prev];
-      AsyncStorage.setItem(STORAGE_KEYS.journal, JSON.stringify(next)).catch(() => {});
+      writeEncryptedJson(STORAGE_KEYS.journal, next).catch(() => {});
       return next;
     });
   }, []);
@@ -237,7 +271,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const removeJournalEntry = useCallback((id: string) => {
     setJournalEntries((prev) => {
       const next = prev.filter((e) => e.id !== id);
-      AsyncStorage.setItem(STORAGE_KEYS.journal, JSON.stringify(next)).catch(() => {});
+      writeEncryptedJson(STORAGE_KEYS.journal, next).catch(() => {});
       return next;
     });
   }, []);
@@ -261,7 +295,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const addPrayerNote = useCallback((n: PrayerNote) => {
     setPrayerNotes((prev) => {
       const next = [n, ...prev];
-      AsyncStorage.setItem(STORAGE_KEYS.prayers, JSON.stringify(next)).catch(() => {});
+      writeEncryptedJson(STORAGE_KEYS.prayers, next).catch(() => {});
       return next;
     });
   }, []);
