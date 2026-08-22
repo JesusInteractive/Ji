@@ -7,7 +7,7 @@ import JesusAvatar, { type JesusAvatarHandle } from './JesusAvatar';
 import { synthesizeSpeech, playSpeech } from '../services/tts';
 import { withAuthRetry } from '../services/backendAuth';
 import { MUSIC_LEVEL_VOLUME, type MusicLevel } from '../services/musicLevel';
-import { playFadedWindCue } from '../services/audioFade';
+import { playFadedWindCue, fadeAudioVolume } from '../services/audioFade';
 
 interface Props {
   verseReference: string;
@@ -75,9 +75,17 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
 
   useEffect(() => {
     playEntrance();
-    startAmbientMusic();
+    // Staggered, not simultaneous -- starting the ambient bed at the same
+    // instant as the wind cue's own fade-in made the two collide right as
+    // Jesus appears (the wind cue's onset and the ambient track's onset
+    // landing on top of each other read as a jarring overlap rather than
+    // two intentionally layered sounds). Letting the wind cue's fade-in
+    // finish first (see playFadedWindCue's fadeInMs) before the ambient
+    // bed starts its own gentler entrance keeps them from clashing.
+    const ambientTimer = setTimeout(startAmbientMusic, 700);
 
     return () => {
+      clearTimeout(ambientTimer);
       ambientPlayerRef.current?.remove();
       ambientPlayerRef.current = null;
       currentStopRef.current?.();
@@ -119,8 +127,15 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
     try {
       const ambient = createAudioPlayer(require('../../assets/sounds/ambient-peaceful.mp3'));
       ambient.loop = true;
-      ambient.volume = MUSIC_LEVEL_VOLUME[musicLevelRef.current];
-      if (musicLevelRef.current !== 'off') ambient.play();
+      if (musicLevelRef.current !== 'off') {
+        // Faded in rather than starting at full volume the instant it's
+        // audible -- same reasoning as playFadedWindCue's own fade-in.
+        ambient.volume = 0;
+        ambient.play();
+        fadeAudioVolume(ambient, MUSIC_LEVEL_VOLUME[musicLevelRef.current], 1200);
+      } else {
+        ambient.volume = MUSIC_LEVEL_VOLUME[musicLevelRef.current];
+      }
       ambientPlayerRef.current = ambient;
     } catch (e) {
       console.error('Ambient music error:', e);

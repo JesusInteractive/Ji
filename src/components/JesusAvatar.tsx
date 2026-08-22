@@ -319,9 +319,15 @@ function AvatarVideoLayer({
   });
 
   useEffect(() => {
+    // Does NOT call idlePlayer.play() here -- the isSpeaking effect below
+    // also runs on mount (isSpeaking/idleEnded both start false) and hits
+    // its own idlePlayer.play() call in the `!idleEnded` branch. Two
+    // play() calls fired back-to-back like that made the native player
+    // restart from frame 0 partway in, which is what read as "the clip
+    // plays twice." Resetting state here and letting that other effect be
+    // the single place that actually starts playback fixes it.
     setIdleEnded(false);
     settlePlayer.pause();
-    idlePlayer.play();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idleSource, idlePlayer]);
 
