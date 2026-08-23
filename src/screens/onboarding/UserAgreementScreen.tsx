@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { useI18n } from '../../i18n';
 import { useApp } from '../../context/AppContext';
 import { USER_AGREEMENT } from '../../constants/legal';
 import type { OnboardingStackParamList } from '../../navigation/RootNavigator';
+import DraggableScrollbar from '../../components/DraggableScrollbar';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'UserAgreement'>;
 
@@ -18,6 +19,11 @@ export default function UserAgreementScreen({ navigation }: Props) {
   const { acceptAgreement } = useApp();
   const [checked, setChecked] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   const handleContinue = () => {
     if (!checked) {
@@ -30,17 +36,36 @@ export default function UserAgreementScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <Text style={styles.title}>{USER_AGREEMENT.title}</Text>
-        <Text style={styles.body}>{USER_AGREEMENT.intro}</Text>
-        {USER_AGREEMENT.sections.map((s) => (
-          <View key={s.heading} style={styles.section}>
-            <Text style={styles.heading}>{s.heading}</Text>
-            <Text style={styles.body}>{s.body}</Text>
-          </View>
-        ))}
-        <Text style={styles.body}>{USER_AGREEMENT.closing}</Text>
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          ref={scrollRef}
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.scroll}
+          onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+          onContentSizeChange={(_width, height) => setContentHeight(height)}
+          onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+          scrollEventThrottle={16}
+        >
+          <Text style={styles.title}>{USER_AGREEMENT.title}</Text>
+          <Text style={styles.body}>{USER_AGREEMENT.intro}</Text>
+          {USER_AGREEMENT.sections.map((s) => (
+            <View key={s.heading} style={styles.section}>
+              <Text style={styles.heading}>{s.heading}</Text>
+              <Text style={styles.body}>{s.body}</Text>
+            </View>
+          ))}
+          <Text style={styles.body}>{USER_AGREEMENT.closing}</Text>
+        </ScrollView>
+        <DraggableScrollbar
+          contentHeight={contentHeight}
+          viewportHeight={viewportHeight}
+          scrollOffset={scrollOffset}
+          onScrollTo={(offset) => {
+            scrollRef.current?.scrollTo({ y: offset, animated: false });
+            setScrollOffset(offset);
+          }}
+        />
+      </View>
 
       <View style={styles.footer}>
         <TouchableOpacity

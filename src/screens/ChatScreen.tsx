@@ -347,10 +347,6 @@ export default function ChatScreen() {
 
   useEffect(() => {
     if (!isRecording) return;
-    // Temporary calibration aid -- shows the real metering values this
-    // device actually produces while recording, so SILENCE_THRESHOLD_DB
-    // can be tuned against real numbers instead of guessed again.
-    console.log('Mic metering:', recorderState.metering, 'dB (threshold:', SILENCE_THRESHOLD_DB, ')');
     const now = Date.now();
     if (now - recordingStartedAtRef.current > MAX_RECORDING_MS) {
       stopRecordingAndSend();
@@ -436,7 +432,6 @@ export default function ChatScreen() {
       setIsTranscribing(true);
       const text = await withAuthRetry((token) => transcribeSpeech(token, uri));
       setIsTranscribing(false);
-      console.log('Voice message transcribed:', JSON.stringify(text));
 
       if (!text) {
         if (autoRelistenRef.current) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
@@ -6,6 +6,7 @@ import { BIOGRAPHY_PARAGRAPHS, ABOUT_INTRO } from '../constants/about';
 import { MATTHEW_LINEAGE, LINEAGE_NOTE, LUKE_LINEAGE_NOTE } from '../constants/lineage';
 import { PROPHECIES, PROPHECY_CATEGORIES, prophecyCountLabel } from '../constants/prophecies';
 import { useI18n } from '../i18n';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Biography + Lineage + Prophecies are presented as one unified story of
 // who Jesus is (spec: "should feel unified... working together"), not
@@ -14,8 +15,22 @@ import { useI18n } from '../i18n';
 export default function AboutScreen() {
   const { t } = useI18n();
 
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={{ flex: 1 }}>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+      onContentSizeChange={(_width, height) => setContentHeight(height)}
+      onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+      scrollEventThrottle={16}
+    >
       <Text style={styles.pageTitle}>{t.about.title}</Text>
       <Text style={styles.intro}>{ABOUT_INTRO}</Text>
 
@@ -74,6 +89,16 @@ export default function AboutScreen() {
         );
       })}
     </ScrollView>
+    <DraggableScrollbar
+      contentHeight={contentHeight}
+      viewportHeight={viewportHeight}
+      scrollOffset={scrollOffset}
+      onScrollTo={(offset) => {
+        scrollRef.current?.scrollTo({ y: offset, animated: false });
+        setScrollOffset(offset);
+      }}
+    />
+    </View>
   );
 }
 
