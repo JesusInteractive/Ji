@@ -44,6 +44,16 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
   const ambientPlayerRef = useRef<ReturnType<typeof createAudioPlayer> | null>(null);
   const currentStopRef = useRef<(() => Promise<void>) | null>(null);
   const musicLevelRef = useRef<MusicLevel>('full');
+  // speakGreeting() awaits a network call (synthesizeSpeech) before it
+  // has anything to stop -- if the screen unmounts (e.g. tapping
+  // "Enter" quickly) while that call is still in flight, the unmount
+  // cleanup below runs first and finds currentStopRef still null, then
+  // the network call resolves afterward and starts playback on an
+  // already-unmounted screen with nothing left to ever stop it. This
+  // flag is checked right after that await, before playSpeech() is
+  // ever called, so a late response just gets skipped instead of
+  // starting audio that plays on into whatever screen came next.
+  const isMountedRef = useRef(true);
 
   const playEntrance = () => {
     cloudOpacity.setValue(0);
@@ -85,6 +95,7 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
     const ambientTimer = setTimeout(startAmbientMusic, 700);
 
     return () => {
+      isMountedRef.current = false;
       clearTimeout(ambientTimer);
       ambientPlayerRef.current?.remove();
       ambientPlayerRef.current = null;
@@ -157,6 +168,7 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
   async function speakGreeting() {
     try {
       const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, greetingText, languageCode));
+      if (!isMountedRef.current) return; // unmounted while synthesizing -- see isMountedRef's own comment
       currentStopRef.current = await playSpeech(audioUrl, {
         onStart: () => {
           avatarRef.current?.startSpeaking();
