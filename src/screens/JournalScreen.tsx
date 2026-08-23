@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, FlatList, Modal, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Journaling of conversations (spec section 7). Entries are stored
 // locally today (AppContext -> AsyncStorage); a real build should also
@@ -32,6 +33,19 @@ export default function JournalScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+
+  // One scrollbar per folder's own FlatList -- only one is ever mounted
+  // at a time (the other folder's list isn't rendered), so there's no
+  // risk of them fighting over the same state.
+  const entriesListRef = useRef<FlatList>(null);
+  const [entriesScrollOffset, setEntriesScrollOffset] = useState(0);
+  const [entriesContentHeight, setEntriesContentHeight] = useState(0);
+  const [entriesViewportHeight, setEntriesViewportHeight] = useState(0);
+
+  const jesusListRef = useRef<FlatList>(null);
+  const [jesusScrollOffset, setJesusScrollOffset] = useState(0);
+  const [jesusContentHeight, setJesusContentHeight] = useState(0);
+  const [jesusViewportHeight, setJesusViewportHeight] = useState(0);
 
   const handleSave = () => {
     if (!title.trim() && !body.trim()) return;
@@ -94,44 +108,76 @@ export default function JournalScreen() {
       </View>
 
       {folder === 'entries' ? (
-        <FlatList
-          data={journalEntries}
-          keyExtractor={(e) => e.id}
-          contentContainerStyle={styles.list}
-          ListEmptyComponent={<Text style={styles.empty}>No journal entries yet. Tap + to write one.</Text>}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.card} onLongPress={() => confirmDelete(item.id)}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardBody} numberOfLines={3}>{item.body}</Text>
-              <Text style={styles.cardDate}>{new Date(item.createdAt).toLocaleDateString()}</Text>
-            </TouchableOpacity>
-          )}
-        />
+        <View style={{ flex: 1 }}>
+          <FlatList
+            ref={entriesListRef}
+            data={journalEntries}
+            keyExtractor={(e) => e.id}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={<Text style={styles.empty}>No journal entries yet. Tap + to write one.</Text>}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.card} onLongPress={() => confirmDelete(item.id)}>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Text style={styles.cardBody} numberOfLines={3}>{item.body}</Text>
+                <Text style={styles.cardDate}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+              </TouchableOpacity>
+            )}
+            onLayout={({ nativeEvent }) => setEntriesViewportHeight(nativeEvent.layout.height)}
+            onContentSizeChange={(_width, height) => setEntriesContentHeight(height)}
+            onScroll={({ nativeEvent }) => setEntriesScrollOffset(nativeEvent.contentOffset.y)}
+            scrollEventThrottle={16}
+          />
+          <DraggableScrollbar
+            contentHeight={entriesContentHeight}
+            viewportHeight={entriesViewportHeight}
+            scrollOffset={entriesScrollOffset}
+            onScrollTo={(offset) => {
+              entriesListRef.current?.scrollToOffset({ offset, animated: false });
+              setEntriesScrollOffset(offset);
+            }}
+          />
+        </View>
       ) : (
-        <FlatList
-          data={favorites}
-          keyExtractor={(f) => f.id}
-          contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <Text style={styles.empty}>
-              Nothing saved yet. Long-press a verse in Scripture, or tap the bookmark on a chat reply.
-            </Text>
-          }
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              {item.reference && <Text style={styles.reference}>{item.reference}</Text>}
-              <Text style={styles.cardBody}>{item.text}</Text>
-              <View style={styles.actions}>
-                <TouchableOpacity style={styles.iconBtn} onPress={() => handleShare(item.text, item.reference)}>
-                  <Ionicons name="share-outline" size={18} color={Colors.royal} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconBtn} onPress={() => removeFavorite(item.id)}>
-                  <Ionicons name="trash-outline" size={18} color={Colors.danger} />
-                </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <FlatList
+            ref={jesusListRef}
+            data={favorites}
+            keyExtractor={(f) => f.id}
+            contentContainerStyle={styles.list}
+            ListEmptyComponent={
+              <Text style={styles.empty}>
+                Nothing saved yet. Long-press a verse in Scripture, or tap Bookmark on a chat reply.
+              </Text>
+            }
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                {item.reference && <Text style={styles.reference}>{item.reference}</Text>}
+                <Text style={styles.cardBody}>{item.text}</Text>
+                <View style={styles.actions}>
+                  <TouchableOpacity style={styles.iconBtn} onPress={() => handleShare(item.text, item.reference)}>
+                    <Ionicons name="share-outline" size={18} color={Colors.royal} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.iconBtn} onPress={() => removeFavorite(item.id)}>
+                    <Ionicons name="trash-outline" size={18} color={Colors.danger} />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-        />
+            )}
+            onLayout={({ nativeEvent }) => setJesusViewportHeight(nativeEvent.layout.height)}
+            onContentSizeChange={(_width, height) => setJesusContentHeight(height)}
+            onScroll={({ nativeEvent }) => setJesusScrollOffset(nativeEvent.contentOffset.y)}
+            scrollEventThrottle={16}
+          />
+          <DraggableScrollbar
+            contentHeight={jesusContentHeight}
+            viewportHeight={jesusViewportHeight}
+            scrollOffset={jesusScrollOffset}
+            onScrollTo={(offset) => {
+              jesusListRef.current?.scrollToOffset({ offset, animated: false });
+              setJesusScrollOffset(offset);
+            }}
+          />
+        </View>
       )}
 
       <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
