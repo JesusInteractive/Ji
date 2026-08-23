@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
@@ -1285,7 +1285,13 @@ export default function StudyToolsScreen() {
     }
   };
   const openLink = (url: string) => {
-    Linking.openURL(url).catch(() => {});
+    // Silently doing nothing on failure read as a dead/broken tap --
+    // with 70+ external links here, some pointing at raw GitHub file
+    // URLs or a source that's temporarily down, a failure is a real
+    // possibility, not just theoretical.
+    Linking.openURL(url).catch(() => {
+      Alert.alert("Couldn't open that link", 'Please check your connection and try again.');
+    });
   };
 
   return (

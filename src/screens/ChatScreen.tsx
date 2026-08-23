@@ -599,7 +599,7 @@ export default function ChatScreen() {
             />
           </Animated.View>
           <Animated.View style={{ opacity: entranceOpacity, transform: [{ scale: entranceScale }] }}>
-            <JesusAvatar ref={avatarRef} mood={lastJesusMood} size={210} shape="portrait" />
+            <JesusAvatar ref={avatarRef} mood={lastJesusMood} size={255} shape="portrait" />
           </Animated.View>
           {/* Lets the idle clip (plays once, freezes on its last frame) be
               rewatched on demand -- placed at the lower-right of the glow
@@ -795,16 +795,16 @@ const styles = StyleSheet.create({
     // background's own bottom edge (see avatarStage's own comment on
     // the overflow this caused). Shrunk to comfortably fit within the
     // stage instead of relying on zIndex to hide the overflow.
-    width: 360,
-    height: 360,
+    width: 430,
+    height: 430,
     alignItems: 'center',
     justifyContent: 'center',
   },
   cloudGlow: {
     position: 'absolute',
-    width: 360,
-    height: 360,
-    borderRadius: 180,
+    width: 430,
+    height: 430,
+    borderRadius: 215,
     overflow: 'hidden',
   },
   replayVideoBtn: {
@@ -813,9 +813,9 @@ const styles = StyleSheet.create({
     // outside the circle's own visible paint area anyway -- a circle
     // inscribed in a square never covers its corners) to sit right at
     // the avatar's own lower-right edge instead, comfortably inside
-    // whatever portion of the 360 box actually ends up on-screen.
-    bottom: 27,
-    right: 52,
+    // whatever portion of the 430 box actually ends up on-screen.
+    bottom: 32,
+    right: 62,
     width: 40,
     height: 40,
     borderRadius: 20,

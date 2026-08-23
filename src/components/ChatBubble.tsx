@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { ChatMessage } from '../types';
 import Colors from '../theme/colors';
@@ -24,6 +24,21 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
   // screen reader/user has to manually retype. See crisisResources.ts.
   const hasCrisisLink = isJesus && message.text.includes(INTERNATIONAL_DIRECTORY_URL);
 
+  // This link matters more than almost any other tap in the app -- if
+  // it silently fails (no browser handler, bad connection, whatever),
+  // someone in an actual crisis gets zero feedback and no way to
+  // recover. Fall back to showing the raw URL so they can still find
+  // it (search it, tell someone, type it manually) instead of a tap
+  // that visibly does nothing.
+  const openCrisisDirectory = () => {
+    Linking.openURL(INTERNATIONAL_DIRECTORY_URL).catch(() => {
+      Alert.alert(
+        "Couldn't open the link",
+        `You can find crisis help at:\n${INTERNATIONAL_DIRECTORY_URL}`
+      );
+    });
+  };
+
   return (
     <View style={[styles.row, isJesus ? styles.rowLeft : styles.rowRight]}>
       {isJesus && showAvatar && <JesusAvatar mood={message.mood ?? 'neutral'} size={36} />}
@@ -43,7 +58,7 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
         {hasCrisisLink && (
           <TouchableOpacity
             style={styles.crisisLinkBtn}
-            onPress={() => Linking.openURL(INTERNATIONAL_DIRECTORY_URL)}
+            onPress={openCrisisDirectory}
             accessibilityRole="link"
             accessibilityLabel="Open international crisis help directory"
           >
