@@ -23,6 +23,7 @@ import {
 } from '../services/bibleApi';
 import { useApp } from '../context/AppContext';
 import MagnifyButton from '../components/MagnifyButton';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 const DEFAULT_TRANSLATION_ID = 'BSB';
 
@@ -52,6 +53,32 @@ export default function ScriptureSearchScreen() {
 
   const verseListRef = useRef<FlatList>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  // State (not refs) so DraggableScrollbar's thumb actually re-renders as
+  // these change. See StudyToolsScreen's identical comment on why
+  // onLayout/onContentSizeChange are needed alongside onScroll -- a long
+  // chapter is scrollable from the very first frame, before any onScroll
+  // event has ever fired.
+  const [verseScrollOffset, setVerseScrollOffset] = useState(0);
+  const [verseContentHeight, setVerseContentHeight] = useState(0);
+  const [verseViewportHeight, setVerseViewportHeight] = useState(0);
+  const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
+    if (newContentHeight && newViewportHeight) {
+      setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
+    }
+  };
+
+  // Same pattern again for the top-level book list (66 books -- always
+  // scrollable from the first frame).
+  const bookListRef = useRef<FlatList>(null);
+  const [showBookScrollToBottom, setShowBookScrollToBottom] = useState(false);
+  const [bookScrollOffset, setBookScrollOffset] = useState(0);
+  const [bookContentHeight, setBookContentHeight] = useState(0);
+  const [bookViewportHeight, setBookViewportHeight] = useState(0);
+  const recomputeBookListVisibility = (newContentHeight: number, newViewportHeight: number) => {
+    if (newContentHeight && newViewportHeight) {
+      setShowBookScrollToBottom(newContentHeight - newViewportHeight > 200);
+    }
+  };
 
   useEffect(() => {
     getTranslations().then(setTranslations).catch(() => {});
@@ -80,6 +107,7 @@ export default function ScriptureSearchScreen() {
       setChapter(await getChapter(book.id, num, translationId));
       verseListRef.current?.scrollToOffset({ offset: 0, animated: false });
       setShowScrollToBottom(false);
+      setVerseScrollOffset(0);
     } catch {
       setChapterError("Couldn't load this chapter.");
     } finally {
@@ -198,12 +226,30 @@ export default function ScriptureSearchScreen() {
                 </TouchableOpacity>
               )}
               contentContainerStyle={styles.list}
+              onLayout={({ nativeEvent }) => {
+                setVerseViewportHeight(nativeEvent.layout.height);
+                recomputeInitialVisibility(verseContentHeight, nativeEvent.layout.height);
+              }}
+              onContentSizeChange={(_width, height) => {
+                setVerseContentHeight(height);
+                recomputeInitialVisibility(height, verseViewportHeight);
+              }}
               onScroll={({ nativeEvent }) => {
                 const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
                 const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
                 setShowScrollToBottom(distanceFromBottom > 200);
+                setVerseScrollOffset(contentOffset.y);
               }}
-              scrollEventThrottle={100}
+              scrollEventThrottle={16}
+            />
+            <DraggableScrollbar
+              contentHeight={verseContentHeight}
+              viewportHeight={verseViewportHeight}
+              scrollOffset={verseScrollOffset}
+              onScrollTo={(offset) => {
+                verseListRef.current?.scrollToOffset({ offset, animated: false });
+                setVerseScrollOffset(offset);
+              }}
             />
             {showScrollToBottom && (
               <TouchableOpacity
@@ -218,7 +264,7 @@ export default function ScriptureSearchScreen() {
         )}
         {translationModal}
         </View>
-        <MagnifyButton />
+        <MagnifyButton style={{ bottom: 80 }} />
       </SafeAreaView>
     );
   }
@@ -267,23 +313,59 @@ export default function ScriptureSearchScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={(b) => b.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.bookRow} onPress={() => openBook(item)}>
-              <View style={styles.bookIcon}>
-                <Ionicons name="book-outline" size={22} color={Colors.gold} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.bookName}>{item.name}</Text>
-                <Text style={styles.bookMeta}>{item.testament} · {item.chapters} chapters</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color="#A0AEC0" />
+        <View style={{ flex: 1 }}>
+          <FlatList
+            ref={bookListRef}
+            data={filtered}
+            keyExtractor={(b) => b.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.bookRow} onPress={() => openBook(item)}>
+                <View style={styles.bookIcon}>
+                  <Ionicons name="book-outline" size={22} color={Colors.gold} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.bookName}>{item.name}</Text>
+                  <Text style={styles.bookMeta}>{item.testament} · {item.chapters} chapters</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color="#A0AEC0" />
+              </TouchableOpacity>
+            )}
+            contentContainerStyle={styles.list}
+            onLayout={({ nativeEvent }) => {
+              setBookViewportHeight(nativeEvent.layout.height);
+              recomputeBookListVisibility(bookContentHeight, nativeEvent.layout.height);
+            }}
+            onContentSizeChange={(_width, height) => {
+              setBookContentHeight(height);
+              recomputeBookListVisibility(height, bookViewportHeight);
+            }}
+            onScroll={({ nativeEvent }) => {
+              const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+              const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+              setShowBookScrollToBottom(distanceFromBottom > 200);
+              setBookScrollOffset(contentOffset.y);
+            }}
+            scrollEventThrottle={16}
+          />
+          <DraggableScrollbar
+            contentHeight={bookContentHeight}
+            viewportHeight={bookViewportHeight}
+            scrollOffset={bookScrollOffset}
+            onScrollTo={(offset) => {
+              bookListRef.current?.scrollToOffset({ offset, animated: false });
+              setBookScrollOffset(offset);
+            }}
+          />
+          {showBookScrollToBottom && (
+            <TouchableOpacity
+              style={styles.scrollToBottomBtn}
+              onPress={() => bookListRef.current?.scrollToEnd({ animated: true })}
+              accessibilityLabel="Scroll to bottom of book list"
+            >
+              <Ionicons name="arrow-down" size={20} color={Colors.white} />
             </TouchableOpacity>
           )}
-          contentContainerStyle={styles.list}
-        />
+        </View>
       )}
       {translationModal}
     </SafeAreaView>

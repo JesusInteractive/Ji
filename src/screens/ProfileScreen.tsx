@@ -34,19 +34,31 @@ export default function ProfileScreen() {
   const currentPlan = PLANS.find((p) => p.id === plan) ?? PLANS[0];
 
   const handlePickPhoto = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Photo access needed', 'Enable photo library access in Settings to upload a profile photo.');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images',
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled && result.assets[0]) {
-      setProfilePhotoUri(result.assets[0].uri);
+    // Previously had no try/catch -- any rejection (permission API
+    // throwing, the picker module not being available in the current
+    // runtime, etc.) failed completely silently, which is exactly what
+    // "tapping it does nothing" looks like from the outside.
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Photo access needed', 'Enable photo library access in Settings to upload a profile photo.');
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+      if (!result.canceled && result.assets[0]) {
+        setProfilePhotoUri(result.assets[0].uri);
+      }
+    } catch (e) {
+      console.error('Photo picker error:', e);
+      Alert.alert(
+        'Couldn\'t open the photo picker',
+        e instanceof Error ? e.message : 'Please try again.'
+      );
     }
   };
 

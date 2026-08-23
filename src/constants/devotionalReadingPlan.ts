@@ -210,9 +210,15 @@ export const READING_PLAN: DevotionDay[] = buildReadingPlan();
 
 // 1-indexed day-of-year, clamped to 1-365 (day 366 on a leap year reuses
 // day 365's passage rather than needing a 366th plan entry).
+// Uses the device's local calendar date (not UTC) -- otherwise a user
+// near a UTC day boundary (e.g. New Zealand already well into "tomorrow"
+// while UTC is still on "today", or Hawaii still on "yesterday" while
+// UTC has rolled over) would get a devotion a day off from their own
+// real date. Date.UTC(...) here is just a fast whole-day-count trick, fed
+// local y/m/d fields, not an actual UTC read of "now."
 export function getDayOfYear(date: Date = new Date()): number {
-  const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 1);
-  const today = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  const startOfYear = Date.UTC(date.getFullYear(), 0, 1);
+  const today = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
   const dayOfYear = Math.floor((today - startOfYear) / 86400000) + 1;
   return Math.min(Math.max(dayOfYear, 1), TOTAL_DAYS);
 }

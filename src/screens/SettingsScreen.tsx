@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
-import { useApp } from '../context/AppContext';
+import { useApp, TEXT_ZOOM_LEVELS } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { PLANS } from '../constants/pricing';
 import { LANGUAGES } from '../i18n/languages';
@@ -14,6 +14,9 @@ import { presentCustomerCenter } from '../services/purchases';
 import { exportLocalDataAsFile } from '../services/dataExport';
 import { deleteAccountAndAllData } from '../services/api';
 import { getAuthToken } from '../services/backendAuth';
+import { scheduleLocalDailyVerseReminder, cancelLocalDailyVerseReminder } from '../services/notifications';
+import LanguagePicker from '../components/LanguagePicker';
+import type { LanguageCode } from '../types';
 import type { SettingsStackParamList } from '../navigation/SettingsStack';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsHome'>;
@@ -30,11 +33,45 @@ export default function SettingsScreen({ navigation }: Props) {
     setOfflineMode,
     wipeAllLocalData,
     clearMessages,
+    textZoom,
+    setTextZoom,
   } = useApp();
 
   const [notifications, setNotifications] = useState(true);
   const [dailyVerseReminder, setDailyVerseReminder] = useState(true);
   const [analyticsOptIn, setLocalAnalyticsOptIn] = useState(true);
+  const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
+  const [textSizePickerOpen, setTextSizePickerOpen] = useState(false);
+
+  // The Language row previously just showed an Alert telling *us* to wire
+  // a picker here -- LanguagePicker already exists (built for onboarding's
+  // LanguageSelectScreen) and setLanguage already persists + re-renders
+  // the whole app's copy, so this reuses both rather than duplicating.
+  const handleSelectLanguage = (code: LanguageCode) => {
+    setLanguage(code);
+    setLanguagePickerOpen(false);
+  };
+
+  // Flipping this switch was previously decorative -- it toggled local
+  // state but never actually scheduled or cancelled anything (the
+  // notifications.ts plumbing existed, nothing called it). Wire it to the
+  // real local (on-device) scheduler; if permission is denied, revert the
+  // switch rather than showing "on" for a reminder that will never fire.
+  const handleDailyVerseReminderChange = async (value: boolean) => {
+    setDailyVerseReminder(value);
+    if (value) {
+      const granted = await scheduleLocalDailyVerseReminder();
+      if (!granted) {
+        setDailyVerseReminder(false);
+        Alert.alert(
+          'Notifications disabled',
+          'Enable notifications for Jesus Interactive in your device Settings to get a daily verse reminder.'
+        );
+      }
+    } else {
+      await cancelLocalDailyVerseReminder();
+    }
+  };
 
   const currentPlan = PLANS.find((p) => p.id === plan) ?? PLANS[0];
   const currentLanguage = LANGUAGES.find((l) => l.code === language);
@@ -176,6 +213,7 @@ export default function SettingsScreen({ navigation }: Props) {
   );
 
   return (
+    <>
     <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.account}</Text>
@@ -192,12 +230,17 @@ export default function SettingsScreen({ navigation }: Props) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.preferences}</Text>
         <Row icon="notifications-outline" label={t.settings.notifications} switchValue={notifications} onSwitchChange={setNotifications} />
-        <Row icon="sunny-outline" label={t.settings.dailyVerse} switchValue={dailyVerseReminder} onSwitchChange={setDailyVerseReminder} />
+        <Row icon="sunny-outline" label={t.settings.dailyVerse} switchValue={dailyVerseReminder} onSwitchChange={handleDailyVerseReminderChange} />
         <Row icon="shield-half-outline" label={t.settings.ageAppropriate} switchValue={ageAppropriateMode} onSwitchChange={setAgeAppropriateMode} />
         <Row icon="cloud-offline-outline" label={t.settings.offlineMode} switchValue={offlineMode} onSwitchChange={setOfflineMode} />
         <Row icon="help-circle-outline" label="What works offline?" onPress={handleOfflineInfo} />
-        <Row icon="text-outline" label="Larger text" value="Follows your phone's Accessibility text size" />
-        <Row icon="language-outline" label={t.settings.language} value={currentLanguage?.nativeLabel} onPress={() => Alert.alert('Language', 'Change this from the onboarding language screen, or wire a dedicated picker here.')} />
+        <Row
+          icon="text-outline"
+          label="Larger text"
+          value={textZoom > 1 ? `${Math.round(textZoom * 100)}%` : 'Off'}
+          onPress={() => setTextSizePickerOpen(true)}
+        />
+        <Row icon="language-outline" label={t.settings.language} value={currentLanguage?.nativeLabel} onPress={() => setLanguagePickerOpen(true)} />
       </View>
 
       <View style={styles.section}>
@@ -231,6 +274,60 @@ export default function SettingsScreen({ navigation }: Props) {
         <Text style={styles.footerSub}>Shofar sound via OrangeFreeSounds.com (CC BY 4.0)</Text>
       </View>
     </ScrollView>
+
+    <Modal
+      visible={languagePickerOpen}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setLanguagePickerOpen(false)}
+    >
+      <TouchableOpacity
+        style={styles.languageModalOverlay}
+        activeOpacity={1}
+        onPress={() => setLanguagePickerOpen(false)}
+      >
+        <View style={styles.languageModalSheet} onStartShouldSetResponder={() => true}>
+          <Text style={styles.languageModalTitle}>{t.settings.language}</Text>
+          <LanguagePicker selected={language} onSelect={handleSelectLanguage} />
+        </View>
+      </TouchableOpacity>
+    </Modal>
+
+    <Modal
+      visible={textSizePickerOpen}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setTextSizePickerOpen(false)}
+    >
+      <TouchableOpacity
+        style={styles.languageModalOverlay}
+        activeOpacity={1}
+        onPress={() => setTextSizePickerOpen(false)}
+      >
+        <View style={styles.languageModalSheet} onStartShouldSetResponder={() => true}>
+          <Text style={styles.languageModalTitle}>Larger text</Text>
+          <Text style={styles.textSizeSubtitle}>
+            Applies to Ask Jesus, Scripture, and Study Tools -- the same zoom as the magnifying-glass button
+            on those screens.
+          </Text>
+          {TEXT_ZOOM_LEVELS.map((level) => (
+            <TouchableOpacity
+              key={level}
+              style={[styles.textSizeRow, textZoom === level && styles.textSizeRowSelected]}
+              onPress={() => {
+                setTextZoom(level);
+                setTextSizePickerOpen(false);
+              }}
+            >
+              <Text style={[styles.textSizeRowLabel, { fontSize: 15 * level }]}>Aa</Text>
+              <Text style={styles.textSizeRowValue}>{level === 1 ? 'Default' : `${Math.round(level * 100)}%`}</Text>
+              {textZoom === level && <Ionicons name="checkmark-circle" size={22} color={Colors.gold} />}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </TouchableOpacity>
+    </Modal>
+    </>
   );
 }
 
@@ -251,4 +348,34 @@ const styles = StyleSheet.create({
   footer: { alignItems: 'center', paddingVertical: 32 },
   footerText: { fontSize: 16, fontWeight: '700', color: Colors.royal },
   footerSub: { fontSize: 12.5, color: '#A0AEC0', marginTop: 4 },
+  languageModalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  languageModalSheet: {
+    // Fixed px, not a %, since LanguagePicker's FlatList doesn't take a
+    // height/style prop -- 8 languages comfortably fit without needing
+    // the list to scroll inside a percentage-height container.
+    backgroundColor: Colors.royal, borderTopLeftRadius: 18, borderTopRightRadius: 18,
+    paddingTop: 16, paddingBottom: 32, maxHeight: 500,
+  },
+  languageModalTitle: {
+    fontSize: 16, fontWeight: '800', color: Colors.ivory, marginBottom: 10, paddingHorizontal: 20,
+  },
+  textSizeSubtitle: {
+    fontSize: 12.5, color: Colors.muted, marginBottom: 14, paddingHorizontal: 20, lineHeight: 18,
+  },
+  textSizeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginHorizontal: 20,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  textSizeRowSelected: { borderColor: Colors.gold },
+  textSizeRowLabel: { fontWeight: '700', color: Colors.ivory, width: 40 },
+  textSizeRowValue: { flex: 1, fontSize: 14, color: Colors.ivory },
 });

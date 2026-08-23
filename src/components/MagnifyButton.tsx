@@ -1,14 +1,17 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
-import { useApp } from '../context/AppContext';
+import { useApp, TEXT_ZOOM_LEVELS } from '../context/AppContext';
 
 // Accessibility zoom for reading-heavy screens -- see AppContext's
-// textZoom comment. A single shared floating button so the control looks
-// and behaves identically everywhere it appears (Scripture, Chat, Study
-// Tools). Cycles 1 -> 1.2 -> 1.4 -> 1.6 -> back to 1 on each tap.
-const ZOOM_LEVELS = [1, 1.2, 1.4, 1.6];
+// textZoom comment. A single shared floating control so it looks and
+// behaves identically everywhere it appears (Scripture, Chat, Study
+// Tools). Originally cycled 1 -> 1.2 -> 1.4 -> 1.6 -> back to 1 on a
+// single tap, but that meant "undoing" a zoom took up to 3 taps and
+// wasn't obvious -- a dedicated minus button (shown once zoomed in) is
+// the direct way back down, one level at a time.
+const ZOOM_LEVELS = TEXT_ZOOM_LEVELS;
 
 interface Props {
   // Lets screens with their own bottom-anchored controls (e.g. Chat's
@@ -19,24 +22,41 @@ interface Props {
 export default function MagnifyButton({ style }: Props) {
   const { textZoom, setTextZoom } = useApp();
 
-  const handlePress = () => {
-    const currentIndex = ZOOM_LEVELS.indexOf(textZoom);
-    const nextIndex = currentIndex === -1 || currentIndex === ZOOM_LEVELS.length - 1 ? 0 : currentIndex + 1;
+  const currentIndex = Math.max(0, ZOOM_LEVELS.indexOf(textZoom));
+  const isZoomedIn = textZoom > 1;
+
+  const zoomIn = () => {
+    const nextIndex = Math.min(currentIndex + 1, ZOOM_LEVELS.length - 1);
     setTextZoom(ZOOM_LEVELS[nextIndex]);
   };
 
-  const isZoomedIn = textZoom > 1;
+  const zoomOut = () => {
+    const nextIndex = Math.max(currentIndex - 1, 0);
+    setTextZoom(ZOOM_LEVELS[nextIndex]);
+  };
 
   return (
-    <TouchableOpacity
-      style={[styles.button, isZoomedIn && styles.buttonActive, style]}
-      onPress={handlePress}
-      accessibilityLabel="Zoom text size"
-      accessibilityHint="Cycles through larger text sizes for easier reading"
-    >
-      <Ionicons name="search" size={20} color={isZoomedIn ? Colors.white : Colors.royal} />
+    <View style={[styles.button, isZoomedIn && styles.buttonActive, style]}>
+      {isZoomedIn && (
+        <TouchableOpacity
+          onPress={zoomOut}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 4 }}
+          accessibilityLabel="Zoom out"
+          accessibilityHint="Decreases text size by one step"
+        >
+          <Ionicons name="remove" size={20} color={Colors.white} />
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity
+        onPress={zoomIn}
+        hitSlop={{ top: 8, bottom: 8, left: isZoomedIn ? 4 : 8, right: 8 }}
+        accessibilityLabel="Zoom text size"
+        accessibilityHint="Increases text size by one step"
+      >
+        <Ionicons name="search" size={20} color={isZoomedIn ? Colors.white : Colors.royal} />
+      </TouchableOpacity>
       {isZoomedIn && <Text style={styles.label}>{Math.round(textZoom * 100)}%</Text>}
-    </TouchableOpacity>
+    </View>
   );
 }
 

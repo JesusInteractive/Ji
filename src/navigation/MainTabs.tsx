@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,6 +15,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import DailyDevotionsScreen from '../screens/DailyDevotionsScreen';
 import SettingsStack, { type SettingsStackParamList } from './SettingsStack';
 import { withFadeIn } from './withFadeIn';
+import DedicationFooter from '../components/DedicationFooter';
 
 // Wrapped once here rather than inline in the JSX below, so each stays a
 // stable component reference across renders (an inline wrap on every
@@ -62,6 +64,7 @@ export default function MainTabs() {
   const { t } = useI18n();
 
   return (
+    <View style={{ flex: 1 }}>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
@@ -110,5 +113,7 @@ export default function MainTabs() {
       />
       <Tab.Screen name="SettingsTab" component={FadedSettingsStack} options={{ title: t.tabs.settings }} />
     </Tab.Navigator>
+    <DedicationFooter />
+    </View>
   );
 }

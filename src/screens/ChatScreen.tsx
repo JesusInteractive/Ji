@@ -32,6 +32,7 @@ import ChatBubble from '../components/ChatBubble';
 import TipBanner from '../components/TipBanner';
 import JesusAvatar, { type JesusAvatarHandle } from '../components/JesusAvatar';
 import MagnifyButton from '../components/MagnifyButton';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { getSafetyReply, buildJesusMessage, maybeBridgeReminder, PEACEFUL_FAREWELL_TEXT } from '../services/demoReplyEngine';
@@ -85,6 +86,12 @@ export default function ChatScreen() {
   // from the newest messages -- without this there was no way back down
   // except manually dragging, easy to miss once the history gets long.
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  // Drives the DraggableScrollbar thumb -- plain state (re-rendered every
+  // scroll tick) rather than a ref, since the thumb's size/position need
+  // to actually re-render as these change.
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
   const avatarRef = useRef<JesusAvatarHandle>(null);
   const currentStopRef = useRef<(() => Promise<void>) | null>(null);
   // "Conversation mode": once a question was asked by voice, keep
@@ -633,13 +640,27 @@ export default function ChatScreen() {
           )}
           contentContainerStyle={styles.list}
           style={styles.historyList}
-          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
+          onContentSizeChange={(_width, height) => {
+            listRef.current?.scrollToEnd({ animated: true });
+            setContentHeight(height);
+          }}
+          onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
           onScroll={({ nativeEvent }) => {
             const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
             const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
             setShowScrollToBottom(distanceFromBottom > 200);
+            setScrollOffset(contentOffset.y);
           }}
-          scrollEventThrottle={100}
+          scrollEventThrottle={16}
+        />
+        <DraggableScrollbar
+          contentHeight={contentHeight}
+          viewportHeight={viewportHeight}
+          scrollOffset={scrollOffset}
+          onScrollTo={(offset) => {
+            listRef.current?.scrollToOffset({ offset, animated: false });
+            setScrollOffset(offset);
+          }}
         />
         {showScrollToBottom && (
           <TouchableOpacity

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import MagnifyButton from '../components/MagnifyButton';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 interface StudyResource {
   title: string;
@@ -745,18 +746,18 @@ const CATEGORIES: StudyCategory[] = [
     note: 'Free, open-license translations hosted by eBible.org for reading online or downloading in the reader\'s own language -- a starting set, not exhaustive. Each opens that translation\'s own details page on eBible.org.',
     resources: [
       {
-        title: 'Louis Segond 1910 (Français)',
-        author: 'eBible.org',
-        era: 'French',
-        description: 'A classic, widely used public-domain French translation.',
-        url: 'https://ebible.org/details.php?id=fraLSG',
+        title: 'Albanian Bible (Shqip)',
+        author: 'open-bibles (GitHub)',
+        era: 'Albanian',
+        description: 'A public-domain Albanian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/sqi-albanian.osis.xml',
       },
       {
-        title: 'Bíblia Livre (Português)',
+        title: 'Amharic Bible (አማርኛ)',
         author: 'eBible.org',
-        era: 'Portuguese',
-        description: 'An open-license Portuguese translation.',
-        url: 'https://ebible.org/details.php?id=porbr2018',
+        era: 'Amharic (Ethiopia)',
+        description: 'An open-license Amharic translation.',
+        url: 'https://ebible.org/details.php?id=amh',
       },
       {
         title: 'New Arabic Version, Book of Life (العربية)',
@@ -766,18 +767,46 @@ const CATEGORIES: StudyCategory[] = [
         url: 'https://ebible.org/details.php?id=arbnav',
       },
       {
-        title: 'Hindi Indian Revised Version (हिन्दी)',
+        title: 'Assamese Indian Revised Version (অসমীয়া)',
         author: 'eBible.org',
-        era: 'Hindi',
-        description: 'An open-license Hindi translation.',
-        url: 'https://ebible.org/details.php?id=hin2017',
+        era: 'Assamese',
+        description: 'An open-license Assamese translation, spoken in northeastern India.',
+        url: 'https://ebible.org/details.php?id=asmfb',
       },
       {
-        title: 'Lutherbibel 1912 (Deutsch)',
+        title: 'South Azerbaijani Bible (Azərbaycan dilində Müqəddəs Kitab)',
         author: 'eBible.org',
-        era: 'German',
-        description: "Luther's classic public-domain German translation.",
-        url: 'https://ebible.org/details.php?id=deu1912',
+        era: 'Azerbaijani',
+        description: 'An open-license Azerbaijani translation for the South Azerbaijani community, primarily in Iran.',
+        url: 'https://ebible.org/details.php?id=azb',
+      },
+      {
+        title: 'Bengali Bible, Easy-to-Read Version (পবিত্র বাইবেল)',
+        author: 'eBible.org',
+        era: 'Bengali',
+        description: 'An easy-to-read Bengali translation, widely spoken in Bangladesh and West Bengal, India.',
+        url: 'https://ebible.org/details.php?id=ben2006',
+      },
+      {
+        title: 'Bulgarian Bible (Български)',
+        author: 'open-bibles (GitHub)',
+        era: 'Bulgarian',
+        description: 'A public-domain Bulgarian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/bul-bulgarian.osis.xml',
+      },
+      {
+        title: 'Judson Burmese Bible (မြန်မာ)',
+        author: 'eBible.org',
+        era: 'Burmese',
+        description: 'A classic public-domain Burmese translation in native script.',
+        url: 'https://ebible.org/details.php?id=myajvb',
+      },
+      {
+        title: 'Balaan nga Bibliya, Ang Pulong sa Dios (Cebuano)',
+        author: 'eBible.org',
+        era: 'Cebuano',
+        description: 'An open-license Cebuano translation, widely spoken across the central Philippines.',
+        url: 'https://ebible.org/details.php?id=cebocb',
       },
       {
         title: 'Chinese Union Version, Simplified (简体中文)',
@@ -794,144 +823,11 @@ const CATEGORIES: StudyCategory[] = [
         url: 'https://ebible.org/details.php?id=cmn-cu89t',
       },
       {
-        title: 'Reina Valera 1909 (Español)',
-        author: 'open-bibles (GitHub)',
-        era: 'Spanish',
-        description: 'A classic public-domain Spanish translation, in USFX XML format.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/spa-rv1909.usfx.xml',
-      },
-      {
-        title: 'Farsi Bible, full text (فارسی)',
-        author: 'bibletranslation.ws',
-        era: 'Persian',
-        description: 'The complete Old and New Testament in Farsi -- direct PDF download, easy to save and share offline.',
-        url: 'https://bibletranslation.ws/down/free-farsi-bible-فارسی.pdf',
-      },
-      {
-        title: 'Synodal Translation (Русский)',
-        author: 'open-bibles (GitHub)',
-        era: 'Russian',
-        description: 'The classic, widely used Russian Synodal translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/rus-synodal.zefania.xml',
-      },
-      {
-        title: 'Korean Bible (한국어)',
-        author: 'open-bibles (GitHub)',
-        era: 'Korean',
-        description: 'A public-domain Korean translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/kor-korean.osis.xml',
-      },
-      {
-        title: 'Gdańsk Bible (Polski)',
-        author: 'open-bibles (GitHub)',
-        era: 'Polish',
-        description: 'A classic public-domain Polish translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/pol-gdanska.osis.xml',
-      },
-      {
-        title: 'Cornilescu Version (Română)',
-        author: 'open-bibles (GitHub)',
-        era: 'Romanian',
-        description: 'A widely used Romanian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/ron-rccv.usfx.xml',
-      },
-      {
-        title: 'Károli Bible (Magyar)',
-        author: 'open-bibles (GitHub)',
-        era: 'Hungarian',
-        description: 'The classic public-domain Hungarian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/hun-karoli.osis.xml',
-      },
-      {
-        title: 'Bible of Kralice (Čeština)',
-        author: 'open-bibles (GitHub)',
-        era: 'Czech',
-        description: 'A classic public-domain Czech translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/cze-bkr.zefania.xml',
-      },
-      {
-        title: 'Bulgarian Bible (Български)',
-        author: 'open-bibles (GitHub)',
-        era: 'Bulgarian',
-        description: 'A public-domain Bulgarian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/bul-bulgarian.osis.xml',
-      },
-      {
-        title: 'Albanian Bible (Shqip)',
-        author: 'open-bibles (GitHub)',
-        era: 'Albanian',
-        description: 'A public-domain Albanian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/sqi-albanian.osis.xml',
-      },
-      {
-        title: 'Turkish Bible (Türkçe)',
-        author: 'open-bibles (GitHub)',
-        era: 'Turkish',
-        description: 'A public-domain Turkish translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/tur-turkish.osis.xml',
-      },
-      {
-        title: 'Ukrainian Bible (Українська)',
+        title: 'Lingala Bible (Lingála)',
         author: 'eBible.org',
-        era: 'Ukrainian',
-        description: 'An open-license Ukrainian translation.',
-        url: 'https://ebible.org/details.php?id=ukr',
-      },
-      {
-        title: 'Serbian Bible (Српски)',
-        author: 'eBible.org',
-        era: 'Serbian',
-        description: 'An open-license Serbian translation.',
-        url: 'https://ebible.org/details.php?id=srp',
-      },
-      {
-        title: 'Clementine Vulgate (Latina)',
-        author: 'open-bibles (GitHub)',
-        era: 'Latin',
-        description: 'The classic Latin Vulgate, Clementine edition.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/lat-clementine.usfx.xml',
-      },
-      {
-        title: 'Riveduta Bible 1927 (Italiano)',
-        author: 'open-bibles (GitHub)',
-        era: 'Italian',
-        description: 'A classic public-domain Italian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/ita-riveduta.osis.xml',
-      },
-      {
-        title: 'Statenvertaling 1637 (Nederlands)',
-        author: 'open-bibles (GitHub)',
-        era: 'Dutch',
-        description: 'The classic public-domain Dutch translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/dut-statenvertaling.zefania.xml',
-      },
-      {
-        title: 'Swedish Bible (Svenska)',
-        author: 'open-bibles (GitHub)',
-        era: 'Swedish',
-        description: 'A public-domain Swedish translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/swe-swedish.osis.xml',
-      },
-      {
-        title: 'Norwegian Bible (Norsk)',
-        author: 'open-bibles (GitHub)',
-        era: 'Norwegian',
-        description: 'A public-domain Norwegian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/nor-norwegian.osis.xml',
-      },
-      {
-        title: 'Danish Bible (Dansk)',
-        author: 'open-bibles (GitHub)',
-        era: 'Danish',
-        description: 'A public-domain Danish translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/dan-danish.osis.xml',
-      },
-      {
-        title: 'Finnish Bible (Suomi)',
-        author: 'open-bibles (GitHub)',
-        era: 'Finnish',
-        description: 'A public-domain Finnish translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/fin-biblia.osis.xml',
+        era: 'Congo (DRC)',
+        description: 'An open-license Lingala translation, widely spoken in the Democratic Republic of Congo and Republic of Congo.',
+        url: 'https://ebible.org/details.php?id=lin',
       },
       {
         title: 'Croatian Bible (Hrvatski)',
@@ -941,11 +837,25 @@ const CATEGORIES: StudyCategory[] = [
         url: 'https://github.com/seven1m/open-bibles/blob/master/hrv-croatian.osis.xml',
       },
       {
-        title: 'Latvian Bible (Latviešu)',
+        title: 'Bible of Kralice (Čeština)',
         author: 'open-bibles (GitHub)',
-        era: 'Latvian',
-        description: 'A public-domain Latvian translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/lav-latvian.osis.xml',
+        era: 'Czech',
+        description: 'A classic public-domain Czech translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/cze-bkr.zefania.xml',
+      },
+      {
+        title: 'Danish Bible (Dansk)',
+        author: 'open-bibles (GitHub)',
+        era: 'Danish',
+        description: 'A public-domain Danish translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/dan-danish.osis.xml',
+      },
+      {
+        title: 'Statenvertaling 1637 (Nederlands)',
+        author: 'open-bibles (GitHub)',
+        era: 'Dutch',
+        description: 'The classic public-domain Dutch translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/dut-statenvertaling.zefania.xml',
       },
       {
         title: 'Estonian Contemporary New Testament (Eesti)',
@@ -955,67 +865,81 @@ const CATEGORIES: StudyCategory[] = [
         url: 'https://ebible.org/details.php?id=ekk',
       },
       {
-        title: 'Swahili Bible (Kiswahili)',
-        author: 'open-bibles (GitHub)',
-        era: 'Swahili',
-        description: 'A public-domain Swahili translation, widely spoken across East Africa.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/swa-swahili.osis.xml',
-      },
-      {
-        title: 'Amharic Bible (አማርኛ)',
-        author: 'eBible.org',
-        era: 'Amharic (Ethiopia)',
-        description: 'An open-license Amharic translation.',
-        url: 'https://ebible.org/details.php?id=amh',
-      },
-      {
-        title: 'Mongolian Bible (Монгол хэл)',
-        author: 'eBible.org',
-        era: 'Mongolian',
-        description: 'An open-license Khalkha Mongolian translation.',
-        url: 'https://ebible.org/details.php?id=khk',
-      },
-      {
-        title: 'Lingala Bible (Lingála)',
-        author: 'eBible.org',
-        era: 'Congo (DRC)',
-        description: 'An open-license Lingala translation, widely spoken in the Democratic Republic of Congo and Republic of Congo.',
-        url: 'https://ebible.org/details.php?id=lin',
-      },
-      {
-        title: 'Punjabi Indian Revised Version (ਪੰਜਾਬੀ)',
-        author: 'eBible.org',
-        era: 'Punjabi',
-        description: 'An open-license Punjabi translation.',
-        url: 'https://ebible.org/details.php?id=panirv',
-      },
-      {
-        title: 'Japanese Kougo Bible (日本語)',
-        author: 'open-bibles (GitHub)',
-        era: 'Japanese',
-        description: 'A public-domain Japanese translation in modern colloquial style.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/jpn-kougo.osis.xml',
-      },
-      {
-        title: 'Vietnamese Bible (Tiếng Việt)',
-        author: 'open-bibles (GitHub)',
-        era: 'Vietnamese',
-        description: 'A public-domain Vietnamese translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/vie-cadman.osis.xml',
-      },
-      {
-        title: 'Thai Bible (ภาษาไทย)',
-        author: 'open-bibles (GitHub)',
-        era: 'Thai',
-        description: 'A public-domain Thai translation.',
-        url: 'https://github.com/seven1m/open-bibles/blob/master/tha-thai.osis.xml',
-      },
-      {
         title: 'Tagalog Bible (Filipino)',
         author: 'open-bibles (GitHub)',
         era: 'Filipino',
         description: 'A public-domain Tagalog translation.',
         url: 'https://github.com/seven1m/open-bibles/blob/master/tgl-tagalog.osis.xml',
+      },
+      {
+        title: 'Finnish Bible (Suomi)',
+        author: 'open-bibles (GitHub)',
+        era: 'Finnish',
+        description: 'A public-domain Finnish translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/fin-biblia.osis.xml',
+      },
+      {
+        title: 'Louis Segond 1910 (Français)',
+        author: 'eBible.org',
+        era: 'French',
+        description: 'A classic, widely used public-domain French translation.',
+        url: 'https://ebible.org/details.php?id=fraLSG',
+      },
+      {
+        title: 'Lutherbibel 1912 (Deutsch)',
+        author: 'eBible.org',
+        era: 'German',
+        description: "Luther's classic public-domain German translation.",
+        url: 'https://ebible.org/details.php?id=deu1912',
+      },
+      {
+        title: 'Greek Majority Text New Testament (Ελληνικά)',
+        author: 'eBible.org',
+        era: 'Greek (Koine)',
+        description: "The original New Testament Greek text -- ancient Koine, not contemporary spoken Greek. No modern-Greek translation was found yet; this is a placeholder until one is verified.",
+        url: 'https://ebible.org/details.php?id=grcmt',
+      },
+      {
+        title: 'Gujarati Indian Revised Version (ગુજરાતી)',
+        author: 'eBible.org',
+        era: 'Gujarati',
+        description: 'An open-license Gujarati translation.',
+        url: 'https://ebible.org/details.php?id=guj2017',
+      },
+      {
+        title: 'Bib La, Haitian Creole Bible 1985 (Kreyòl Ayisyen)',
+        author: 'eBible.org',
+        era: 'Haitian Creole',
+        description: 'A public-domain Haitian Creole translation.',
+        url: 'https://ebible.org/details.php?id=hat',
+      },
+      {
+        title: 'Hausa Contemporary Bible (Hausa)',
+        author: 'eBible.org',
+        era: 'Hausa',
+        description: "Biblica's open-license Hausa translation, widely spoken across West Africa and the Sahel.",
+        url: 'https://ebible.org/details.php?id=hausa',
+      },
+      {
+        title: 'Modern Hebrew Bible (תנ״ך עברי מודרני)',
+        author: 'eBible.org',
+        era: 'Hebrew (Modern)',
+        description: 'A public-domain Bible in contemporary Ivrit -- distinct from the ancient Koine Greek New Testament listed above.',
+        url: 'https://ebible.org/details.php?id=heb',
+      },
+      {
+        title: 'Hindi Indian Revised Version (हिन्दी)',
+        author: 'eBible.org',
+        era: 'Hindi',
+        description: 'An open-license Hindi translation.',
+        url: 'https://ebible.org/details.php?id=hin2017',
+      },
+      {
+        title: 'Károli Bible (Magyar)',
+        author: 'open-bibles (GitHub)',
+        era: 'Hungarian',
+        description: 'The classic public-domain Hungarian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/hun-karoli.osis.xml',
       },
       {
         title: 'Icelandic Bible (Íslenska)',
@@ -1025,11 +949,319 @@ const CATEGORIES: StudyCategory[] = [
         url: 'https://ebible.org/details.php?id=isl316',
       },
       {
-        title: 'Greek Majority Text New Testament (Ελληνικά)',
+        title: 'Igbo Bible (Igbo)',
         author: 'eBible.org',
-        era: 'Greek (Koine)',
-        description: "The original New Testament Greek text -- ancient Koine, not contemporary spoken Greek. No modern-Greek translation was found yet; this is a placeholder until one is verified.",
-        url: 'https://ebible.org/details.php?id=grcmt',
+        era: 'Igbo',
+        description: "Biblica's open-license Igbo translation, widely spoken in southeastern Nigeria.",
+        url: 'https://ebible.org/details.php?id=ibo',
+      },
+      {
+        title: 'Alkitab Gratis untuk Semua (Bahasa Indonesia)',
+        author: 'eBible.org',
+        era: 'Indonesian',
+        description: 'An open-license Indonesian translation ("Bible for All").',
+        url: 'https://ebible.org/details.php?id=indags',
+      },
+      {
+        title: 'Riveduta Bible 1927 (Italiano)',
+        author: 'open-bibles (GitHub)',
+        era: 'Italian',
+        description: 'A classic public-domain Italian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/ita-riveduta.osis.xml',
+      },
+      {
+        title: 'Japanese Kougo Bible (日本語)',
+        author: 'open-bibles (GitHub)',
+        era: 'Japanese',
+        description: 'A public-domain Japanese translation in modern colloquial style.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/jpn-kougo.osis.xml',
+      },
+      {
+        title: 'Kannada Indian Revised Version (ಕನ್ನಡ)',
+        author: 'eBible.org',
+        era: 'Kannada',
+        description: 'An open-license Kannada translation.',
+        url: 'https://ebible.org/details.php?id=kanirv',
+      },
+      {
+        title: 'Khmer Standard Version (ព្រះគម្ពីរខ្មែរ)',
+        author: 'eBible.org',
+        era: 'Khmer (Cambodia)',
+        description: 'The standard modern Khmer translation.',
+        url: 'https://ebible.org/details.php?id=khm',
+      },
+      {
+        title: 'Korean Bible (한국어)',
+        author: 'open-bibles (GitHub)',
+        era: 'Korean',
+        description: 'A public-domain Korean translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/kor-korean.osis.xml',
+      },
+      {
+        title: 'Kurdish Sorani Bible (کوردیی سۆرانی)',
+        author: 'eBible.org',
+        era: 'Kurdish (Sorani)',
+        description: "Biblica's open-license Central Kurdish translation, spoken across Iraqi and Iranian Kurdistan.",
+        url: 'https://ebible.org/details.php?id=ckb',
+      },
+      {
+        title: 'Clementine Vulgate (Latina)',
+        author: 'open-bibles (GitHub)',
+        era: 'Latin',
+        description: 'The classic Latin Vulgate, Clementine edition.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/lat-clementine.usfx.xml',
+      },
+      {
+        title: 'Latvian Bible (Latviešu)',
+        author: 'open-bibles (GitHub)',
+        era: 'Latvian',
+        description: 'A public-domain Latvian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/lav-latvian.osis.xml',
+      },
+      {
+        title: "Lithuanian Believers' Heritage Translation (Lietuvių)",
+        author: 'eBible.org',
+        era: 'Lithuanian',
+        description: 'An open-license, complete Lithuanian translation.',
+        url: 'https://ebible.org/details.php?id=lit',
+      },
+      {
+        title: 'Kitab Suci Zabur dan Injil (Bahasa Malaysia)',
+        author: 'eBible.org',
+        era: 'Malay',
+        description: 'An open-license, contextualized Malay New Testament.',
+        url: 'https://ebible.org/details.php?id=zlmKSZI',
+      },
+      {
+        title: 'Malayalam Bible 1910, Revised Contemporary Script (മലയാളം)',
+        author: 'eBible.org',
+        era: 'Malayalam',
+        description: 'A public-domain Malayalam translation, digitized and revised into contemporary orthography.',
+        url: 'https://ebible.org/details.php?id=mal2015',
+      },
+      {
+        title: 'Māori Bible (Te Reo Māori)',
+        author: 'open-bibles (GitHub)',
+        era: 'Maori',
+        description: 'A public-domain Maori translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/mri-maori.osis.xml',
+      },
+      {
+        title: 'Marathi Indian Revised Version (मराठी)',
+        author: 'eBible.org',
+        era: 'Marathi',
+        description: 'An open-license Marathi translation.',
+        url: 'https://ebible.org/details.php?id=mar',
+      },
+      {
+        title: 'Mongolian Bible (Монгол хэл)',
+        author: 'eBible.org',
+        era: 'Mongolian',
+        description: 'An open-license Khalkha Mongolian translation.',
+        url: 'https://ebible.org/details.php?id=khk',
+      },
+      {
+        title: 'Nepali Bible (पवित्र बाइबल)',
+        author: 'eBible.org',
+        era: 'Nepali',
+        description: 'An open-license Nepali translation.',
+        url: 'https://ebible.org/details.php?id=npiulb',
+      },
+      {
+        title: 'Norwegian Bible (Norsk)',
+        author: 'open-bibles (GitHub)',
+        era: 'Norwegian',
+        description: 'A public-domain Norwegian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/nor-norwegian.osis.xml',
+      },
+      {
+        title: 'Odia Indian Revised Version (ଓଡ଼ିଆ)',
+        author: 'eBible.org',
+        era: 'Odia',
+        description: 'An open-license Odia translation, spoken in the Indian state of Odisha.',
+        url: 'https://ebible.org/details.php?id=ory',
+      },
+      {
+        title: 'Farsi Bible, full text (فارسی)',
+        author: 'bibletranslation.ws',
+        era: 'Persian',
+        description: 'The complete Old and New Testament in Farsi -- direct PDF download, easy to save and share offline.',
+        url: 'https://bibletranslation.ws/down/free-farsi-bible-فارسی.pdf',
+      },
+      {
+        title: 'Gdańsk Bible (Polski)',
+        author: 'open-bibles (GitHub)',
+        era: 'Polish',
+        description: 'A classic public-domain Polish translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/pol-gdanska.osis.xml',
+      },
+      {
+        title: 'Bíblia Livre (Português)',
+        author: 'eBible.org',
+        era: 'Portuguese',
+        description: 'An open-license Portuguese translation.',
+        url: 'https://ebible.org/details.php?id=porbr2018',
+      },
+      {
+        title: 'Punjabi Indian Revised Version (ਪੰਜਾਬੀ)',
+        author: 'eBible.org',
+        era: 'Punjabi',
+        description: 'An open-license Punjabi translation.',
+        url: 'https://ebible.org/details.php?id=panirv',
+      },
+      {
+        title: 'South Bolivian Quechua New Testament (Qhichwa)',
+        author: 'eBible.org',
+        era: 'Quechua',
+        description: 'A Wycliffe-translated Quechua New Testament for South Bolivian speakers in the Andes.',
+        url: 'https://ebible.org/details.php?id=quhNT',
+      },
+      {
+        title: 'Cornilescu Version (Română)',
+        author: 'open-bibles (GitHub)',
+        era: 'Romanian',
+        description: 'A widely used Romanian translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/ron-rccv.usfx.xml',
+      },
+      {
+        title: 'Synodal Translation (Русский)',
+        author: 'open-bibles (GitHub)',
+        era: 'Russian',
+        description: 'The classic, widely used Russian Synodal translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/rus-synodal.zefania.xml',
+      },
+      {
+        title: 'Serbian Bible (Српски)',
+        author: 'eBible.org',
+        era: 'Serbian',
+        description: 'An open-license Serbian translation.',
+        url: 'https://ebible.org/details.php?id=srp',
+      },
+      {
+        title: 'Slovak New Testament, Hope for All (Slovenčina)',
+        author: 'eBible.org',
+        era: 'Slovak',
+        description: "Biblica's open-license Slovak New Testament.",
+        url: 'https://ebible.org/details.php?id=slk',
+      },
+      {
+        title: 'Somali Bible, Kitaabka Quduuska Ah (Soomaali)',
+        author: 'eBible.org',
+        era: 'Somali',
+        description: 'An open-license Somali translation.',
+        url: 'https://ebible.org/details.php?id=som',
+      },
+      {
+        title: 'Reina Valera 1909 (Español)',
+        author: 'open-bibles (GitHub)',
+        era: 'Spanish',
+        description: 'A classic public-domain Spanish translation, in USFX XML format.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/spa-rv1909.usfx.xml',
+      },
+      {
+        title: 'Swahili Bible (Kiswahili)',
+        author: 'open-bibles (GitHub)',
+        era: 'Swahili',
+        description: 'A public-domain Swahili translation, widely spoken across East Africa.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/swa-swahili.osis.xml',
+      },
+      {
+        title: 'Swedish Bible (Svenska)',
+        author: 'open-bibles (GitHub)',
+        era: 'Swedish',
+        description: 'A public-domain Swedish translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/swe-swedish.osis.xml',
+      },
+      {
+        title: 'Tajik Scripture Portions (тоҷикӣ)',
+        author: 'eBible.org',
+        era: 'Tajik',
+        description: 'Open-license portions of scripture in Tajik -- not yet a complete New Testament, but the fullest free option available.',
+        url: 'https://ebible.org/details.php?id=tgk',
+      },
+      {
+        title: 'Tamil Indian Revised Version (தமிழ்)',
+        author: 'eBible.org',
+        era: 'Tamil',
+        description: 'An open-license Tamil translation.',
+        url: 'https://ebible.org/details.php?id=tam2017',
+      },
+      {
+        title: 'Telugu Indian Revised Version (తెలుగు)',
+        author: 'eBible.org',
+        era: 'Telugu',
+        description: 'An open-license Telugu translation.',
+        url: 'https://ebible.org/details.php?id=tel2017',
+      },
+      {
+        title: 'Thai Bible (ภาษาไทย)',
+        author: 'open-bibles (GitHub)',
+        era: 'Thai',
+        description: 'A public-domain Thai translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/tha-thai.osis.xml',
+      },
+      {
+        title: 'Tongan Bible, Revised West Version (Lea Fakatonga)',
+        author: 'eBible.org',
+        era: 'Tongan',
+        description: 'A public-domain Tongan translation.',
+        url: 'https://ebible.org/details.php?id=ton',
+      },
+      {
+        title: 'Turkish Bible (Türkçe)',
+        author: 'open-bibles (GitHub)',
+        era: 'Turkish',
+        description: 'A public-domain Turkish translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/tur-turkish.osis.xml',
+      },
+      {
+        title: 'Akuapem Twi New Testament (Twi)',
+        author: 'eBible.org',
+        era: 'Twi',
+        description: "Biblica's open-license Twi New Testament, widely spoken in Ghana.",
+        url: 'https://ebible.org/details.php?id=twi',
+      },
+      {
+        title: 'Ukrainian Bible (Українська)',
+        author: 'eBible.org',
+        era: 'Ukrainian',
+        description: 'An open-license Ukrainian translation.',
+        url: 'https://ebible.org/details.php?id=ukr',
+      },
+      {
+        title: 'Urdu Geo Bible, Urdu Script (کتابِ مقدّس)',
+        author: 'eBible.org',
+        era: 'Urdu',
+        description: 'An open-license Urdu translation in native Nastaliq script.',
+        url: 'https://ebible.org/details.php?id=urdgvu',
+      },
+      {
+        title: 'Uyghur Bible, Arabic Script (مۇقېددېس كالام)',
+        author: 'eBible.org',
+        era: 'Uyghur',
+        description: 'An open-license Uyghur translation in Perso-Arabic script, the primary script used by Uyghur communities in Central Asia and China.',
+        url: 'https://ebible.org/details.php?id=uigara',
+      },
+      {
+        title: 'Vietnamese Bible (Tiếng Việt)',
+        author: 'open-bibles (GitHub)',
+        era: 'Vietnamese',
+        description: 'A public-domain Vietnamese translation.',
+        url: 'https://github.com/seven1m/open-bibles/blob/master/vie-cadman.osis.xml',
+      },
+      {
+        title: 'Wolof Bible, Kàddug Yàlla (Wolof)',
+        author: 'eBible.org',
+        era: 'Wolof',
+        description: 'An open-license Wolof translation, widely spoken in Senegal.',
+        url: 'https://ebible.org/details.php?id=wolmbs',
+      },
+      {
+        title: 'Yoruba Contemporary Bible (Yorùbá)',
+        author: 'eBible.org',
+        era: 'Yoruba',
+        description: "Biblica's open-license contemporary Yoruba translation, widely spoken in Nigeria.",
+        url: 'https://ebible.org/details.php?id=yor',
       },
     ],
   },
@@ -1039,6 +1271,19 @@ export default function StudyToolsScreen() {
   const { textZoom } = useApp();
   const scrollRef = useRef<ScrollView>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  // Content/viewport heights + scroll offset as state, not refs -- needed
+  // by DraggableScrollbar's thumb to actually re-render, and doubles as
+  // the button-visibility tracking (RN's onScroll only fires once the
+  // user actually scrolls, so a screen that's scrollable from the very
+  // first frame needs onLayout/onContentSizeChange too, not just onScroll).
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
+    if (newContentHeight && newViewportHeight) {
+      setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
+    }
+  };
   const openLink = (url: string) => {
     Linking.openURL(url).catch(() => {});
   };
@@ -1049,12 +1294,21 @@ export default function StudyToolsScreen() {
         ref={scrollRef}
         style={styles.container}
         contentContainerStyle={[styles.content, { transform: [{ scale: textZoom }] }]}
+        onLayout={({ nativeEvent }) => {
+          setViewportHeight(nativeEvent.layout.height);
+          recomputeInitialVisibility(contentHeight, nativeEvent.layout.height);
+        }}
+        onContentSizeChange={(_width, height) => {
+          setContentHeight(height);
+          recomputeInitialVisibility(height, viewportHeight);
+        }}
         onScroll={({ nativeEvent }) => {
           const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
           const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
           setShowScrollToBottom(distanceFromBottom > 200);
+          setScrollOffset(contentOffset.y);
         }}
-        scrollEventThrottle={100}
+        scrollEventThrottle={16}
       >
         <Text style={styles.intro}>
           Free commentaries, sermons, and study tools -- every entry below is either public domain or a free tool
@@ -1088,6 +1342,15 @@ export default function StudyToolsScreen() {
           </View>
         ))}
       </ScrollView>
+      <DraggableScrollbar
+        contentHeight={contentHeight}
+        viewportHeight={viewportHeight}
+        scrollOffset={scrollOffset}
+        onScrollTo={(offset) => {
+          scrollRef.current?.scrollTo({ y: offset, animated: false });
+          setScrollOffset(offset);
+        }}
+      />
       {showScrollToBottom && (
         <TouchableOpacity
           style={styles.scrollToBottomBtn}
@@ -1097,7 +1360,7 @@ export default function StudyToolsScreen() {
           <Ionicons name="arrow-down" size={20} color={Colors.ivory} />
         </TouchableOpacity>
       )}
-      <MagnifyButton />
+      <MagnifyButton style={{ bottom: 80 }} />
     </View>
   );
 }

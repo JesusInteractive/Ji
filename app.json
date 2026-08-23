@@ -56,7 +56,38 @@
           "backgroundColor": "#0D1B4C"
         }
       ],
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            {
+              "family": "Inter",
+              "weight": 400,
+              "path": "./assets/fonts/Inter-Regular.ttf"
+            },
+            {
+              "family": "Inter",
+              "weight": 500,
+              "path": "./assets/fonts/Inter-Medium.ttf"
+            },
+            {
+              "family": "Inter",
+              "weight": 600,
+              "path": "./assets/fonts/Inter-SemiBold.ttf"
+            },
+            {
+              "family": "Inter",
+              "weight": 700,
+              "path": "./assets/fonts/Inter-Bold.ttf"
+            },
+            {
+              "family": "Inter",
+              "weight": 800,
+              "path": "./assets/fonts/Inter-ExtraBold.ttf"
+            }
+          ]
+        }
+      ],
       "expo-audio",
       "expo-video",
       "expo-asset",

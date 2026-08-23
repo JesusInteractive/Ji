@@ -1212,7 +1212,7 @@ app.post('/v1/chat/messages', chatLimiter, requireAuth, async (req, res) => {
 // server's memory.
 app.post('/v1/tts/synthesize', ttsLimiter, requireAuth, async (req, res) => {
   try {
-    const { text, voiceId, modelId } = req.body || {};
+    const { text, voiceId, modelId, languageCode } = req.body || {};
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
       return res.status(400).json({ error: 'text is required' });
     }
@@ -1235,6 +1235,14 @@ app.post('/v1/tts/synthesize', ttsLimiter, requireAuth, async (req, res) => {
         // the `modelId` request field if a caller wants multilingual_v2
         // back for a specific language/voice.
         modelId: modelId || 'eleven_flash_v2_5',
+        // Client sends the app's selected UI language (src/services/tts.ts)
+        // -- previously dropped entirely, leaving pronunciation to
+        // ElevenLabs' own guess from the text alone. Passing it through
+        // pins pronunciation explicitly instead, which matters most for
+        // short or ambiguous replies where auto-detection is least
+        // reliable. Our language codes (src/i18n/languages.ts) are
+        // already ISO 639-1, which is what this field expects.
+        ...(typeof languageCode === 'string' && languageCode ? { languageCode } : {}),
         outputFormat: 'mp3_44100_128',
         voiceSettings: { stability: 0.4, similarityBoost: 0.75, style: 0.35, useSpeakerBoost: true },
       },

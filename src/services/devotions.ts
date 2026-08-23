@@ -33,7 +33,11 @@ export interface Devotion {
 // state to persist, satisfying "yearly shuffling" without a counter that
 // could drift out of sync with reality.
 export function getDevotionYear(date: Date = new Date()): number {
-  return ((date.getUTCFullYear() % 3) + 3) % 3;
+  // Local year, not UTC -- same reasoning as getDayOfYear in
+  // devotionalReadingPlan.ts: keeps this in sync with the day-of-year
+  // calculation right around New Year's, where UTC and local year can
+  // briefly disagree depending on timezone.
+  return ((date.getFullYear() % 3) + 3) % 3;
 }
 
 async function generateReflectionAndPrayer(

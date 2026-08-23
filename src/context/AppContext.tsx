@@ -10,6 +10,11 @@ import type {
 import { PLANS } from '../constants/pricing';
 import { encryptLocalText, decryptLocalText } from '../services/security';
 
+// Shared by MagnifyButton (Chat/Scripture/Study Tools) and Settings'
+// "Larger text" row, so both read/write the same textZoom scale and stay
+// in sync with each other rather than each hardcoding its own copy.
+export const TEXT_ZOOM_LEVELS = [1, 1.2, 1.4, 1.6];
+
 // Exported so src/services/dataExport.ts can build a real on-device data
 // export from these same keys without duplicating (and risking drifting
 // out of sync with) this list.
@@ -109,9 +114,9 @@ interface AppContextValue {
 
   // Accessibility zoom for reading-heavy screens (Scripture, Chat, Study
   // Tools) -- a visual scale multiplier applied via a transform on those
-  // screens' content, cycled by the shared MagnifyButton component rather
-  // than a per-screen font size. 1 = normal; the button cycles upward
-  // (1 -> 1.2 -> 1.4 -> 1.6 -> back to 1).
+  // screens' content. Settable either per-screen via the floating
+  // MagnifyButton, or app-wide via Settings' "Larger text" row -- both
+  // read/write this same value (see TEXT_ZOOM_LEVELS above). 1 = normal.
   textZoom: number;
   setTextZoom: (v: number) => void;
 

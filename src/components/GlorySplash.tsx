@@ -125,6 +125,13 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
 
   async function startAmbientMusic() {
     try {
+      // A second call (replay(), a remount, Fast Refresh re-running this
+      // effect) previously overwrote ambientPlayerRef without stopping
+      // whatever it already pointed at -- that old player kept looping
+      // forever with no reference left anywhere to stop it, since only
+      // the newest ref is what cleanup ever touches. Stop the old one
+      // first so there's never more than one ambient player alive.
+      ambientPlayerRef.current?.remove();
       const ambient = createAudioPlayer(require('../../assets/sounds/ambient-peaceful.mp3'));
       ambient.loop = true;
       if (musicLevelRef.current !== 'off') {

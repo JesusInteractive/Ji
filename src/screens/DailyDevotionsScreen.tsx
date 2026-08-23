@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { getDevotion, type Devotion } from '../services/devotions';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Real translation is BSB by default, matching ScriptureSearchScreen.tsx's
 // own default -- keeps the passage text consistent with what Scripture
@@ -13,6 +14,21 @@ export default function DailyDevotionsScreen() {
   const [devotion, setDevotion] = useState<Devotion | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Same scroll-to-bottom pattern as Study Tools/Scripture -- shows
+  // immediately on load (not just after a manual scroll), since a full
+  // devotion (verses + reflection + prayer) is reliably longer than one
+  // screen.
+  const scrollRef = useRef<ScrollView>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
+    if (newContentHeight && newViewportHeight) {
+      setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -59,7 +75,27 @@ export default function DailyDevotionsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={{ flex: 1 }}>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      onLayout={({ nativeEvent }) => {
+        setViewportHeight(nativeEvent.layout.height);
+        recomputeInitialVisibility(contentHeight, nativeEvent.layout.height);
+      }}
+      onContentSizeChange={(_width, height) => {
+        setContentHeight(height);
+        recomputeInitialVisibility(height, viewportHeight);
+      }}
+      onScroll={({ nativeEvent }) => {
+        const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+        const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+        setShowScrollToBottom(distanceFromBottom > 200);
+        setScrollOffset(contentOffset.y);
+      }}
+      scrollEventThrottle={16}
+    >
       <View style={styles.badge}>
         <Ionicons name="sunny" size={16} color={Colors.gold} />
         <Text style={styles.badgeText}>Day {devotion.day} of 365</Text>
@@ -94,6 +130,25 @@ export default function DailyDevotionsScreen() {
         <Text style={styles.prayerText}>{devotion.prayer}</Text>
       </View>
     </ScrollView>
+    <DraggableScrollbar
+      contentHeight={contentHeight}
+      viewportHeight={viewportHeight}
+      scrollOffset={scrollOffset}
+      onScrollTo={(offset) => {
+        scrollRef.current?.scrollTo({ y: offset, animated: false });
+        setScrollOffset(offset);
+      }}
+    />
+    {showScrollToBottom && (
+      <TouchableOpacity
+        style={styles.scrollToBottomBtn}
+        onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
+        accessibilityLabel="Scroll to bottom"
+      >
+        <Ionicons name="arrow-down" size={20} color={Colors.white} />
+      </TouchableOpacity>
+    )}
+    </View>
   );
 }
 
@@ -204,5 +259,21 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     color: Colors.royal,
     fontStyle: 'italic',
+  },
+  scrollToBottomBtn: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.royal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
 });

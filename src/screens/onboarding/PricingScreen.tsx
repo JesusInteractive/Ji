@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../../theme/colors';
 import PlanCard from '../../components/PlanCard';
+import DraggableScrollbar from '../../components/DraggableScrollbar';
 import { PLANS, TOKEN_PACKS, MONETIZATION_EXPLAINER } from '../../constants/pricing';
 import { useI18n } from '../../i18n';
 import { useApp } from '../../context/AppContext';
@@ -19,6 +21,17 @@ export default function PricingScreen({ navigation }: Props) {
   const [selected, setSelected] = useState<PlanId>('free');
   const [error, setError] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
+    if (newContentHeight && newViewportHeight) {
+      setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
+    }
+  };
 
   // Free just records a local choice -- nothing to purchase. Basic/Pro
   // buy their single monthly product directly via purchasePlan().
@@ -76,7 +89,27 @@ export default function PricingScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <View style={{ flex: 1 }}>
+      <ScrollView
+        ref={scrollRef}
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scroll}
+        onLayout={({ nativeEvent }) => {
+          setViewportHeight(nativeEvent.layout.height);
+          recomputeInitialVisibility(contentHeight, nativeEvent.layout.height);
+        }}
+        onContentSizeChange={(_width, height) => {
+          setContentHeight(height);
+          recomputeInitialVisibility(height, viewportHeight);
+        }}
+        onScroll={({ nativeEvent }) => {
+          const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+          const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+          setShowScrollToBottom(distanceFromBottom > 200);
+          setScrollOffset(contentOffset.y);
+        }}
+        scrollEventThrottle={16}
+      >
         <Text style={styles.title}>{t.pricing.title}</Text>
         <Text style={styles.subtitle}>{t.pricing.subtitle}</Text>
         <Text style={styles.explainer}>{MONETIZATION_EXPLAINER.free} {MONETIZATION_EXPLAINER.paid}</Text>
@@ -99,6 +132,25 @@ export default function PricingScreen({ navigation }: Props) {
           </View>
         </View>
       </ScrollView>
+      <DraggableScrollbar
+        contentHeight={contentHeight}
+        viewportHeight={viewportHeight}
+        scrollOffset={scrollOffset}
+        onScrollTo={(offset) => {
+          scrollRef.current?.scrollTo({ y: offset, animated: false });
+          setScrollOffset(offset);
+        }}
+      />
+      {showScrollToBottom && (
+        <TouchableOpacity
+          style={styles.scrollToBottomBtn}
+          onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
+          accessibilityLabel="Scroll to bottom"
+        >
+          <Ionicons name="arrow-down" size={20} color={Colors.white} />
+        </TouchableOpacity>
+      )}
+      </View>
 
       <View style={styles.footer}>
         {error && <Text style={styles.error}>Choose a plan to continue.</Text>}
@@ -140,4 +192,20 @@ const styles = StyleSheet.create({
   error: { color: Colors.danger, fontSize: 12, marginBottom: 8, textAlign: 'center' },
   cta: { backgroundColor: Colors.royal, borderRadius: 26, paddingVertical: 16, alignItems: 'center' },
   ctaText: { color: Colors.white, fontWeight: '800', fontSize: 16 },
+  scrollToBottomBtn: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.royal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
 });

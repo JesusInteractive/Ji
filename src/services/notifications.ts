@@ -58,7 +58,30 @@ export async function registerForDailyVersePush(): Promise<string | null> {
 // repeating trigger can't vary its content day to day. Swap for the
 // backend-driven flow above (registerForDailyVersePush) once the API is
 // live, so the server can pick fresh copy -- or a fresh verse -- every day.
-export async function scheduleLocalDailyVerseReminder(hour = 8, minute = 0) {
+// Returns false (and schedules nothing) if permission is denied, so the
+// caller (SettingsScreen) can flip its toggle back off rather than
+// showing "on" for a reminder that will never actually fire -- local
+// notifications need permission just like remote push does, and that's
+// easy to miss since registerForDailyVersePush above is the only place
+// that currently asks for it.
+export async function scheduleLocalDailyVerseReminder(hour = 8, minute = 0): Promise<boolean> {
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+  if (finalStatus !== 'granted') {
+    return false;
+  }
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('daily-verse', {
+      name: 'Daily verse',
+      importance: Notifications.AndroidImportance.DEFAULT,
+    });
+  }
+
   await Notifications.cancelAllScheduledNotificationsAsync();
   const { title, body } = pickDailyVerseNotification();
   await Notifications.scheduleNotificationAsync({
@@ -70,4 +93,9 @@ export async function scheduleLocalDailyVerseReminder(hour = 8, minute = 0) {
       repeats: true,
     },
   });
+  return true;
+}
+
+export async function cancelLocalDailyVerseReminder() {
+  await Notifications.cancelAllScheduledNotificationsAsync();
 }
