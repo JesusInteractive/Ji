@@ -23,10 +23,16 @@ const THUMB_MIN_HEIGHT = 32;
 // react-native-gesture-handler, since nothing else in this app pulls that
 // library in yet.
 //
-// Deliberately NOT memoized with useRef -- PanResponder.create() is cheap,
-// and recreating it each render is what lets onPanResponderMove close over
-// the current scrollOffset/contentHeight/viewportHeight props instead of
-// stale ones captured at first mount (a real bug if this were memoized).
+// The PanResponder is built exactly ONCE (useRef initializer), not
+// recreated on every render -- an earlier version rebuilt it every
+// render specifically to avoid stale closures, but since this
+// component's own screen re-renders on every scroll-position update
+// (60fps while dragging), that meant reconstructing the whole
+// PanResponder object every single frame, which read as the drag
+// sticking/catching up rather than following the finger smoothly. The
+// handlers below read maxScroll/trackRange/onScrollTo through refs
+// that are kept fresh on every render instead, so there's no stale-
+// closure problem without paying for per-frame recreation.
 export default function DraggableScrollbar({
   contentHeight,
   viewportHeight,
@@ -34,8 +40,6 @@ export default function DraggableScrollbar({
   onScrollTo,
   style,
 }: Props) {
-  const dragStartOffsetRef = useRef(0);
-
   const maxScroll = Math.max(contentHeight - viewportHeight, 0);
   const canScroll = maxScroll > 0 && viewportHeight > 0;
 
@@ -45,24 +49,71 @@ export default function DraggableScrollbar({
   const trackRange = Math.max(viewportHeight - thumbHeight, 1);
   const thumbTop = canScroll ? trackRange * (Math.min(Math.max(scrollOffset, 0), maxScroll) / maxScroll) : 0;
 
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => canScroll,
-    onMoveShouldSetPanResponder: () => canScroll,
-    onPanResponderGrant: () => {
-      dragStartOffsetRef.current = scrollOffset;
-    },
-    onPanResponderMove: (_evt, gestureState) => {
-      const deltaRatio = gestureState.dy / trackRange;
-      const newOffset = Math.min(Math.max(dragStartOffsetRef.current + deltaRatio * maxScroll, 0), maxScroll);
-      onScrollTo(newOffset);
-    },
-  });
+  const dragStartOffsetRef = useRef(0);
+  const scrollOffsetRef = useRef(scrollOffset);
+  const maxScrollRef = useRef(maxScroll);
+  const trackRangeRef = useRef(trackRange);
+  const canScrollRef = useRef(canScroll);
+  const onScrollToRef = useRef(onScrollTo);
+  scrollOffsetRef.current = scrollOffset;
+  maxScrollRef.current = maxScroll;
+  trackRangeRef.current = trackRange;
+  canScrollRef.current = canScroll;
+  onScrollToRef.current = onScrollTo;
+
+  // Raw touch-move events can fire faster than the screen can actually
+  // redraw, especially on a FlatList (Scripture's book list and chapter
+  // view) where each imperative scrollToOffset also has to recompute
+  // which rows are virtualized/visible -- calling onScrollTo for every
+  // one of those raw events, faster than frames can render, is what
+  // reads as sticking rather than a fluid drag. Coalescing to at most
+  // one call per animation frame (dropping/superseding anything in
+  // between) keeps the drag following the finger without over-driving
+  // the underlying list.
+  const pendingDyRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+  const flushPendingMove = () => {
+    rafIdRef.current = null;
+    const deltaRatio = pendingDyRef.current / trackRangeRef.current;
+    const newOffset = Math.min(
+      Math.max(dragStartOffsetRef.current + deltaRatio * maxScrollRef.current, 0),
+      maxScrollRef.current
+    );
+    onScrollToRef.current(newOffset);
+  };
+
+  const panResponderRef = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => canScrollRef.current,
+      onMoveShouldSetPanResponder: () => canScrollRef.current,
+      onPanResponderGrant: () => {
+        dragStartOffsetRef.current = scrollOffsetRef.current;
+      },
+      onPanResponderMove: (_evt, gestureState) => {
+        pendingDyRef.current = gestureState.dy;
+        if (rafIdRef.current !== null) return;
+        rafIdRef.current = requestAnimationFrame(flushPendingMove);
+      },
+      onPanResponderRelease: () => {
+        if (rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
+          flushPendingMove();
+        }
+      },
+      onPanResponderTerminate: () => {
+        if (rafIdRef.current !== null) {
+          cancelAnimationFrame(rafIdRef.current);
+          rafIdRef.current = null;
+        }
+      },
+    })
+  );
 
   if (!canScroll) return null;
 
   return (
     <View style={[styles.track, { height: viewportHeight }, style]} pointerEvents="box-none">
-      <View {...panResponder.panHandlers} style={[styles.thumb, { height: thumbHeight, top: thumbTop }]} />
+      <View {...panResponderRef.current.panHandlers} style={[styles.thumb, { height: thumbHeight, top: thumbTop }]} />
     </View>
   );
 }

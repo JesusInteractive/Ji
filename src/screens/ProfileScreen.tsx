@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -8,6 +8,7 @@ import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import { PLANS } from '../constants/pricing';
 import type { MainTabParamList } from '../navigation/MainTabs';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Profile is purely local -- see AppContext.tsx's own note on
 // displayName/profilePhotoUri. There's no user/session system in this
@@ -30,6 +31,11 @@ export default function ProfileScreen() {
   } = useApp();
   const [nameInput, setNameInput] = useState(displayName);
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   const currentPlan = PLANS.find((p) => p.id === plan) ?? PLANS[0];
 
@@ -74,7 +80,16 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={{ flex: 1 }}>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+      onContentSizeChange={(_width, height) => setContentHeight(height)}
+      onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+      scrollEventThrottle={16}
+    >
       <View style={styles.photoSection}>
         <TouchableOpacity onPress={handlePickPhoto} accessibilityRole="button" accessibilityLabel="Upload profile photo">
           {profilePhotoUri ? (
@@ -149,15 +164,40 @@ export default function ProfileScreen() {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Saved on this device</Text>
-        <Row icon="bookmark-outline" label="Favorites" value={String(favorites.length)} />
-        <Row icon="book-outline" label="Journal entries" value={String(journalEntries.length)} />
-        <Row icon="hand-left-outline" label="Prayer notes" value={String(prayerNotes.length)} />
+        <Row
+          icon="bookmark-outline"
+          label="Favorites"
+          value={String(favorites.length)}
+          onPress={() => navigation.navigate('ChatTab', { screen: 'Favorites' })}
+        />
+        <Row
+          icon="book-outline"
+          label="Journal entries"
+          value={String(journalEntries.length)}
+          onPress={() => navigation.navigate('Journal')}
+        />
+        <Row
+          icon="hand-left-outline"
+          label="Prayer notes"
+          value={String(prayerNotes.length)}
+          onPress={() => navigation.navigate('PrayerWall')}
+        />
       </View>
 
       <Text style={styles.footerNote}>
         Your name and photo are stored only on this device -- there's no account server behind them yet.
       </Text>
     </ScrollView>
+    <DraggableScrollbar
+      contentHeight={contentHeight}
+      viewportHeight={viewportHeight}
+      scrollOffset={scrollOffset}
+      onScrollTo={(offset) => {
+        scrollRef.current?.scrollTo({ y: offset, animated: false });
+        setScrollOffset(offset);
+      }}
+    />
+    </View>
   );
 }
 

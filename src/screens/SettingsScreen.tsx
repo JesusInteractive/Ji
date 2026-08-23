@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -16,6 +16,7 @@ import { deleteAccountAndAllData } from '../services/api';
 import { getAuthToken } from '../services/backendAuth';
 import { scheduleLocalDailyVerseReminder, cancelLocalDailyVerseReminder } from '../services/notifications';
 import LanguagePicker from '../components/LanguagePicker';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 import type { LanguageCode } from '../types';
 import type { SettingsStackParamList } from '../navigation/SettingsStack';
 
@@ -42,6 +43,11 @@ export default function SettingsScreen({ navigation }: Props) {
   const [analyticsOptIn, setLocalAnalyticsOptIn] = useState(true);
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
   const [textSizePickerOpen, setTextSizePickerOpen] = useState(false);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   // The Language row previously just showed an Alert telling *us* to wire
   // a picker here -- LanguagePicker already exists (built for onboarding's
@@ -214,7 +220,15 @@ export default function SettingsScreen({ navigation }: Props) {
 
   return (
     <>
-    <ScrollView style={styles.container}>
+    <View style={{ flex: 1 }}>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+      onContentSizeChange={(_width, height) => setContentHeight(height)}
+      onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+      scrollEventThrottle={16}
+    >
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.account}</Text>
         <Row icon="card-outline" label={t.settings.plan} value={`${currentPlan.name} · ${currentPlan.priceLabel}`} onPress={handleManagePlan} />
@@ -274,6 +288,16 @@ export default function SettingsScreen({ navigation }: Props) {
         <Text style={styles.footerSub}>Shofar sound via OrangeFreeSounds.com (CC BY 4.0)</Text>
       </View>
     </ScrollView>
+    <DraggableScrollbar
+      contentHeight={contentHeight}
+      viewportHeight={viewportHeight}
+      scrollOffset={scrollOffset}
+      onScrollTo={(offset) => {
+        scrollRef.current?.scrollTo({ y: offset, animated: false });
+        setScrollOffset(offset);
+      }}
+    />
+    </View>
 
     <Modal
       visible={languagePickerOpen}

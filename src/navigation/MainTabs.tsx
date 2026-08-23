@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import HomeScreen from '../screens/HomeScreen';
-import ChatStack from './ChatStack';
+import ChatStack, { type ChatStackParamList } from './ChatStack';
 import PrayerWallScreen from '../screens/PrayerWallScreen';
 import ScriptureSearchScreen from '../screens/ScriptureSearchScreen';
 import JournalScreen from '../screens/JournalScreen';
@@ -33,7 +33,10 @@ const FadedSettingsStack = withFadeIn(SettingsStack);
 
 export type MainTabParamList = {
   HomeTab: undefined;
-  ChatTab: undefined;
+  // Allows jumping directly into a screen nested inside the Chat stack
+  // (e.g. ProfileScreen linking straight to Favorites) from a sibling
+  // tab, same pattern as SettingsTab below.
+  ChatTab: NavigatorScreenParams<ChatStackParamList> | undefined;
   PrayerWall: undefined;
   Bible: undefined;
   Journal: undefined;
