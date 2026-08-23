@@ -52,6 +52,7 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
           {isJesus && onFavorite && (
             <TouchableOpacity style={styles.favoriteBtn} onPress={() => onFavorite(message)} accessibilityRole="button" accessibilityLabel="Save to favorites">
               <Ionicons name="bookmark-outline" size={14} color={Colors.gold} />
+              <Text style={styles.favoriteBtnText}>Bookmark</Text>
             </TouchableOpacity>
           )}
         </TouchableOpacity>
@@ -86,7 +87,18 @@ const styles = StyleSheet.create({
   text: { fontSize: 13.5, lineHeight: 17 },
   jesusText: { color: Colors.ink },
   userText: { color: Colors.white },
-  favoriteBtn: { marginTop: 6, alignSelf: 'flex-end' },
+  favoriteBtn: {
+    marginTop: 6,
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  favoriteBtnText: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: Colors.gold,
+  },
   crisisLinkBtn: {
     flexDirection: 'row',
     alignItems: 'center',
