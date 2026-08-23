@@ -32,6 +32,8 @@ export default function SettingsScreen({ navigation }: Props) {
     setAgeAppropriateMode,
     offlineMode,
     setOfflineMode,
+    voiceRepliesEnabled,
+    setVoiceRepliesEnabled,
     wipeAllLocalData,
     clearMessages,
     textZoom,
@@ -248,6 +250,13 @@ export default function SettingsScreen({ navigation }: Props) {
         <Row icon="shield-half-outline" label={t.settings.ageAppropriate} switchValue={ageAppropriateMode} onSwitchChange={setAgeAppropriateMode} />
         <Row icon="cloud-offline-outline" label={t.settings.offlineMode} switchValue={offlineMode} onSwitchChange={setOfflineMode} />
         <Row icon="help-circle-outline" label="What works offline?" onPress={handleOfflineInfo} />
+        <Row
+          icon="volume-high-outline"
+          label="Voice replies"
+          value={voiceRepliesEnabled ? undefined : 'Text only -- faster'}
+          switchValue={voiceRepliesEnabled}
+          onSwitchChange={setVoiceRepliesEnabled}
+        />
         <Row
           icon="text-outline"
           label="Larger text"

@@ -62,6 +62,7 @@ export default function ChatScreen() {
     ageAppropriateMode,
     clearMessages,
     textZoom,
+    voiceRepliesEnabled,
   } = useApp();
   const [input, setInput] = useState('');
   const [sendError, setSendError] = useState<{ text: string } | null>(null);
@@ -210,6 +211,12 @@ export default function ChatScreen() {
   // instead of speaking over the newer one.
   const speakGenerationRef = useRef(0);
   const speakReply = async (replyText: string) => {
+    // Text is already on screen by the time this is called (addMessage
+    // happens first in handleSend) -- skipping voice here only skips
+    // the synthesize/download/play steps, not the reply itself. This is
+    // the actual lever for a faster-feeling reply; voice can never
+    // arrive before text since ElevenLabs needs the final text first.
+    if (!voiceRepliesEnabled) return;
     if (currentStopRef.current) {
       await currentStopRef.current();
       currentStopRef.current = null;

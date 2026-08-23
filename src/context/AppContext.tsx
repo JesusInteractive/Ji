@@ -111,6 +111,15 @@ interface AppContextValue {
   setAgeAppropriateMode: (v: boolean) => void;
   offlineMode: boolean;
   setOfflineMode: (v: boolean) => void;
+  // Voice can never arrive faster than text -- ElevenLabs needs the
+  // final reply text before it can synthesize anything, so TTS is
+  // always additional time on top of text generation, not parallel to
+  // it. Turning this off skips that step entirely (no synthesize/
+  // download/play), which is the actual way to get a faster-feeling
+  // reply, not a "voice only" mode (that would still wait the same
+  // total time, just hide the text that was already ready).
+  voiceRepliesEnabled: boolean;
+  setVoiceRepliesEnabled: (v: boolean) => void;
 
   // Accessibility zoom for reading-heavy screens (Scripture, Chat, Study
   // Tools) -- a visual scale multiplier applied via a transform on those
@@ -147,6 +156,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [prayerNotes, setPrayerNotes] = useState<PrayerNote[]>([]);
   const [ageAppropriateMode, setAgeAppropriateMode] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
+  const [voiceRepliesEnabled, setVoiceRepliesEnabled] = useState(true);
   const [textZoom, setTextZoom] = useState(1);
   const [displayName, setDisplayNameState] = useState('');
   const [profilePhotoUri, setProfilePhotoUriState] = useState<string | null>(null);
@@ -395,6 +405,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setAgeAppropriateMode,
       offlineMode,
       setOfflineMode,
+      voiceRepliesEnabled,
+      setVoiceRepliesEnabled,
       textZoom,
       setTextZoom,
       displayName,
@@ -409,6 +421,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       remainingQuestionsToday, tokenBalance, addTokens, spendToken, messages, addMessage, clearMessages,
       journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
       prayerNotes, addPrayerNote, wipeAllLocalData, ageAppropriateMode, offlineMode,
+      voiceRepliesEnabled,
       textZoom, setTextZoom,
       displayName, setDisplayName, profilePhotoUri, setProfilePhotoUri, ready,
     ]
