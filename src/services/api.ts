@@ -50,6 +50,23 @@ export async function fetchDailyVerse(languageCode: string): Promise<{ reference
   return request(`/v1/daily-verse?lang=${encodeURIComponent(languageCode)}`);
 }
 
+// Settings' "Report a technical issue" form (ReportIssueScreen.tsx).
+// Unlike reportMessage/fetchDailyVerse above -- which call endpoints
+// that were never actually built -- POST /v1/support/report is real
+// (see backend/server.js's own comment on where these currently go:
+// Vercel's function logs, not a database or email yet).
+export async function reportTechIssue(
+  authToken: string,
+  message: string,
+  deviceInfo?: string
+): Promise<{ ok: true }> {
+  return request('/v1/support/report', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${authToken}` },
+    body: JSON.stringify({ message, deviceInfo }),
+  });
+}
+
 export async function reportMessage(
   authToken: string,
   messageId: string,

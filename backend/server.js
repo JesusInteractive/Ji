@@ -36,6 +36,16 @@ const cors = require('cors');
 const { ElevenLabsClient } = require('@elevenlabs/elevenlabs-js');
 
 const app = express();
+// Vercel sits in front of this as a single reverse proxy and sets
+// X-Forwarded-For to the real client IP -- without telling Express to
+// trust it, express-rate-limit can't tell requests apart by IP at all
+// (every rate limiter in this file -- chat, TTS, STT, sessions,
+// devotions, support reports -- keys on IP by default), and logs a
+// warning on every single rate-limited request. `1` means trust
+// exactly one hop of proxy, matching Vercel's actual setup -- not a
+// blanket "trust everything," which would let a client spoof its own
+// X-Forwarded-For and dodge rate limits entirely.
+app.set('trust proxy', 1);
 // Sets standard defensive headers (X-Content-Type-Options, X-Frame-
 // Options, a conservative Content-Security-Policy, Strict-Transport-
 // Security, etc.) -- baseline hardening against header-based attacks
@@ -394,6 +404,15 @@ const sessionLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many session requests, slow down.' },
+});
+// Cheap to spam (no AI/TTS cost behind it) but still bounded -- a report
+// form with no rate limit at all is an easy target for junk submissions.
+const supportReportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: Number(process.env.SUPPORT_REPORT_RATE_LIMIT) || 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many reports submitted -- please try again later.' },
 });
 // Daily Devotions generates real, billed Anthropic content same as chat
 // -- this bounds runaway spend the same way chatLimiter does. Generous
@@ -1434,6 +1453,32 @@ app.post('/v1/devotions/generate', devotionsLimiter, requireAuth, async (req, re
 app.delete('/v1/account', requireAuth, (req, res) => {
   // Nothing to delete yet (see comment above). Real cascade-delete logic
   // goes here once there's a database.
+  res.status(200).json({ ok: true });
+});
+
+// POST /v1/support/report: Settings' "Report a technical issue" form
+// (src/screens/ReportIssueScreen.tsx). Same "no database yet" situation
+// as everything else in this file -- this can't insert into a support
+// queue that doesn't exist. Logging to stdout is genuinely the honest,
+// fully-functional option available today: Vercel captures every
+// console.log from a serverless function and makes it searchable under
+// that deployment's Logs tab, so nothing is silently dropped, it's just
+// not routed anywhere proactive (no email/Slack ping) yet. Wire this to
+// a real notification channel once one exists -- don't let it keep
+// quietly logging once that's expected to actually reach someone.
+app.post('/v1/support/report', supportReportLimiter, requireAuth, (req, res) => {
+  const { message, deviceInfo } = req.body || {};
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    return res.status(400).json({ error: 'message is required' });
+  }
+  if (message.length > 4000) {
+    return res.status(400).json({ error: 'message is too long (max 4000 characters)' });
+  }
+  console.log('[support-report]', JSON.stringify({
+    at: new Date().toISOString(),
+    message: message.trim(),
+    deviceInfo: typeof deviceInfo === 'string' ? deviceInfo.slice(0, 500) : undefined,
+  }));
   res.status(200).json({ ok: true });
 });
 

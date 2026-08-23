@@ -4,6 +4,7 @@ import Colors from '../theme/colors';
 import SettingsScreen from '../screens/SettingsScreen';
 import TokenGiftScreen from '../screens/TokenGiftScreen';
 import LegalDocScreen from '../screens/LegalDocScreen';
+import ReportIssueScreen from '../screens/ReportIssueScreen';
 
 export type LegalDocParams = {
   title: string;
@@ -17,6 +18,7 @@ export type SettingsStackParamList = {
   SettingsHome: undefined;
   TokenGift: undefined;
   LegalDoc: LegalDocParams;
+  ReportIssue: undefined;
 };
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
@@ -31,6 +33,7 @@ export default function SettingsStack() {
         component={LegalDocScreen}
         options={({ route }) => ({ title: route.params.title })}
       />
+      <Stack.Screen name="ReportIssue" component={ReportIssueScreen} options={{ title: 'Report an Issue' }} />
     </Stack.Navigator>
   );
 }

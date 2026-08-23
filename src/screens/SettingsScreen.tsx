@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Alert, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
@@ -277,7 +277,20 @@ export default function SettingsScreen({ navigation }: Props) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.support}</Text>
         <Row icon="library-outline" label={t.settings.reportContent} onPress={() => Alert.alert('Report', 'Long-press any message in Chat to report it, or contact us here.')} />
-        <Row icon="mail-outline" label={t.settings.contactSupport} onPress={() => Alert.alert('Contact support', 'support@jesusinteractive.com')} />
+        <Row
+          icon="bug-outline"
+          label="Report a technical issue"
+          onPress={() => navigation.navigate('ReportIssue')}
+        />
+        <Row
+          icon="mail-outline"
+          label={t.settings.contactSupport}
+          onPress={() => {
+            Linking.openURL('mailto:support@jesusinteractive.com').catch(() => {
+              Alert.alert('Contact support', 'support@jesusinteractive.com');
+            });
+          }}
+        />
       </View>
 
       <View style={styles.section}>
