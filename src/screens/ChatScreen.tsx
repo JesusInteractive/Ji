@@ -651,7 +651,7 @@ export default function ChatScreen() {
           </TouchableOpacity>
         )}
       </View>
-      <MagnifyButton />
+      <MagnifyButton style={{ bottom: 100 }} />
 
       <Text style={styles.quotaText}>
         {remainingQuestionsToday === Infinity

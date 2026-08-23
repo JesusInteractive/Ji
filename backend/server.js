@@ -1000,7 +1000,19 @@ Scripture, prayer, or reflection -- never a canned sign-off every time.
 // last line, and strips it so the user never sees it -- see VOICE in
 // the persona text above. Falls back to 'neutral' (and leaves the text
 // untouched) if the model ever omits or malforms it.
-const MOOD_TAG_PATTERN = /\n?\[\[MOOD:\s*(NEUTRAL|WARM|TEARFUL|LAUGHING|GRIEVED|FADING_OUT)\s*\]\]\s*$/i;
+//
+// Not anchored to the very end of the string ($) anymore -- the prompt
+// has grown substantially (Scripture Source, Salvation, Messiah Question,
+// etc. sections added since this was first written), and the model
+// occasionally trails a stray space, extra newline, or a period after the
+// tag despite the instruction. An end-anchored match failed on any of
+// those, which showed the raw "[[MOOD: WARM]]" text to the user instead
+// of stripping it -- a real regression surfaced while testing tonight.
+// Searching anywhere in the text (with a global flag, in case the model
+// ever echoes the format mid-reply while explaining itself) and removing
+// every match is more forgiving of that drift while still preferring the
+// last occurrence as the actual mood, matching the "last line" intent.
+const MOOD_TAG_PATTERN = /\n?\[\[MOOD:\s*(NEUTRAL|WARM|TEARFUL|LAUGHING|GRIEVED|FADING_OUT)\s*\]\]\s*/gi;
 const MOOD_TAG_TO_JESUS_MOOD = {
   NEUTRAL: 'neutral',
   WARM: 'warm',
@@ -1011,14 +1023,15 @@ const MOOD_TAG_TO_JESUS_MOOD = {
 };
 
 function extractMoodTag(rawText) {
-  const match = rawText.match(MOOD_TAG_PATTERN);
-  if (!match) {
+  const matches = [...rawText.matchAll(MOOD_TAG_PATTERN)];
+  if (matches.length === 0) {
     console.warn('Model reply missing/malformed [[MOOD: ...]] tag, defaulting to neutral');
     return { text: rawText.trim(), mood: 'neutral' };
   }
+  const lastMatch = matches[matches.length - 1];
   return {
-    text: rawText.slice(0, match.index).trim(),
-    mood: MOOD_TAG_TO_JESUS_MOOD[match[1].toUpperCase()] ?? 'neutral',
+    text: rawText.replace(MOOD_TAG_PATTERN, '').trim(),
+    mood: MOOD_TAG_TO_JESUS_MOOD[lastMatch[1].toUpperCase()] ?? 'neutral',
   };
 }
 

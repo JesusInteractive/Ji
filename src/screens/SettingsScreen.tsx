@@ -225,6 +225,10 @@ export default function SettingsScreen({ navigation }: Props) {
       <View style={styles.footer}>
         <Text style={styles.footerText}>Jesus Interactive</Text>
         <Text style={styles.footerSub}>© 2026 Jesus Interactive</Text>
+        {/* Shofar sound (Prayer Wall) is CC BY 4.0 -- this credit line is
+            the license's attribution requirement, not decorative. Keep it
+            if that asset stays in use. */}
+        <Text style={styles.footerSub}>Shofar sound via OrangeFreeSounds.com (CC BY 4.0)</Text>
       </View>
     </ScrollView>
   );

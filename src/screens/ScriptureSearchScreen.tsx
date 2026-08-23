@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -50,6 +50,9 @@ export default function ScriptureSearchScreen() {
   const [translation, setTranslation] = useState(DEFAULT_TRANSLATION_ID);
   const [translationPickerOpen, setTranslationPickerOpen] = useState(false);
 
+  const verseListRef = useRef<FlatList>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
   useEffect(() => {
     getTranslations().then(setTranslations).catch(() => {});
   }, []);
@@ -75,6 +78,8 @@ export default function ScriptureSearchScreen() {
     setChapterError(null);
     try {
       setChapter(await getChapter(book.id, num, translationId));
+      verseListRef.current?.scrollToOffset({ offset: 0, animated: false });
+      setShowScrollToBottom(false);
     } catch {
       setChapterError("Couldn't load this chapter.");
     } finally {
@@ -170,28 +175,46 @@ export default function ScriptureSearchScreen() {
         ) : chapterError ? (
           <Text style={styles.error}>{chapterError}</Text>
         ) : (
-          <FlatList
-            data={chapter?.verses ?? []}
-            keyExtractor={(v) => String(v.number)}
-            renderItem={({ item }) => (
+          <View style={{ flex: 1 }}>
+            <FlatList
+              ref={verseListRef}
+              data={chapter?.verses ?? []}
+              keyExtractor={(v) => String(v.number)}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.verseRow}
+                  onLongPress={() =>
+                    addFavorite({
+                      id: `${Date.now()}`,
+                      type: 'verse',
+                      reference: `${selectedBook.name} ${chapterNum}:${item.number}`,
+                      text: item.text,
+                      createdAt: new Date().toISOString(),
+                    })
+                  }
+                >
+                  <Text style={styles.verseNum}>{item.number}</Text>
+                  <Text style={styles.verseText}>{item.text}</Text>
+                </TouchableOpacity>
+              )}
+              contentContainerStyle={styles.list}
+              onScroll={({ nativeEvent }) => {
+                const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+                const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+                setShowScrollToBottom(distanceFromBottom > 200);
+              }}
+              scrollEventThrottle={100}
+            />
+            {showScrollToBottom && (
               <TouchableOpacity
-                style={styles.verseRow}
-                onLongPress={() =>
-                  addFavorite({
-                    id: `${Date.now()}`,
-                    type: 'verse',
-                    reference: `${selectedBook.name} ${chapterNum}:${item.number}`,
-                    text: item.text,
-                    createdAt: new Date().toISOString(),
-                  })
-                }
+                style={styles.scrollToBottomBtn}
+                onPress={() => verseListRef.current?.scrollToEnd({ animated: true })}
+                accessibilityLabel="Scroll to bottom of chapter"
               >
-                <Text style={styles.verseNum}>{item.number}</Text>
-                <Text style={styles.verseText}>{item.text}</Text>
+                <Ionicons name="arrow-down" size={20} color={Colors.white} />
               </TouchableOpacity>
             )}
-            contentContainerStyle={styles.list}
-          />
+          </View>
         )}
         {translationModal}
         </View>
@@ -318,4 +341,20 @@ const styles = StyleSheet.create({
   verseRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 10, gap: 8 },
   verseNum: { fontSize: 11, fontWeight: '700', color: Colors.gold, width: 20, marginTop: 2 },
   verseText: { flex: 1, fontSize: 14.5, lineHeight: 21, color: Colors.ink },
+  scrollToBottomBtn: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.royal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
 });

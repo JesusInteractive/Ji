@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
@@ -1037,13 +1037,25 @@ const CATEGORIES: StudyCategory[] = [
 
 export default function StudyToolsScreen() {
   const { textZoom } = useApp();
+  const scrollRef = useRef<ScrollView>(null);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const openLink = (url: string) => {
     Linking.openURL(url).catch(() => {});
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={[styles.content, { transform: [{ scale: textZoom }] }]}>
+      <ScrollView
+        ref={scrollRef}
+        style={styles.container}
+        contentContainerStyle={[styles.content, { transform: [{ scale: textZoom }] }]}
+        onScroll={({ nativeEvent }) => {
+          const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
+          const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
+          setShowScrollToBottom(distanceFromBottom > 200);
+        }}
+        scrollEventThrottle={100}
+      >
         <Text style={styles.intro}>
           Free commentaries, sermons, and study tools -- every entry below is either public domain or a free tool
           we link out to, so nothing here runs into licensing trouble.
@@ -1076,6 +1088,15 @@ export default function StudyToolsScreen() {
           </View>
         ))}
       </ScrollView>
+      {showScrollToBottom && (
+        <TouchableOpacity
+          style={styles.scrollToBottomBtn}
+          onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
+          accessibilityLabel="Scroll to bottom"
+        >
+          <Ionicons name="arrow-down" size={20} color={Colors.ivory} />
+        </TouchableOpacity>
+      )}
       <MagnifyButton />
     </View>
   );
@@ -1108,4 +1129,20 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 14.5, fontWeight: '700', color: Colors.ink },
   cardMeta: { fontSize: 11.5, color: '#718096', marginTop: 2 },
   cardDescription: { fontSize: 12.5, lineHeight: 17, color: '#4A5568', marginTop: 4 },
+  scrollToBottomBtn: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.royal,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
 });

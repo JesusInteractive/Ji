@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
@@ -10,7 +10,13 @@ import { useApp } from '../context/AppContext';
 // Tools). Cycles 1 -> 1.2 -> 1.4 -> 1.6 -> back to 1 on each tap.
 const ZOOM_LEVELS = [1, 1.2, 1.4, 1.6];
 
-export default function MagnifyButton() {
+interface Props {
+  // Lets screens with their own bottom-anchored controls (e.g. Chat's
+  // input row/send button) push this above them instead of overlapping.
+  style?: StyleProp<ViewStyle>;
+}
+
+export default function MagnifyButton({ style }: Props) {
   const { textZoom, setTextZoom } = useApp();
 
   const handlePress = () => {
@@ -23,7 +29,7 @@ export default function MagnifyButton() {
 
   return (
     <TouchableOpacity
-      style={[styles.button, isZoomedIn && styles.buttonActive]}
+      style={[styles.button, isZoomedIn && styles.buttonActive, style]}
       onPress={handlePress}
       accessibilityLabel="Zoom text size"
       accessibilityHint="Cycles through larger text sizes for easier reading"

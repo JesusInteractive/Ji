@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Modal,
@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Colors from '../theme/colors';
+import { playFadedWindCue } from '../services/audioFade';
 import WesternWallBackground, { WALL_WIDTH, buildWall, mulberry32, hashStringToSeed } from '../components/WesternWallBackground';
 import PrayerNote, { NOTE_WIDTH } from '../components/PrayerNote';
 import TipBanner from '../components/TipBanner';
@@ -38,6 +40,7 @@ export default function PrayerWallScreen() {
   const [anonymous, setAnonymous] = useState(true);
   const [shared, setShared] = useState(false);
   const [openNote, setOpenNote] = useState<PrayerNoteType | null>(null);
+  const wallScrollRef = useRef<ScrollView>(null);
 
   const wallHeight = useMemo(() => buildWall(WALL_ROWS, mulberry32(1337)).totalHeight, []);
 
@@ -51,6 +54,21 @@ export default function PrayerWallScreen() {
     });
   }, [prayerNotes, wallHeight]);
 
+  // A brief shofar blast when a prayer is placed -- the sound of the
+  // ram's horn at the Western Wall, kept deliberately quiet/short (same
+  // ~0.14 target volume as the entrance wind cue, no fade-out) so it
+  // reads as a gentle received-confirmation rather than a literal
+  // trumpet blast.
+  async function playShofarSound() {
+    try {
+      await setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers' });
+      const shofar = createAudioPlayer(require('../../assets/sounds/shofar.mp3'));
+      playFadedWindCue(shofar, 0.14);
+    } catch (e) {
+      console.error('Shofar sound error:', e);
+    }
+  }
+
   const handlePlace = () => {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -63,8 +81,22 @@ export default function PrayerWallScreen() {
     };
     addPrayerNote(note);
     setText('');
-    // TODO: play a soft "bell received" sound (see GlorySplash for the
-    // pattern -- drop a real asset at assets/sounds/bell-received.mp3).
+    playShofarSound();
+
+    // New notes land at a random crevice anywhere on the (tall,
+    // scrollable) wall -- same seeded-by-id math as the `positions`
+    // memo above. Without this, a note placed low/high off the current
+    // scroll position is indistinguishable from "nothing happened,"
+    // since the Alert alone doesn't show *where* it went. Scroll it
+    // into view (with a little headroom, not pinned to the very top)
+    // so placing a prayer visibly does something.
+    const rand = mulberry32(hashStringToSeed(note.id));
+    rand(); // consumes the x draw first, matching the memo's draw order
+    const y = 10 + rand() * (wallHeight - 50);
+    requestAnimationFrame(() => {
+      wallScrollRef.current?.scrollTo({ y: Math.max(0, y - 150), animated: true });
+    });
+
     Alert.alert(t.prayerWall.placed);
   };
 
@@ -80,7 +112,7 @@ export default function PrayerWallScreen() {
         text="Write a prayer below and place it in the wall -- it tucks into a crevice like a real note. Tap any note to read it."
       />
 
-      <ScrollView contentContainerStyle={styles.wallScroll}>
+      <ScrollView ref={wallScrollRef} contentContainerStyle={styles.wallScroll}>
         <View style={[styles.wallWrap, { height: wallHeight }]}>
           <WesternWallBackground rows={WALL_ROWS} />
           {positions.map(({ note, x, y, rotateDeg }) => (
