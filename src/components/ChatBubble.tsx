@@ -42,7 +42,7 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
   return (
     <View style={[styles.row, isJesus ? styles.rowLeft : styles.rowRight]}>
       {isJesus && showAvatar && <JesusAvatar mood={message.mood ?? 'neutral'} size={36} />}
-      <View style={{ maxWidth: '78%' }}>
+      <View style={{ maxWidth: isJesus ? '78%' : '88%' }}>
         <TouchableOpacity
           activeOpacity={0.85}
           onLongPress={() => onLongPressReport?.(message)}
@@ -77,13 +77,12 @@ const styles = StyleSheet.create({
   rowLeft: { justifyContent: 'flex-start' },
   rowRight: { justifyContent: 'flex-end' },
   bubble: {
-    maxWidth: '78%',
     borderRadius: 16,
     paddingVertical: 7,
     paddingHorizontal: 14,
   },
-  jesusBubble: { backgroundColor: Colors.ivory, borderTopLeftRadius: 4 },
-  userBubble: { backgroundColor: Colors.royal, borderTopRightRadius: 4 },
+  jesusBubble: { backgroundColor: Colors.ivory, borderTopLeftRadius: 4, maxWidth: '78%' },
+  userBubble: { backgroundColor: Colors.royal, borderTopRightRadius: 4, maxWidth: '88%' },
   text: { fontSize: 13.5, lineHeight: 17 },
   jesusText: { color: Colors.ink },
   userText: { color: Colors.white },
