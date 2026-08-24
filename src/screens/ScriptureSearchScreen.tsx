@@ -51,6 +51,17 @@ export default function ScriptureSearchScreen() {
   const [translation, setTranslation] = useState(DEFAULT_TRANSLATION_ID);
   const [translationPickerOpen, setTranslationPickerOpen] = useState(false);
 
+  // Same pattern again for the translation picker modal's list -- it's
+  // short enough on most translation counts to not need this, but the
+  // full list (74 entries, see StudyToolsScreen) is long enough inside
+  // the modal's capped maxHeight that it was scrollable with no visible
+  // way to tell, same complaint as every other list in this app before
+  // DraggableScrollbar was added to it.
+  const translationListRef = useRef<FlatList>(null);
+  const [translationScrollOffset, setTranslationScrollOffset] = useState(0);
+  const [translationContentHeight, setTranslationContentHeight] = useState(0);
+  const [translationViewportHeight, setTranslationViewportHeight] = useState(0);
+
   const verseListRef = useRef<FlatList>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   // State (not refs) so DraggableScrollbar's thumb actually re-renders as
@@ -145,20 +156,35 @@ export default function ScriptureSearchScreen() {
       >
         <View style={styles.modalSheet}>
           <Text style={styles.modalTitle}>Translation</Text>
-          <FlatList
-            data={translations}
-            keyExtractor={(t) => t.id}
-            style={{ maxHeight: 360 }}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.translationRow} onPress={() => selectTranslation(item.id)}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.translationRowName}>{item.name}</Text>
-                  <Text style={styles.translationRowId}>{item.id}</Text>
-                </View>
-                {item.id === translation && <Ionicons name="checkmark" size={18} color={Colors.royal} />}
-              </TouchableOpacity>
-            )}
-          />
+          <View style={{ maxHeight: 360 }}>
+            <FlatList
+              ref={translationListRef}
+              data={translations}
+              keyExtractor={(t) => t.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.translationRow} onPress={() => selectTranslation(item.id)}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.translationRowName}>{item.name}</Text>
+                    <Text style={styles.translationRowId}>{item.id}</Text>
+                  </View>
+                  {item.id === translation && <Ionicons name="checkmark" size={18} color={Colors.royal} />}
+                </TouchableOpacity>
+              )}
+              onLayout={({ nativeEvent }) => setTranslationViewportHeight(nativeEvent.layout.height)}
+              onContentSizeChange={(_width, height) => setTranslationContentHeight(height)}
+              onScroll={({ nativeEvent }) => setTranslationScrollOffset(nativeEvent.contentOffset.y)}
+              scrollEventThrottle={16}
+            />
+            <DraggableScrollbar
+              contentHeight={translationContentHeight}
+              viewportHeight={translationViewportHeight}
+              scrollOffset={translationScrollOffset}
+              onScrollTo={(offset) => {
+                translationListRef.current?.scrollToOffset({ offset, animated: false });
+                setTranslationScrollOffset(offset);
+              }}
+            />
+          </View>
         </View>
       </TouchableOpacity>
     </Modal>
