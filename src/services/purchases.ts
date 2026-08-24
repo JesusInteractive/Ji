@@ -3,49 +3,32 @@
 // sits in front of StoreKit and Play Billing so this file doesn't need
 // two separate native integrations.
 //
-// STATUS: scaffolded, NOT yet wired into PricingScreen.tsx or
-// TokenGiftScreen.tsx. Those screens still call selectPlan()/addTokens()
-// directly with no real purchase behind them (see their own top
-// comments). Wiring this in is a deliberate follow-up, not an oversight
-// -- see the next paragraph for why.
+// STATUS: PricingScreen.tsx and TokenGiftScreen.tsx already call into
+// this file (purchasePlan/purchaseTokenPack/presentProPaywall). The iOS
+// side of setup is done: App Store Connect has real Basic/Pro/Platinum
+// (monthly/yearly/lifetime) subscription+IAP products and 3 token-pack
+// consumables; RevenueCat has matching Products, one "Jesus Interactive
+// Pro" entitlement covering all three Platinum durations, and a default
+// Offering with each duration's package pointed at its real product.
+// The IDs below are the real ones, not placeholders.
 //
-// WHY THIS ISN'T CALLED FROM ANY SCREEN YET: react-native-purchases is a
-// native module. It requires a real native build (`eas build` or
-// `expo prebuild`) to exist at all -- Expo Go has no way to include
-// third-party native code, the same limitation that made expo-av crash
-// this app at import time earlier ("Cannot find native module
-// 'ExponentAV'"). Rather than risk that exact crash class again by
-// importing this from a screen every Expo Go session touches,
-// initPurchases() below detects Expo Go via expo-constants and no-ops
-// instead of calling into the native SDK. That makes THIS file safe to
-// import, but the screens haven't been switched over to call it yet --
-// do that as a real EAS dev-client build becomes part of the testing
-// loop, not before.
+// STILL NEEDED:
+//   - Android/Play Console: same products, mirrored, not done yet.
+//   - Swap EXPO_PUBLIC_REVENUECAT_IOS_KEY / _ANDROID_KEY in .env from
+//     RevenueCat's test_ keys to its production public SDK keys (Apps
+//     page in the RevenueCat dashboard).
+//   - `eas build` a real dev client (not `expo start`/Expo Go, and not
+//     the iOS Simulator -- see isExpoGo below, and StoreKit purchases
+//     don't work in Simulator either) to actually test a purchase, using
+//     a sandbox tester Apple ID. Real purchases cost real money.
 //
-// SETUP NEEDED BEFORE ANY OF THIS WORKS:
-//   1. Apple Developer Program + App Store Connect: create subscription
-//      products for Basic/Pro/Platinum and consumable IAPs for the
-//      token packs, matching constants/pricing.ts. For the Platinum
-//      tier specifically, create three purchase options -- monthly,
-//      yearly, and lifetime (a non-consumable one-time IAP, not a
-//      subscription) -- all granting the same entitlement.
-//   2. Google Play Console: same products, mirrored for Android.
-//   3. A RevenueCat project (app.revenuecat.com): connect both stores,
-//      define one entitlement named exactly "Jesus Interactive Pro"
-//      (PRO_ENTITLEMENT_ID below) covering the Platinum tier's
-//      monthly/yearly/lifetime products, plus separate entitlements for
-//      Basic/Pro if you want those individually gated too. Bundle
-//      Platinum's three purchase options into one "offering" so
-//      RevenueCatUI's prebuilt paywall (see presentProPaywall below)
-//      can present all three side by side. Copy the iOS/Android public
-//      SDK keys into EXPO_PUBLIC_REVENUECAT_IOS_KEY / _ANDROID_KEY in
-//      .env.
-//   4. Replace every PRODUCT_ID_PLACEHOLDER below with the real product
-//      identifiers you created in step 1-2, exactly as RevenueCat sees
-//      them.
-//   5. `eas build` a dev client (not `expo start`) to actually test
-//      purchases -- use store sandbox/test accounts, real purchases
-//      cost real money.
+// WHY isExpoGo EXISTS: react-native-purchases is a native module --
+// Expo Go has no way to include third-party native code, the same
+// limitation that made expo-av crash this app at import time earlier
+// ("Cannot find native module 'ExponentAV'"). initPurchases() below
+// detects Expo Go via expo-constants and no-ops instead of calling into
+// the native SDK, so this file stays safe to import from screens that
+// still get exercised in Expo Go day-to-day.
 //
 // PAYWALL/CUSTOMER CENTER: react-native-purchases-ui gives you
 // RevenueCat's prebuilt, dashboard-configurable paywall and customer
@@ -73,9 +56,9 @@ export const PRO_ENTITLEMENT_ID = 'Jesus Interactive Pro';
 // monthly product). Placeholders -- replace with your real RevenueCat
 // product identifiers.
 export const PRO_PRODUCT_IDS = {
-  monthly: 'PRODUCT_ID_PLACEHOLDER_platinum_monthly',
-  yearly: 'PRODUCT_ID_PLACEHOLDER_platinum_yearly',
-  lifetime: 'PRODUCT_ID_PLACEHOLDER_platinum_lifetime',
+  monthly: 'com.jesusinteractive.app.platinum.monthly',
+  yearly: 'com.jesusinteractive.app.platinum.yearly',
+  lifetime: 'com.jesusinteractive.app.platinum.lifetime',
 } as const;
 
 export type ProDuration = keyof typeof PRO_PRODUCT_IDS;
@@ -93,15 +76,15 @@ const isExpoGo = Constants.executionEnvironment === 'storeClient';
 // charge anyone anything.
 export const REVENUECAT_PRODUCT_IDS: Record<PlanId, string | null> = {
   free: null, // no product -- free tier has nothing to purchase
-  basic: 'PRODUCT_ID_PLACEHOLDER_basic_monthly',
-  pro: 'PRODUCT_ID_PLACEHOLDER_pro_monthly',
-  platinum: 'PRODUCT_ID_PLACEHOLDER_platinum_monthly',
+  basic: 'com.jesusinteractive.app.basic.monthly',
+  pro: 'com.jesusinteractive.app.pro.monthly',
+  platinum: 'com.jesusinteractive.app.platinum.monthly',
 };
 
 export const REVENUECAT_TOKEN_PACK_IDS: Record<string, string> = {
-  pack_20: 'PRODUCT_ID_PLACEHOLDER_tokens_20',
-  pack_60: 'PRODUCT_ID_PLACEHOLDER_tokens_60',
-  pack_150: 'PRODUCT_ID_PLACEHOLDER_tokens_150',
+  pack_20: 'com.jesusinteractive.app.tokens.20',
+  pack_60: 'com.jesusinteractive.app.tokens.60',
+  pack_150: 'com.jesusinteractive.app.tokens.150',
 };
 
 let initialized = false;
