@@ -34,6 +34,7 @@ const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const cors = require('cors');
 const { ElevenLabsClient } = require('@elevenlabs/elevenlabs-js');
+const { Resend } = require('resend');
 
 const app = express();
 // Vercel sits in front of this as a single reverse proxy and sets
@@ -65,6 +66,13 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_DEFAULT_VOICE_ID = process.env.ELEVENLABS_DEFAULT_VOICE_ID;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const SUPPORT_REPORT_TO_EMAIL = process.env.SUPPORT_REPORT_TO_EMAIL || 'support@jesusinteractive.com';
+// send.jesusinteractive.com is the subdomain verified with Resend for
+// outbound mail (see the DKIM/SPF/MX records added there) -- deliberately
+// not the root domain, so this never collides with Neo Mail's own MX
+// records handling actual inbound mail to @jesusinteractive.com.
+const SUPPORT_REPORT_FROM_EMAIL = process.env.SUPPORT_REPORT_FROM_EMAIL || 'Jesus Interactive <reports@send.jesusinteractive.com>';
 // Signs/verifies short-lived session JWTs (see /v1/auth/session and
 // requireAuth below). Server-only -- never sent to or read by the client,
 // unlike the old BACKEND_SECRET this replaces. If BACKEND_SECRET was ever
@@ -110,6 +118,7 @@ function isDeveloperRequest(req) {
 }
 
 const elevenlabs = ELEVENLABS_API_KEY ? new ElevenLabsClient({ apiKey: ELEVENLABS_API_KEY }) : null;
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Keep-warm target for an external scheduled pinger (UptimeRobot,
 // cron-job.org, etc. -- Vercel's own Cron Jobs are capped at once/day on
@@ -1459,14 +1468,13 @@ app.delete('/v1/account', requireAuth, (req, res) => {
 // POST /v1/support/report: Settings' "Report a technical issue" form
 // (src/screens/ReportIssueScreen.tsx). Same "no database yet" situation
 // as everything else in this file -- this can't insert into a support
-// queue that doesn't exist. Logging to stdout is genuinely the honest,
-// fully-functional option available today: Vercel captures every
-// console.log from a serverless function and makes it searchable under
-// that deployment's Logs tab, so nothing is silently dropped, it's just
-// not routed anywhere proactive (no email/Slack ping) yet. Wire this to
-// a real notification channel once one exists -- don't let it keep
-// quietly logging once that's expected to actually reach someone.
-app.post('/v1/support/report', supportReportLimiter, requireAuth, (req, res) => {
+// queue that doesn't exist, so email (via Resend, from the verified
+// send.jesusinteractive.com subdomain) is the actual notification
+// channel. Still logs unconditionally first, before attempting to send
+// -- if RESEND_API_KEY is ever unset or the send fails, the report is
+// never silently lost, it just falls back to Vercel's logs the same
+// way this endpoint worked before email was wired up.
+app.post('/v1/support/report', supportReportLimiter, requireAuth, async (req, res) => {
   const { message, deviceInfo } = req.body || {};
   if (!message || typeof message !== 'string' || message.trim().length === 0) {
     return res.status(400).json({ error: 'message is required' });
@@ -1474,11 +1482,35 @@ app.post('/v1/support/report', supportReportLimiter, requireAuth, (req, res) => 
   if (message.length > 4000) {
     return res.status(400).json({ error: 'message is too long (max 4000 characters)' });
   }
-  console.log('[support-report]', JSON.stringify({
-    at: new Date().toISOString(),
-    message: message.trim(),
-    deviceInfo: typeof deviceInfo === 'string' ? deviceInfo.slice(0, 500) : undefined,
-  }));
+  const trimmedMessage = message.trim();
+  const trimmedDeviceInfo = typeof deviceInfo === 'string' ? deviceInfo.slice(0, 500) : undefined;
+  const at = new Date().toISOString();
+
+  console.log('[support-report]', JSON.stringify({ at, message: trimmedMessage, deviceInfo: trimmedDeviceInfo }));
+
+  if (resend) {
+    try {
+      // The Resend SDK does NOT throw on a failed send -- it resolves
+      // with { data: null, error: {...} } instead, so `error` has to be
+      // checked explicitly or a failure (e.g. the sending domain not
+      // being verified yet) silently looks identical to a success here.
+      const { error } = await resend.emails.send({
+        from: SUPPORT_REPORT_FROM_EMAIL,
+        to: SUPPORT_REPORT_TO_EMAIL,
+        subject: 'Jesus Interactive -- Technical issue report',
+        text: `Reported at: ${at}\nDevice: ${trimmedDeviceInfo || 'not provided'}\n\n${trimmedMessage}`,
+      });
+      if (error) {
+        console.error('[support-report] email send failed:', error);
+      }
+    } catch (err) {
+      // Don't fail the request over this -- the report is already
+      // logged above, so the user's submission wasn't lost even if the
+      // email itself didn't go out.
+      console.error('[support-report] email send failed:', err);
+    }
+  }
+
   res.status(200).json({ ok: true });
 });
 
