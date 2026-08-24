@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,7 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
+import { getDailyVerse, type DailyVerse } from '../services/devotions';
 
 const QUICK_LINKS: {
   tab: Exclude<keyof MainTabParamList, 'HomeTab' | 'Profile'>;
@@ -24,9 +25,39 @@ const QUICK_LINKS: {
   { tab: 'DailyDevotions', icon: 'sunny', labelKey: 'devotions' },
 ];
 
+// Same default translation Daily Devotions itself uses (see its own
+// comment) -- keeps this teaser's text consistent with what tapping
+// through to the full devotion shows.
+const DEFAULT_TRANSLATION_ID = 'BSB';
+
+// Matthew 7:7 -- shown until the real daily verse loads, and again if
+// fetching it fails for any reason (offline, API hiccup). Never leaves
+// this card blank or erroring; worst case it's just not "today's"
+// verse specifically.
+const FALLBACK_VERSE: DailyVerse = {
+  day: 0,
+  reference: 'Matthew 7:7',
+  text: "Ask and it will be given to you; seek and you will find; knock and the door will be opened to you.",
+};
+
 export default function HomeScreen() {
   const { t } = useI18n();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+  const [dailyVerse, setDailyVerse] = useState<DailyVerse>(FALLBACK_VERSE);
+
+  useEffect(() => {
+    let cancelled = false;
+    getDailyVerse(DEFAULT_TRANSLATION_ID)
+      .then((verse) => {
+        if (!cancelled) setDailyVerse(verse);
+      })
+      .catch(() => {
+        // Stay on FALLBACK_VERSE -- see its own comment.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,10 +91,19 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      <Text style={styles.verseText}>
-        "Ask and it will be given to you; seek and you will find; knock and the door will be opened to you."
-      </Text>
-      <Text style={styles.verseRef}>Matthew 7:7</Text>
+      <TouchableOpacity
+        style={styles.verseCard}
+        onPress={() => navigation.navigate('DailyDevotions')}
+        accessibilityRole="button"
+        accessibilityLabel={`Daily verse, ${dailyVerse.reference}. Tap for the full devotion.`}
+      >
+        <View style={styles.verseCardLabel}>
+          <Ionicons name="sunny" size={13} color={Colors.gold} />
+          <Text style={styles.verseCardLabelText}>Today's Verse</Text>
+        </View>
+        <Text style={styles.verseText}>"{dailyVerse.text}"</Text>
+        <Text style={styles.verseRef}>{dailyVerse.reference}</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -117,14 +157,30 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.ivory,
   },
+  verseCard: {
+    marginTop: 28,
+    paddingHorizontal: 16,
+  },
+  verseCardLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    marginBottom: 10,
+  },
+  verseCardLabelText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.gold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
   verseText: {
     fontSize: 16,
     fontStyle: 'italic',
     lineHeight: 24,
     textAlign: 'center',
     color: Colors.ivory,
-    marginTop: 36,
-    paddingHorizontal: 12,
   },
   verseRef: {
     fontSize: 13,
