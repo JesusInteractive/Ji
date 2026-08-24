@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
@@ -7,6 +7,7 @@ import { useApp } from '../context/AppContext';
 import { generateGiftCodeLocally, redeemGiftCode } from '../services/tokenGifting';
 import { isFounderCode, isFamilyCode } from '../services/founderAccess';
 import { purchaseTokenPack } from '../services/purchases';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Token / gift code system (spec sections 2 & 7): buy access, gift it to
 // someone who can't afford it. Both buy and gift purchase a real token
@@ -18,6 +19,11 @@ export default function TokenGiftScreen() {
   const [redeemInput, setRedeemInput] = useState('');
   const [lastGiftCode, setLastGiftCode] = useState<string | null>(null);
   const [purchasingPackId, setPurchasingPackId] = useState<string | null>(null);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   const handleBuy = async (packId: string, tokens: number) => {
     setPurchasingPackId(packId);
@@ -77,7 +83,16 @@ export default function TokenGiftScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={{ flex: 1 }}>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+      onContentSizeChange={(_width, height) => setContentHeight(height)}
+      onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+      scrollEventThrottle={16}
+    >
       <Text style={styles.title}>Buy & Gift</Text>
       <Text style={styles.balance}>Your balance: {tokenBalance} tokens</Text>
       <Text style={styles.explainer}>{MONETIZATION_EXPLAINER.tokens}</Text>
@@ -146,6 +161,16 @@ export default function TokenGiftScreen() {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    <DraggableScrollbar
+      contentHeight={contentHeight}
+      viewportHeight={viewportHeight}
+      scrollOffset={scrollOffset}
+      onScrollTo={(offset) => {
+        scrollRef.current?.scrollTo({ y: offset, animated: false });
+        setScrollOffset(offset);
+      }}
+    />
+    </View>
   );
 }
 

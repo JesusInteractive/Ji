@@ -220,7 +220,11 @@ export default function ScriptureSearchScreen() {
             disabled={selectedBook.chapters ? chapterNum >= selectedBook.chapters : false}
             onPress={() => { const n = chapterNum + 1; setChapterNum(n); loadChapter(selectedBook, n, translation); }}
           >
-            <Ionicons name="chevron-forward-circle" size={28} color={Colors.royal} />
+            <Ionicons
+              name="chevron-forward-circle"
+              size={28}
+              color={selectedBook.chapters && chapterNum >= selectedBook.chapters ? '#CBD5E0' : Colors.royal}
+            />
           </TouchableOpacity>
         </View>
 

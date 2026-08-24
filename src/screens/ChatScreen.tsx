@@ -95,6 +95,13 @@ export default function ChatScreen() {
   const [viewportHeight, setViewportHeight] = useState(0);
   const avatarRef = useRef<JesusAvatarHandle>(null);
   const currentStopRef = useRef<(() => Promise<void>) | null>(null);
+  // speakReply() awaits a network call (synthesizeSpeech) before it has
+  // anything to stop -- if this screen unmounts (navigating away) while
+  // that call is still in flight, the response can land after unmount
+  // and start playback with nothing left able to stop it. Checked right
+  // after that await, before playSpeech() is ever called -- see the
+  // identical pattern/comment in GlorySplash.tsx's isMountedRef.
+  const isMountedRef = useRef(true);
   // "Conversation mode": once a question was asked by voice, keep
   // listening automatically after each reply instead of requiring
   // another mic tap for every follow-up. Only kicks in when the LAST
@@ -170,6 +177,10 @@ export default function ChatScreen() {
 
   useEffect(() => {
     playEntrance();
+    return () => {
+      isMountedRef.current = false;
+      currentStopRef.current?.();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -224,6 +235,7 @@ export default function ChatScreen() {
     const generation = ++speakGenerationRef.current;
     try {
       const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, replyText, language));
+      if (!isMountedRef.current) return; // unmounted while synthesizing -- see isMountedRef's own comment
       if (generation !== speakGenerationRef.current) return; // superseded while synthesizing
       currentStopRef.current = await playSpeech(audioUrl, {
         onStart: () => {

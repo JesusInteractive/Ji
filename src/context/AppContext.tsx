@@ -27,7 +27,20 @@ export const STORAGE_KEYS = {
   favorites: 'ji_favorites_v2',
   prayers: 'ji_prayers_v2',
   profile: 'ji_profile_v1',
+  dailyQuota: 'ji_daily_quota_v1',
 };
+
+// Local calendar date (not UTC) as YYYY-MM-DD -- keys the persisted daily
+// question quota below so it only resets once a real day has actually
+// passed, not on every app restart. Local time for the same reason
+// devotionalReadingPlan.ts's getDayOfYear uses local getFullYear/
+// getMonth/getDate rather than UTC.
+function todayKey(date: Date = new Date()): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
 // Journal entries and prayer notes are the two categories of genuinely
 // private, never-sent-to-the-model content this app stores (see
@@ -165,7 +178,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [onboardingRaw, planRaw, tokensRaw, messagesRaw, journalRaw, favRaw, prayersRaw, profileRaw] =
+        const [onboardingRaw, planRaw, tokensRaw, messagesRaw, journalRaw, favRaw, prayersRaw, profileRaw, dailyQuotaRaw] =
           await Promise.all([
             AsyncStorage.getItem(STORAGE_KEYS.onboarding),
             AsyncStorage.getItem(STORAGE_KEYS.plan),
@@ -175,6 +188,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             AsyncStorage.getItem(STORAGE_KEYS.favorites),
             AsyncStorage.getItem(STORAGE_KEYS.prayers),
             AsyncStorage.getItem(STORAGE_KEYS.profile),
+            AsyncStorage.getItem(STORAGE_KEYS.dailyQuota),
           ]);
 
         if (onboardingRaw) {
@@ -194,7 +208,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           // again in that session. Recompute it from the restored plan
           // the same way selectPlan() itself does.
           const restoredPlan = PLANS.find((p) => p.id === planRaw);
-          setRemainingQuestionsToday(restoredPlan?.dailyQuestionLimit ?? Infinity);
+          const fullLimit = restoredPlan?.dailyQuestionLimit ?? Infinity;
+          // That full-limit recompute alone reintroduced a different bug:
+          // a free-tier user who used up today's questions could force-
+          // quit and relaunch to get a fresh 5, unlimited times a day,
+          // since nothing about *usage* was ever persisted, only the
+          // plan's limit. ji_daily_quota_v1 persists {date, remaining} so
+          // a same-day relaunch restores what was actually left, while a
+          // new calendar day (date mismatch) still resets to the full
+          // limit, same as before.
+          let restoredRemaining = fullLimit;
+          if (dailyQuotaRaw) {
+            try {
+              const parsedQuota = JSON.parse(dailyQuotaRaw) as { date: string; remaining: number };
+              if (parsedQuota.date === todayKey()) {
+                restoredRemaining = parsedQuota.remaining;
+              }
+            } catch {
+              // Fall through to fullLimit if the cached quota is corrupt.
+            }
+          }
+          setRemainingQuestionsToday(restoredRemaining);
+          AsyncStorage.setItem(
+            STORAGE_KEYS.dailyQuota,
+            JSON.stringify({ date: todayKey(), remaining: restoredRemaining })
+          ).catch(() => {});
         }
         if (tokensRaw) setTokenBalance(Number(tokensRaw) || 0);
         if (messagesRaw) setMessages(JSON.parse(messagesRaw));
@@ -248,7 +286,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPlan(planId);
     AsyncStorage.setItem(STORAGE_KEYS.plan, planId).catch(() => {});
     const found = PLANS.find((p) => p.id === planId);
-    setRemainingQuestionsToday(found?.dailyQuestionLimit ?? Infinity);
+    const fullLimit = found?.dailyQuestionLimit ?? Infinity;
+    setRemainingQuestionsToday(fullLimit);
+    AsyncStorage.setItem(
+      STORAGE_KEYS.dailyQuota,
+      JSON.stringify({ date: todayKey(), remaining: fullLimit })
+    ).catch(() => {});
+  }, []);
+
+  // The raw useState setter above isn't itself persisted -- ChatScreen
+  // decrementing remainingQuestionsToday through it (each question asked)
+  // would otherwise hit the exact same "resets on relaunch" bug this
+  // whole ji_daily_quota_v1 mechanism exists to close. This is the one
+  // actually exposed to consumers below.
+  const updateRemainingQuestionsToday = useCallback((n: number) => {
+    setRemainingQuestionsToday(n);
+    AsyncStorage.setItem(
+      STORAGE_KEYS.dailyQuota,
+      JSON.stringify({ date: todayKey(), remaining: n })
+    ).catch(() => {});
   }, []);
 
   const addTokens = useCallback((n: number) => {
@@ -385,7 +441,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       onboardingComplete:
         hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasSeenEntrance && plan !== null,
       remainingQuestionsToday,
-      setRemainingQuestionsToday,
+      setRemainingQuestionsToday: updateRemainingQuestionsToday,
       tokenBalance,
       addTokens,
       spendToken,

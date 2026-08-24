@@ -40,7 +40,6 @@ export default function SettingsScreen({ navigation }: Props) {
     setTextZoom,
   } = useApp();
 
-  const [notifications, setNotifications] = useState(true);
   const [dailyVerseReminder, setDailyVerseReminder] = useState(true);
   const [analyticsOptIn, setLocalAnalyticsOptIn] = useState(true);
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
@@ -245,7 +244,6 @@ export default function SettingsScreen({ navigation }: Props) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.preferences}</Text>
-        <Row icon="notifications-outline" label={t.settings.notifications} switchValue={notifications} onSwitchChange={setNotifications} />
         <Row icon="sunny-outline" label={t.settings.dailyVerse} switchValue={dailyVerseReminder} onSwitchChange={handleDailyVerseReminderChange} />
         <Row icon="shield-half-outline" label={t.settings.ageAppropriate} switchValue={ageAppropriateMode} onSwitchChange={setAgeAppropriateMode} />
         <Row icon="cloud-offline-outline" label={t.settings.offlineMode} switchValue={offlineMode} onSwitchChange={setOfflineMode} />
