@@ -97,8 +97,25 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
     return () => {
       isMountedRef.current = false;
       clearTimeout(ambientTimer);
-      ambientPlayerRef.current?.remove();
+      // Fading out here (not just remove()) since this is what actually
+      // runs when the user taps "Enter" into Pricing -- a hard cut read
+      // as the music just stopping abruptly right as the next screen
+      // appears. The player itself is a plain object reference, not
+      // something React owns, so this fade keeps running via its own
+      // setInterval (see audioFade.ts) after this component has already
+      // unmounted and Pricing is on screen -- same idea as
+      // playFadedWindCue letting its clip finish on its own.
+      const ambient = ambientPlayerRef.current;
       ambientPlayerRef.current = null;
+      if (ambient) {
+        fadeAudioVolume(ambient, 0, 900, 10, () => {
+          try {
+            ambient.remove();
+          } catch {
+            // already removed -- fine to ignore
+          }
+        });
+      }
       currentStopRef.current?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
