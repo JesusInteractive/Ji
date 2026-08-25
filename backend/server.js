@@ -436,6 +436,18 @@ const devotionsLimiter = rateLimit({
   message: { error: 'Too many devotion requests -- please slow down and try again shortly.' },
   skip: isDeveloperRequest,
 });
+// Sermon Writer generates a full manuscript per request (not cached
+// client-side the way a devotion is, since every topic/passage is a
+// fresh ask) -- tighter than devotionsLimiter for that reason, still
+// generous for genuine pastoral prep use.
+const sermonLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: Number(process.env.SERMON_RATE_LIMIT) || 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many sermon requests -- please slow down and try again shortly.' },
+  skip: isDeveloperRequest,
+});
 
 // memoryStorage is fine here -- voice-message clips are short (chat
 // input, not long-form audio) and never touch disk; multer hands the
@@ -1437,6 +1449,103 @@ app.post('/v1/devotions/generate', devotionsLimiter, requireAuth, async (req, re
     }
 
     res.json({ reflection: reflectionMatch[1].trim(), prayer: prayerMatch[1].trim() });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Sermon & Bible Study Writer (Study Tools > Sermon Writer, Pro/Platinum
+// feature per constants/pricing.ts). One free-text field, not the
+// REFLECTION:/PRAYER: split devotions use above -- a sermon manuscript's
+// own internal structure (title, scripture, points, illustration,
+// application, closing) varies too much by topic to force into fixed
+// fields, and the client just renders it as one scrollable block, so
+// there's nothing gained by splitting it up.
+const SERMON_SYSTEM_PROMPT = `You are a seasoned, theologically sound sermon-and-Bible-study writing assistant for the "Jesus Interactive" app, helping pastors, ministry leaders, and small-group leaders prepare real material to teach from -- not a devotional written to the requester themselves.
+
+Write in your own words throughout. Never reproduce more than a single short verse of Scripture text verbatim at a time -- summarize, paraphrase, and cite references (e.g. "John 3:16") instead; the requester has their own Bible open. Ground every point in sound exegesis of the actual passage/topic given, not invented details, and never fabricate a Bible reference that doesn't exist.
+
+Respond in plain text only -- no markdown formatting (no asterisks, no #, no code fences). Structure the piece clearly with plain-text section labels on their own line (e.g. "Title:", "Key Scripture:", "Introduction:", "Main Points:", "Illustration:", "Application:", "Closing Prayer:"), substantive content under each.`;
+
+function sermonLengthGuidance(length) {
+  if (length === 'extended') {
+    return 'Write a full, detailed sermon manuscript suitable for a 30-40 minute message: a clear introduction, 3-4 developed main points each with supporting exposition and at least one concrete illustration or contemporary application, and a closing call to response with a short closing prayer. Aim for genuine depth, not padding.';
+  }
+  return 'Write a solid, well-organized outline-with-substance suitable for a 15-20 minute message or a small-group Bible study: a brief introduction, 2-3 main points with a sentence or two of supporting exposition each, one practical application, and a short closing prayer. Concise, not padded, but not a bare outline either -- give the leader real material to work from.';
+}
+
+app.post('/v1/sermon/generate', sermonLimiter, requireAuth, async (req, res) => {
+  try {
+    const { topic, passageReference, occasion, length, languageCode } = req.body || {};
+    if (!topic || typeof topic !== 'string' || !topic.trim()) {
+      return res.status(400).json({ error: 'topic is required' });
+    }
+    if (topic.length > 300) {
+      return res.status(400).json({ error: 'topic is too long (max 300 characters)' });
+    }
+    if (typeof passageReference === 'string' && passageReference.length > 200) {
+      return res.status(400).json({ error: 'passageReference is too long (max 200 characters)' });
+    }
+    if (typeof occasion === 'string' && occasion.length > 200) {
+      return res.status(400).json({ error: 'occasion is too long (max 200 characters)' });
+    }
+    if (!ANTHROPIC_API_KEY) {
+      return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' });
+    }
+
+    const languageName = typeof languageCode === 'string' && languageCode ? (LANGUAGE_NAMES[languageCode] || languageCode) : null;
+    const userPrompt =
+      `Topic/theme: ${topic.trim()}` +
+      (passageReference && passageReference.trim() ? `\nFocus passage: ${passageReference.trim()}` : '') +
+      (occasion && occasion.trim() ? `\nOccasion/audience: ${occasion.trim()}` : '') +
+      `\n\n${sermonLengthGuidance(length)}` +
+      (languageName ? `\n\nWrite the entire piece in ${languageName}, fluently and naturally.` : '');
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45_000);
+    let anthropicRes;
+    try {
+      anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: ANTHROPIC_MODEL,
+          max_tokens: length === 'extended' ? 3072 : 1536,
+          system: SERMON_SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: userPrompt }],
+          thinking: { type: 'disabled' },
+        }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return res.status(504).json({ error: 'Model request timed out' });
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!anthropicRes.ok) {
+      const errText = await anthropicRes.text();
+      console.error('Anthropic API error (sermon):', errText);
+      return res.status(502).json({ error: 'Model request failed' });
+    }
+
+    const data = await anthropicRes.json();
+    const textBlock = data.content?.find((block) => block.type === 'text');
+    const content = (textBlock?.text ?? '').trim();
+    if (!content) {
+      console.error('Empty sermon response from model');
+      return res.status(502).json({ error: 'Malformed response from model' });
+    }
+
+    res.json({ content });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

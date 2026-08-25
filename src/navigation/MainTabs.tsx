@@ -10,7 +10,7 @@ import ChatStack, { type ChatStackParamList } from './ChatStack';
 import PrayerWallScreen from '../screens/PrayerWallScreen';
 import ScriptureSearchScreen from '../screens/ScriptureSearchScreen';
 import JournalScreen from '../screens/JournalScreen';
-import StudyToolsScreen from '../screens/StudyToolsScreen';
+import StudyToolsStack from './StudyToolsStack';
 import ProfileScreen from '../screens/ProfileScreen';
 import DailyDevotionsScreen from '../screens/DailyDevotionsScreen';
 import SettingsStack, { type SettingsStackParamList } from './SettingsStack';
@@ -26,7 +26,7 @@ const FadedChatStack = withFadeIn(ChatStack);
 const FadedPrayerWall = withFadeIn(PrayerWallScreen);
 const FadedBible = withFadeIn(ScriptureSearchScreen);
 const FadedJournal = withFadeIn(JournalScreen);
-const FadedStudyTools = withFadeIn(StudyToolsScreen);
+const FadedStudyToolsStack = withFadeIn(StudyToolsStack);
 const FadedProfile = withFadeIn(ProfileScreen);
 const FadedDailyDevotions = withFadeIn(DailyDevotionsScreen);
 const FadedSettingsStack = withFadeIn(SettingsStack);
@@ -86,11 +86,10 @@ export default function MainTabs() {
       <Tab.Screen name="Journal" component={FadedJournal} options={{ title: t.tabs.journal }} />
       <Tab.Screen
         name="StudyTools"
-        component={FadedStudyTools}
+        component={FadedStudyToolsStack}
         options={{
           title: t.tabs.studyTools,
-          headerShown: true,
-          headerTintColor: Colors.royal,
+          headerShown: false,
           tabBarButton: () => null,
         }}
       />

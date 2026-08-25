@@ -1,10 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import MagnifyButton from '../components/MagnifyButton';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import type { StudyToolsStackParamList } from '../navigation/StudyToolsStack';
+
+type Props = NativeStackScreenProps<StudyToolsStackParamList, 'StudyToolsHome'>;
 
 interface StudyResource {
   title: string;
@@ -1267,7 +1271,7 @@ const CATEGORIES: StudyCategory[] = [
   },
 ];
 
-export default function StudyToolsScreen() {
+export default function StudyToolsScreen({ navigation }: Props) {
   const { textZoom } = useApp();
   const scrollRef = useRef<ScrollView>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -1320,6 +1324,17 @@ export default function StudyToolsScreen() {
           Free commentaries, sermons, and study tools -- every entry below is either public domain or a free tool
           we link out to, so nothing here runs into licensing trouble.
         </Text>
+
+        <TouchableOpacity style={styles.sermonWriterCard} onPress={() => navigation.navigate('SermonWriter')}>
+          <View style={styles.sermonWriterIcon}>
+            <Ionicons name="create-outline" size={22} color={Colors.gold} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.sermonWriterTitle}>Sermon & Bible Study Writer</Text>
+            <Text style={styles.sermonWriterSubtitle}>Generate a full sermon or study on any topic or passage</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#A0AEC0" />
+        </TouchableOpacity>
 
         {CATEGORIES.map((category) => (
           <View key={category.heading} style={styles.category}>
@@ -1376,6 +1391,25 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 32 },
   intro: { fontSize: 13.5, lineHeight: 20, color: '#718096', marginBottom: 20 },
   category: { marginBottom: 24 },
+  sermonWriterCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.royal,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 22,
+    gap: 12,
+  },
+  sermonWriterIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sermonWriterTitle: { fontSize: 15, fontWeight: '700', color: Colors.white },
+  sermonWriterSubtitle: { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 2 },
   categoryHeading: { fontSize: 17, fontWeight: '800', color: Colors.royal, marginBottom: 4 },
   categoryNote: { fontSize: 12, lineHeight: 17, color: '#A0AEC0', marginBottom: 10 },
   card: {
