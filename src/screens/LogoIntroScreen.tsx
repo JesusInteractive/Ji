@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, Image, StyleSheet, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '../theme/colors';
@@ -9,24 +9,22 @@ interface Props {
 }
 
 const LOGO_VIDEO = require('../../assets/video/logo-intro.mp4');
-const STATIC_LOGO = require('../../assets/icon.png');
 
-const STATIC_HOLD_MS = 900; // how long the static logo sits alone before dissolving
-const DISSOLVE_MS = 700;
+const FADE_IN_MS = 500; // the motion graphic's own fade-in, over the glow/cloud background
 const FADE_OUT_MS = 550; // graceful close: dissolve video+glow+clouds to navy instead of cutting on the last frame
 
-// Two-stage reveal, on request: a royal-blue page with the static logo
-// mark first, which then cross-dissolves into the motion graphic (the
-// "J" mark with swirling gold light, ending on "Jesus interactive"),
-// rather than the video just starting cold. Plays once per cold launch,
-// before the onboarding/main navigators mount. Not the native OS splash
-// screen -- that only supports a single static image (app.json's
-// expo-splash-screen config), no video and no animation, so this is a
-// second, richer intro shown once the JS bundle is actually running.
-// Advances automatically when the clip ends; also tappable to skip, and
-// falls back to onFinish() after a timeout if the video fails to load
-// for any reason, so a broken/missing asset can never strand someone on
-// this screen.
+// The motion graphic (the "J" mark with swirling gold light, ending on
+// "Jesus interactive") over a glow + drifting cloud veil, plays once
+// per cold launch, before the onboarding/main navigators mount. This
+// used to hold on a static logo image first, then cross-dissolve into
+// the video -- removed, since the native OS splash screen (app.json's
+// expo-splash-screen config, itself a static image of the same logo)
+// already shows that exact static mark right before this screen even
+// mounts, so the hold just repeated the same "J Interactive" branding
+// twice in a row. Advances automatically when the clip ends; also
+// tappable to skip, and falls back to onFinish() after a timeout if the
+// video fails to load for any reason, so a broken/missing asset can
+// never strand someone on this screen.
 //
 // The clip itself is a 544x544 square, but the screen is a tall
 // portrait rectangle -- contentFit="contain" (kept, so the full logo
@@ -41,14 +39,9 @@ export default function LogoIntroScreen({ onFinish }: Props) {
   const glowOpacity = useRef(new Animated.Value(0)).current;
   const glowScale = useRef(new Animated.Value(0.8)).current;
   const cloudDrift = useRef(new Animated.Value(0)).current;
-  const staticLogoOpacity = useRef(new Animated.Value(1)).current;
   const videoOpacity = useRef(new Animated.Value(0)).current;
   const player = useVideoPlayer(LOGO_VIDEO, (p) => {
     p.loop = false;
-    // Not played immediately -- starts exactly when the dissolve to it
-    // begins (below), so the clip's own motion is in sync with when it
-    // actually becomes visible rather than having played silently
-    // underneath the static logo for however long that sat on screen.
   });
 
   useEffect(() => {
@@ -62,17 +55,16 @@ export default function LogoIntroScreen({ onFinish }: Props) {
     );
     loop.start();
 
-    const dissolveTimer = setTimeout(() => {
-      player.play();
-      Animated.parallel([
-        Animated.timing(staticLogoOpacity, { toValue: 0, duration: DISSOLVE_MS, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-        Animated.timing(videoOpacity, { toValue: 1, duration: DISSOLVE_MS, easing: Easing.inOut(Easing.cubic), useNativeDriver: true }),
-      ]).start();
-    }, STATIC_HOLD_MS);
+    player.play();
+    Animated.timing(videoOpacity, {
+      toValue: 1,
+      duration: FADE_IN_MS,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
 
     return () => {
       loop.stop();
-      clearTimeout(dissolveTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -108,9 +100,9 @@ export default function LogoIntroScreen({ onFinish }: Props) {
 
   useEffect(() => {
     const subscription = player.addListener('playToEnd', fadeOutAndFinish);
-    // Clip is ~6s; STATIC_HOLD_MS + that + fade-out + margin is the real
-    // ceiling, so the fallback needs headroom past all stages combined.
-    const fallback = setTimeout(finish, STATIC_HOLD_MS + 8000 + FADE_OUT_MS);
+    // Clip is ~6s; that + fade-out + margin is the real ceiling, so the
+    // fallback needs headroom past both combined.
+    const fallback = setTimeout(finish, 8000 + FADE_OUT_MS);
     return () => {
       subscription.remove();
       clearTimeout(fallback);
@@ -154,9 +146,6 @@ export default function LogoIntroScreen({ onFinish }: Props) {
             />
           ))}
         </Animated.View>
-        <Animated.View style={[styles.staticLogoWrap, { opacity: staticLogoOpacity }]}>
-          <Image source={STATIC_LOGO} style={styles.staticLogo} resizeMode="contain" />
-        </Animated.View>
         <Animated.View style={[styles.video, { opacity: videoOpacity }]}>
           <VideoView player={player} style={styles.video} contentFit="contain" nativeControls={false} />
         </Animated.View>
@@ -184,17 +173,6 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     flexDirection: 'row',
-  },
-  staticLogoWrap: {
-    position: 'absolute',
-    width: '60%',
-    height: '30%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  staticLogo: {
-    width: '100%',
-    height: '100%',
   },
   video: {
     position: 'absolute',
