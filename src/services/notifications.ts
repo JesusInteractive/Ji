@@ -1,70 +1,58 @@
-// Push notifications for the daily verse (spec section 3 / 7).
-// Uses expo-notifications. Requires a real device (not the iOS Simulator)
-// to receive remote pushes, and an EAS project ID in app.json (extra.eas)
-// for getExpoPushTokenAsync to work in a production build.
+// Local (on-device) daily verse reminder. Deliberately local-only, not
+// remote push -- this app has no backend database/user accounts (see
+// AppContext's own architecture comment) to associate a push token
+// with, so there was never anywhere for a real registerForDailyVersePush
+// (getExpoPushTokenAsync) flow to send its token, and it was dead code,
+// never called from any screen. Removed rather than kept as an unused
+// stub -- also sidesteps needing the isExpoGo guard below for it
+// specifically, since Expo Go on Android (SDK 53+) throws immediately
+// merely importing expo-notifications' remote-push machinery at all,
+// which is exactly the "[runtime not ready]" crash this file used to
+// cause on every Android Expo Go launch (setNotificationHandler below
+// touches that same machinery internally) -- not just when a push
+// function was actually called.
 
+import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { pickDailyVerseNotification } from '../constants/notificationsCopy';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// Same Expo Go detection as services/purchases.ts -- SDK 53+ removed
+// remote-push support from Expo Go on ANDROID specifically (iOS Expo Go
+// is unaffected), and even local notification setup here touches enough
+// of the same native module surface to throw there. A real dev-client/
+// production build (what this crash's own error message points you
+// toward) doesn't have this restriction.
+const isBlockedInExpoGo = Constants.executionEnvironment === 'storeClient' && Platform.OS === 'android';
 
-export async function registerForDailyVersePush(): Promise<string | null> {
-  if (!Device.isDevice) {
-    console.warn('Push notifications require a physical device.');
-    return null;
-  }
-
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-  if (finalStatus !== 'granted') {
-    return null;
-  }
-
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('daily-verse', {
-      name: 'Daily verse',
-      importance: Notifications.AndroidImportance.DEFAULT,
-    });
-  }
-
-  const tokenResponse = await Notifications.getExpoPushTokenAsync();
-  // TODO: send tokenResponse.data to your backend, associated with the
-  // user's account and their chosen daily-verse send time, so the
-  // backend can schedule/send the push. Do not schedule the recurring
-  // send purely on-device; a backend-scheduled push is what actually
-  // reaches users when the app isn't open.
-  return tokenResponse.data;
+if (!isBlockedInExpoGo) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
 }
 
-// Local (on-device, no backend needed) fallback: schedules a daily
-// reminder at a fixed time using content already cached on-device. Picks
-// one of the gentle example notifications in constants/notificationsCopy.ts
-// at schedule time -- note this means the SAME notification repeats every
+// Local (on-device, no backend needed): schedules a daily reminder at a
+// fixed time using content already cached on-device. Picks one of the
+// gentle example notifications in constants/notificationsCopy.ts at
+// schedule time -- note this means the SAME notification repeats every
 // day until the user changes their reminder time, since a locally
-// repeating trigger can't vary its content day to day. Swap for the
-// backend-driven flow above (registerForDailyVersePush) once the API is
-// live, so the server can pick fresh copy -- or a fresh verse -- every day.
-// Returns false (and schedules nothing) if permission is denied, so the
-// caller (SettingsScreen) can flip its toggle back off rather than
-// showing "on" for a reminder that will never actually fire -- local
-// notifications need permission just like remote push does, and that's
-// easy to miss since registerForDailyVersePush above is the only place
-// that currently asks for it.
+// repeating trigger can't vary its content day to day. Returns false
+// (and schedules nothing) if permission is denied, so the caller
+// (SettingsScreen) can flip its toggle back off rather than showing "on"
+// for a reminder that will never actually fire, or if running in Expo
+// Go on Android -- see isBlockedInExpoGo's own comment.
 export async function scheduleLocalDailyVerseReminder(hour = 8, minute = 0): Promise<boolean> {
+  if (isBlockedInExpoGo) {
+    console.warn('Local notifications are unavailable in Expo Go on Android (SDK 53+) -- use a development build.');
+    return false;
+  }
+
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
   if (existingStatus !== 'granted') {
@@ -97,5 +85,6 @@ export async function scheduleLocalDailyVerseReminder(hour = 8, minute = 0): Pro
 }
 
 export async function cancelLocalDailyVerseReminder() {
+  if (isBlockedInExpoGo) return;
   await Notifications.cancelAllScheduledNotificationsAsync();
 }
