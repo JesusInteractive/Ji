@@ -168,7 +168,7 @@ export default function LogoIntroScreen({ onFinish }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.royal,
+    backgroundColor: Colors.royalLight,
     alignItems: 'center',
     justifyContent: 'center',
   },

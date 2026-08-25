@@ -65,7 +65,7 @@ export default function RootNavigator() {
   // between the native splash screen ending and the logo video starting
   // (an empty NavigationContainer has nothing to paint a background with
   // on its own), which read as its own "blank white page."
-  if (!ready) return <View style={{ flex: 1, backgroundColor: Colors.royal }} />;
+  if (!ready) return <View style={{ flex: 1, backgroundColor: Colors.royalLight }} />;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
