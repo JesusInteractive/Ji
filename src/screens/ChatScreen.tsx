@@ -307,7 +307,17 @@ export default function ChatScreen() {
       const { text: replyText, mood } = await generateReply(text);
       setSending(false);
       addMessage(buildJesusMessage(replyText, mood));
+      // Called immediately after addMessage() above, this scrolls to the
+      // END OF THE PREVIOUS content -- the new bubble hasn't rendered or
+      // been measured yet, since addMessage's state update is async. The
+      // delayed call is what actually lands at the true bottom once the
+      // new (possibly multi-line) bubble has laid out; same fix already
+      // needed for the farewell message in handleEndConversation below.
+      // onContentSizeChange also fires its own scrollToEnd on every
+      // content-size change, but isn't reliably enough on its own for a
+      // longer reply that wraps across several lines.
       listRef.current?.scrollToEnd({ animated: true });
+      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
       speakReply(replyText);
 
       // "The app is only a bridge" (spec requirement 4) -- surfaced
@@ -318,6 +328,7 @@ export default function ChatScreen() {
         setTimeout(() => {
           addMessage(buildJesusMessage(reminder.text, reminder.mood));
           listRef.current?.scrollToEnd({ animated: true });
+          setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
           speakReply(reminder.text);
         }, 1400);
       }
@@ -644,13 +655,19 @@ export default function ChatScreen() {
           isn't lost, but intentionally smaller than the avatar stage above
           and without a per-bubble avatar (showAvatar={false}), since the
           one large avatar above already carries that role. */}
-      <View style={{ flex: 1, transform: [{ scale: textZoom }] }}>
+      <View style={{ flex: 1 }}>
         <FlatList
           ref={listRef}
           data={messages}
           keyExtractor={(m) => m.id}
           renderItem={({ item }) => (
-            <ChatBubble message={item} onLongPressReport={handleReport} onFavorite={handleFavorite} showAvatar={false} />
+            <ChatBubble
+              message={item}
+              onLongPressReport={handleReport}
+              onFavorite={handleFavorite}
+              showAvatar={false}
+              textZoom={textZoom}
+            />
           )}
           contentContainerStyle={styles.list}
           style={styles.historyList}
@@ -855,7 +872,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F6FA',
   },
   historyList: { flex: 0.8 },
-  list: { padding: 16, paddingBottom: 8 },
+  list: { paddingVertical: 16, paddingHorizontal: 24, paddingBottom: 8 },
   limitBanner: { backgroundColor: '#FEEBC8', padding: 10, marginHorizontal: 16, borderRadius: 8 },
   limitText: { color: '#7B341E', fontSize: 12.5, textAlign: 'center' },
   errorBanner: {

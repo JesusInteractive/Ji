@@ -15,9 +15,18 @@ interface Props {
   // small one per bubble would be redundant with that "one talking
   // Jesus" framing.
   showAvatar?: boolean;
+  // Settings' "Larger text" (TEXT_ZOOM_LEVELS in AppContext.tsx).
+  // Deliberately a real fontSize/lineHeight multiplier here, not a
+  // `transform: scale` on some ancestor -- ChatScreen used to wrap its
+  // whole scrolling message list in one, which doesn't actually resize
+  // the list's layout box or make RN re-wrap the text at the new size.
+  // It just visually stretched the already-wrapped-at-100%-size content,
+  // so enlarged text overflowed its own bubble and got cut off/
+  // overlapped neighboring messages instead of cleanly reflowing.
+  textZoom?: number;
 }
 
-export default function ChatBubble({ message, onLongPressReport, onFavorite, showAvatar = true }: Props) {
+export default function ChatBubble({ message, onLongPressReport, onFavorite, showAvatar = true, textZoom = 1 }: Props) {
   const isJesus = message.author === 'jesus';
   // Crisis replies mention the IASP international directory by URL --
   // surface it as a real, easy-to-tap button rather than plain text a
@@ -48,7 +57,15 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
           onLongPress={() => onLongPressReport?.(message)}
           style={[styles.bubble, isJesus ? styles.jesusBubble : styles.userBubble]}
         >
-          <Text style={[styles.text, isJesus ? styles.jesusText : styles.userText]}>{message.text}</Text>
+          <Text
+            style={[
+              styles.text,
+              isJesus ? styles.jesusText : styles.userText,
+              { fontSize: 13.5 * textZoom, lineHeight: 17 * textZoom },
+            ]}
+          >
+            {message.text}
+          </Text>
           {isJesus && onFavorite && (
             <TouchableOpacity style={styles.favoriteBtn} onPress={() => onFavorite(message)} accessibilityRole="button" accessibilityLabel="Save to favorites">
               <Ionicons name="bookmark-outline" size={14} color={Colors.gold} />
@@ -83,7 +100,7 @@ const styles = StyleSheet.create({
   },
   jesusBubble: { backgroundColor: Colors.ivory, borderTopLeftRadius: 4, maxWidth: '78%' },
   userBubble: { backgroundColor: Colors.royal, borderTopRightRadius: 4, maxWidth: '88%' },
-  text: { fontSize: 13.5, lineHeight: 17 },
+  text: {},
   jesusText: { color: Colors.ink },
   userText: { color: Colors.white },
   favoriteBtn: {
