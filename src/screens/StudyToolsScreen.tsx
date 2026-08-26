@@ -706,6 +706,39 @@ const CATEGORIES: StudyCategory[] = [
     ],
   },
   {
+    heading: 'Prophecies Fulfilled by Jesus',
+    note: "A full compiled list of Messianic prophecies from the Hebrew Scriptures and their New Testament fulfillment -- see this app's own Chat persona for a shorter set of the most-cited anchors (Isaiah 53, Psalm 22, Daniel 7, etc.); this is the deep, exhaustive version for real study, not reproduced here since it's someone else's compiled work, not just Bible text.",
+    resources: [
+      {
+        title: 'Prophecies Fulfilled by Jesus Christ (356 Prophecies)',
+        author: 'ApplyScripture.com',
+        era: 'Free reference site',
+        description: 'A single exhaustive list of 356 Old Testament Messianic prophecies with their New Testament fulfillment, cross-referenced verse by verse.',
+        url: 'https://applyscripture.com/prophecies-fulfilled-in-jesus-christ',
+      },
+    ],
+  },
+  {
+    heading: 'The 613 Commandments (Taryag Mitzvot)',
+    note: 'The traditional count of 613 commandments (taryag mitzvot) given in the Torah, primarily in Leviticus -- referenced in JEWISH SOURCES & KNOWLEDGE in the Chat persona itself. These are the two classic works that actually enumerate and explain them, both free to read in full.',
+    resources: [
+      {
+        title: 'Sefer HaChinukh (Book of Education)',
+        author: 'Attributed to Rabbi Aharon HaLevi of Barcelona, 13th century',
+        era: 'Public domain source text; free translation hosted by Sefaria',
+        description: "Goes through all 613 commandments in the order they appear in the Torah, explaining each one's reasoning, who it applies to, and its practical details -- the most widely studied introduction to the full mitzvot.",
+        url: 'https://www.sefaria.org/Sefer_HaChinukh',
+      },
+      {
+        title: 'Sefer HaMitzvot (Book of Commandments)',
+        author: 'Maimonides (Rambam), 12th century',
+        era: 'Public domain source text; free translation hosted by Sefaria',
+        description: "Maimonides' own enumeration and legal classification of the 613 commandments into positive (\"you shall\") and negative (\"you shall not\") categories -- the most authoritative traditional count.",
+        url: 'https://www.sefaria.org/Sefer_HaMitzvot',
+      },
+    ],
+  },
+  {
     heading: 'Jewish History & the Diaspora',
     note: "General Jewish history and culture, not tied to a specific text or era -- from antiquity through the 19th century. Modern Jewish history (20th century onward, including the Holocaust) is almost entirely still under copyright -- recent, deeply personal scholarship and testimony that rightly belongs to its authors and survivors' families, not something to list here as if it were free to use.",
     resources: [
