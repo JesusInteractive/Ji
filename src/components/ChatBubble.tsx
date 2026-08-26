@@ -48,10 +48,19 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
     });
   };
 
+  // Positioning the avatar absolutely (instead of as a normal flex
+  // sibling) keeps it from eating into the bubble's own width budget --
+  // otherwise Jesus's bubble had ~44pt (avatar + gap) less room than the
+  // user's, making his longer replies wrap into a narrower column even
+  // at the same maxWidth percentage.
   return (
     <View style={[styles.row, isJesus ? styles.rowLeft : styles.rowRight]}>
-      {isJesus && showAvatar && <JesusAvatar mood={message.mood ?? 'neutral'} size={36} />}
-      <View style={{ maxWidth: isJesus ? '78%' : '88%' }}>
+      {isJesus && showAvatar && (
+        <View style={styles.avatarWrap}>
+          <JesusAvatar mood={message.mood ?? 'neutral'} size={36} />
+        </View>
+      )}
+      <View style={{ maxWidth: '88%', marginLeft: isJesus && showAvatar ? 44 : 0 }}>
         <TouchableOpacity
           activeOpacity={0.85}
           onLongPress={() => onLongPressReport?.(message)}
@@ -90,15 +99,16 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'flex-end', marginVertical: 3, gap: 8 },
+  row: { flexDirection: 'row', alignItems: 'flex-end', marginVertical: 3, position: 'relative' },
   rowLeft: { justifyContent: 'flex-start' },
   rowRight: { justifyContent: 'flex-end' },
+  avatarWrap: { position: 'absolute', left: 0, bottom: 0, zIndex: 1 },
   bubble: {
     borderRadius: 16,
     paddingVertical: 7,
     paddingHorizontal: 14,
   },
-  jesusBubble: { backgroundColor: Colors.ivory, borderTopLeftRadius: 4, maxWidth: '78%' },
+  jesusBubble: { backgroundColor: Colors.ivory, borderTopLeftRadius: 4, maxWidth: '88%' },
   userBubble: { backgroundColor: Colors.royal, borderTopRightRadius: 4, maxWidth: '88%' },
   text: {},
   jesusText: { color: Colors.ink },

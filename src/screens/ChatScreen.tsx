@@ -735,7 +735,25 @@ export default function ChatScreen() {
           placeholder={t.chat.inputPlaceholder}
           placeholderTextColor="#A0AEC0"
           value={input}
-          onChangeText={setInput}
+          onChangeText={(text) => {
+            // Multiline TextInput never fires onSubmitEditing on Return --
+            // it always inserts a newline instead. Catching that newline
+            // here (before it renders) is the standard way to make Return
+            // submit while keeping the box visually multiline for wrapped
+            // text.
+            if (text.endsWith('\n')) {
+              const trimmed = text.slice(0, -1).trim();
+              if (trimmed && canSendNow()) {
+                setInput('');
+                lastInputWasVoiceRef.current = false;
+                sendText(trimmed, { chargeQuota: true });
+                return;
+              }
+              setInput(text.slice(0, -1));
+              return;
+            }
+            setInput(text);
+          }}
           multiline
           editable={!limitReached}
           accessibilityLabel={t.chat.inputPlaceholder}
