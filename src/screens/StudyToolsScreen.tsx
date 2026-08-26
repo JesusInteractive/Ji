@@ -102,7 +102,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'Carl Friedrich Keil & Franz Delitzsch',
         era: '1861-1875',
         description: 'A rigorous, still-respected Old Testament commentary from two Christian Hebrew scholars -- Delitzsch in particular was known for close, respectful engagement with Jewish scholarship of his day.',
-        url: 'https://ccel.org/ccel/keil_delitzsch',
+        url: 'https://archive.org/details/BiblicalCommentaryOldTestament.KeilAndDelitzsch.6',
       },
     ],
   },
@@ -164,7 +164,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'William Tyndale',
         era: '16th century',
         description: 'The first English translator to work directly from Greek and Hebrew rather than Latin -- much of his wording survives almost unchanged in the King James Version. Burned at the stake in 1536 for this work (see also Foxe\'s Book of Martyrs above).',
-        url: 'https://ccel.org/ccel/tyndale',
+        url: 'https://archive.org/details/newtestamentofou00tynd',
       },
       {
         title: 'Sermons & Teaching Booklets',
@@ -348,7 +348,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'attrib. to followers of Francis of Assisi',
         era: '14th century',
         description: 'Beloved, legend-rich stories of the life of Francis of Assisi and his early companions.',
-        url: 'https://ccel.org/ccel/francis',
+        url: 'https://www.ccel.org/ccel/ugolino/flowers.html',
       },
       {
         title: "Butler's Lives of the Saints",
@@ -442,14 +442,14 @@ const CATEGORIES: StudyCategory[] = [
         author: 'William Smith',
         era: '1863',
         description: 'A classic one-volume reference covering people, places, and terms throughout Scripture. Closest public-domain equivalent to a modern work like the Oxford Companion to the Bible, which is still under active copyright and can\'t be linked the same way.',
-        url: 'https://ccel.org/ccel/smith',
+        url: 'https://www.ccel.org/ccel/smith_w/bibledict.html',
       },
       {
         title: 'The Interlinear Greek-English New Testament',
         author: 'George Ricker Berry',
         era: '1897',
         description: 'A public-domain Greek New Testament with a word-for-word English gloss beneath the Greek text.',
-        url: 'https://ccel.org/ccel/berry',
+        url: 'https://archive.org/details/interlinearliter00ber',
       },
       {
         title: "Easton's Bible Dictionary",
@@ -469,7 +469,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'Austen Henry Layard',
         era: '1849',
         description: "The account of Layard's excavation of ancient Nineveh -- the Assyrian capital named throughout Kings, Isaiah, and Jonah -- among the founding works of biblical archaeology.",
-        url: 'https://ccel.org/ccel/layard',
+        url: 'https://archive.org/details/ninevehanditsre03layagoog',
       },
       {
         title: 'The Chaldean Account of Genesis',
@@ -620,7 +620,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'Joseph Seiss',
         era: '1865',
         description: 'A detailed, widely-read 19th-century verse-by-verse study of Revelation.',
-        url: 'https://ccel.org/ccel/seiss',
+        url: 'https://archive.org/details/apocalypseseries01seis',
       },
       {
         title: 'Studies on the Book of Daniel',
@@ -647,7 +647,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'William Paley',
         era: '1802',
         description: "The classic \"argument from design\" -- that the intricate order of the natural world points to a designer -- hugely influential on how science and faith were discussed for the next century, including on a young Charles Darwin.",
-        url: 'https://ccel.org/ccel/paley/theology',
+        url: 'https://ccel.org/ccel/paley/paleysnatural/paleysnatural',
       },
       {
         title: 'Omphalos: An Attempt to Untie the Geological Knot',
