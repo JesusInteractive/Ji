@@ -108,6 +108,7 @@ export default function ProfileScreen() {
             <Text style={styles.removeText}>Remove photo</Text>
           </TouchableOpacity>
         )}
+        {!!displayName && <Text style={styles.photoName}>{displayName}</Text>}
       </View>
 
       <View style={styles.nameSection}>
@@ -259,6 +260,7 @@ const styles = StyleSheet.create({
     borderColor: '#F4F6FA',
   },
   removeText: { color: Colors.danger, fontSize: 12.5, marginTop: 10, textAlign: 'center' },
+  photoName: { fontSize: 20, fontWeight: '800', color: Colors.royal, marginTop: 10 },
   nameSection: { marginBottom: 24 },
   label: { fontSize: 12.5, color: '#718096', marginBottom: 6, fontWeight: '600' },
   nameInput: {
