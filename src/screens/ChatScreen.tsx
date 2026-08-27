@@ -289,7 +289,7 @@ export default function ChatScreen() {
           return;
         }
       } else {
-        setRemainingQuestionsToday(remainingQuestionsToday - 1);
+        setRemainingQuestionsToday((prev) => prev - 1);
       }
       addMessage({
         id: `${Date.now()}-user`,
@@ -755,7 +755,7 @@ export default function ChatScreen() {
             setInput(text);
           }}
           multiline
-          editable={!limitReached}
+          editable={!limitReached && !sending}
           accessibilityLabel={t.chat.inputPlaceholder}
         />
         <TouchableOpacity

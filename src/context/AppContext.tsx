@@ -87,7 +87,7 @@ interface AppContextValue {
 
   // Usage / tokens
   remainingQuestionsToday: number;
-  setRemainingQuestionsToday: (n: number) => void;
+  setRemainingQuestionsToday: (n: number | ((prev: number) => number)) => void;
   tokenBalance: number;
   addTokens: (n: number) => void;
   spendToken: () => boolean;
@@ -299,12 +299,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // would otherwise hit the exact same "resets on relaunch" bug this
   // whole ji_daily_quota_v1 mechanism exists to close. This is the one
   // actually exposed to consumers below.
-  const updateRemainingQuestionsToday = useCallback((n: number) => {
-    setRemainingQuestionsToday(n);
-    AsyncStorage.setItem(
-      STORAGE_KEYS.dailyQuota,
-      JSON.stringify({ date: todayKey(), remaining: n })
-    ).catch(() => {});
+  const updateRemainingQuestionsToday = useCallback((n: number | ((prev: number) => number)) => {
+    setRemainingQuestionsToday((prev) => {
+      const next = typeof n === 'function' ? n(prev) : n;
+      AsyncStorage.setItem(
+        STORAGE_KEYS.dailyQuota,
+        JSON.stringify({ date: todayKey(), remaining: next })
+      ).catch(() => {});
+      return next;
+    });
   }, []);
 
   const addTokens = useCallback((n: number) => {
