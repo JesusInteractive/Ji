@@ -101,6 +101,7 @@ const hi: TranslationShape = {
     privacyPolicy: 'गोपनीयता नीति',
     terms: 'सेवा की शर्तें',
     disclosureLink: 'AI प्रकटीकरण',
+    aboutApp: 'इस ऐप के बारे में',
   },
 };
 

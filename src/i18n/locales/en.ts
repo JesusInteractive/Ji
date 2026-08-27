@@ -101,6 +101,7 @@ const en = {
     privacyPolicy: 'Privacy policy',
     terms: 'Terms of service',
     disclosureLink: 'AI disclosure',
+    aboutApp: 'About This App',
   },
 };
 

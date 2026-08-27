@@ -1,15 +1,20 @@
 import React, { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
-import type { SettingsStackParamList } from '../navigation/SettingsStack';
+import type { LegalDocParams } from '../navigation/SettingsStack';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 
-type Props = NativeStackScreenProps<SettingsStackParamList, 'LegalDoc'>;
+// Typed against just the params shape, not a specific stack's
+// ParamList -- this screen is mounted both inside SettingsStack
+// (Privacy Policy, Terms, AI Disclosure) and at the root navigator
+// (the "About This App" modal, reachable from Home and Settings alike
+// without either polluting the other's own navigation stack).
+interface Props {
+  route: { params: LegalDocParams };
+}
 
-// Generic read-only viewer for finalized legal documents (Privacy
-// Policy, Terms of Service, AI Disclosure) linked from Settings.
+// Generic read-only viewer for finalized legal/reference documents.
 export default function LegalDocScreen({ route }: Props) {
   const { title, lastUpdated, intro, sections, closing } = route.params;
 

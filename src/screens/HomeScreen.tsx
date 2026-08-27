@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import { getDailyPromise, type DailyPromise } from '../services/devotions';
+import { ABOUT_APP, ABOUT_APP_CARD } from '../constants/aboutApp';
 
 const QUICK_LINKS: {
   tab: Exclude<keyof MainTabParamList, 'HomeTab' | 'Profile'>;
@@ -86,7 +89,11 @@ export default function HomeScreen() {
             accessibilityRole="button"
             accessibilityLabel={t.tabs[labelKey]}
           >
-            <Ionicons name={icon} size={32} color={Colors.gold} />
+            {tab === 'PrayerWall' ? (
+              <MaterialCommunityIcons name="hands-pray" size={32} color={Colors.gold} />
+            ) : (
+              <Ionicons name={icon} size={32} color={Colors.gold} />
+            )}
             <Text style={styles.cardLabel}>{t.tabs[labelKey]}</Text>
           </TouchableOpacity>
         ))}
@@ -103,6 +110,27 @@ export default function HomeScreen() {
         <Text style={styles.verseText}>"{dailyPromise.text}"</Text>
         <Text style={styles.verseRef}>{dailyPromise.reference}</Text>
       </View>
+
+      <TouchableOpacity
+        style={styles.aboutCard}
+        onPress={() =>
+          // Navigates up to the root stack's own "AboutApp" modal (see
+          // RootNavigator.tsx) rather than pushing into SettingsStack --
+          // that used to leave the Settings tab's own stack parked on
+          // this screen, so switching tabs away and back to Settings
+          // reopened this instead of the settings list.
+          navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('AboutApp', ABOUT_APP)
+        }
+        accessibilityRole="button"
+        accessibilityLabel={`${ABOUT_APP_CARD.title} -- ${ABOUT_APP_CARD.subtitle}`}
+      >
+        <Ionicons name="apps-outline" size={18} color={Colors.gold} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.aboutCardTitle}>{ABOUT_APP_CARD.title}</Text>
+          <Text style={styles.aboutCardSubtitle}>{ABOUT_APP_CARD.subtitle}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={Colors.muted} />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -159,6 +187,26 @@ const styles = StyleSheet.create({
   verseCard: {
     marginTop: 28,
     paddingHorizontal: 16,
+  },
+  aboutCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 20,
+    backgroundColor: Colors.royalLight,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  aboutCardTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.ivory,
+  },
+  aboutCardSubtitle: {
+    fontSize: 12,
+    color: Colors.muted,
+    marginTop: 2,
   },
   verseCardLabel: {
     flexDirection: 'row',

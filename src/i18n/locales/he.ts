@@ -99,6 +99,7 @@ const he: TranslationShape = {
     privacyPolicy: 'מדיניות פרטיות',
     terms: 'תנאי שימוש',
     disclosureLink: 'גילוי בינה מלאכותית',
+    aboutApp: 'אודות האפליקציה',
   },
 };
 

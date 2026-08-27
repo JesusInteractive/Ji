@@ -102,6 +102,7 @@ const ar: TranslationShape = {
     privacyPolicy: 'سياسة الخصوصية',
     terms: 'شروط الخدمة',
     disclosureLink: 'إفصاح الذكاء الاصطناعي',
+    aboutApp: 'حول هذا التطبيق',
   },
 };
 

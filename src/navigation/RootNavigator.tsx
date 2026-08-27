@@ -1,5 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useApp } from '../context/AppContext';
@@ -10,7 +11,9 @@ import DisclaimerScreen from '../screens/onboarding/DisclaimerScreen';
 import UserAgreementScreen from '../screens/onboarding/UserAgreementScreen';
 import EntranceScreen from '../screens/onboarding/EntranceScreen';
 import PricingScreen from '../screens/onboarding/PricingScreen';
+import LegalDocScreen from '../screens/LegalDocScreen';
 import MainTabs from './MainTabs';
+import type { LegalDocParams } from './SettingsStack';
 
 export type OnboardingStackParamList = {
   LanguageSelect: undefined;
@@ -24,6 +27,14 @@ export type RootStackParamList = {
   LogoIntro: undefined;
   Onboarding: undefined;
   Main: undefined;
+  // A root-level modal, deliberately NOT nested inside SettingsStack --
+  // reachable from both Home and Settings without either one leaving
+  // the Settings tab's own internal stack parked on this screen (which
+  // is what happened when this used to be pushed via SettingsStack's
+  // LegalDoc route: switching tabs away and back to Settings landed back
+  // on this screen instead of the settings list, since tab navigators
+  // remember each tab's last-active screen).
+  AboutApp: LegalDocParams;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -78,7 +89,25 @@ export default function RootNavigator() {
           that as a screen change (still animated via `animation: 'fade'`
           above), with no explicit navigate() call needed anywhere. */}
       {onboardingComplete ? (
-        <Stack.Screen name="Main" component={MainTabs} />
+        <>
+          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen
+            name="AboutApp"
+            component={LegalDocScreen}
+            options={({ route, navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: route.params.title,
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+        </>
       ) : (
         <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
       )}

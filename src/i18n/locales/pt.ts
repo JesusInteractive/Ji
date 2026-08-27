@@ -102,6 +102,7 @@ const pt: TranslationShape = {
     privacyPolicy: 'Política de privacidade',
     terms: 'Termos de serviço',
     disclosureLink: 'Divulgação de IA',
+    aboutApp: 'Sobre este aplicativo',
   },
 };
 

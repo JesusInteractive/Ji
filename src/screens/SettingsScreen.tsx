@@ -1,13 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { Alert, Linking, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useApp, TEXT_ZOOM_LEVELS } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { PLANS } from '../constants/pricing';
 import { LANGUAGES } from '../i18n/languages';
 import { PRIVACY_POLICY, USER_AGREEMENT, AI_DISCLOSURE } from '../constants/legal';
+import { ABOUT_APP } from '../constants/aboutApp';
 import { setAnalyticsOptIn } from '../services/analytics';
 import { wipeLocalSecrets } from '../services/security';
 import { presentCustomerCenter } from '../services/purchases';
@@ -19,6 +20,7 @@ import LanguagePicker from '../components/LanguagePicker';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import type { LanguageCode } from '../types';
 import type { SettingsStackParamList } from '../navigation/SettingsStack';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsHome'>;
 
@@ -293,6 +295,19 @@ export default function SettingsScreen({ navigation }: Props) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t.settings.about}</Text>
+        <Row
+          icon="apps-outline"
+          label={t.settings.aboutApp}
+          onPress={() =>
+            // Root-level modal (RootNavigator.tsx's "AboutApp"), not a
+            // push into this stack's own LegalDoc route -- see
+            // HomeScreen.tsx's identical call for why: pushing it here
+            // would leave this tab's stack parked on this screen, so
+            // leaving and returning to Settings would reopen this
+            // instead of the settings list.
+            navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('AboutApp', ABOUT_APP)
+          }
+        />
         <Row icon="information-circle-outline" label={t.settings.version} value="2.0.0" />
         <Row icon="shield-checkmark-outline" label={t.settings.privacyPolicy} onPress={() => navigation.navigate('LegalDoc', PRIVACY_POLICY)} />
         <Row icon="document-text-outline" label={t.settings.terms} onPress={() => navigation.navigate('LegalDoc', USER_AGREEMENT)} />

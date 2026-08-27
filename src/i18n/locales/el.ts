@@ -101,6 +101,7 @@ const el: TranslationShape = {
     privacyPolicy: 'Πολιτική απορρήτου',
     terms: 'Όροι χρήσης',
     disclosureLink: 'Δήλωση τεχνητής νοημοσύνης',
+    aboutApp: 'Σχετικά με αυτή την εφαρμογή',
   },
 };
 
