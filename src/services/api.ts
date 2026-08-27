@@ -37,12 +37,13 @@ export async function sendMessage(
   authToken: string,
   conversationId: string,
   text: string,
-  languageCode?: string
+  languageCode?: string,
+  greeting?: { displayName?: string; isFirstMessageToday?: boolean; isFirstMessageEver?: boolean }
 ): Promise<ChatMessage> {
   return request<ChatMessage>('/v1/chat/messages', {
     method: 'POST',
     headers: { Authorization: `Bearer ${authToken}` },
-    body: JSON.stringify({ conversationId, text, languageCode }),
+    body: JSON.stringify({ conversationId, text, languageCode, ...greeting }),
   });
 }
 

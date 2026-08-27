@@ -63,6 +63,7 @@ export default function ChatScreen() {
     clearMessages,
     textZoom,
     voiceRepliesEnabled,
+    displayName,
   } = useApp();
   const [input, setInput] = useState('');
   const [sendError, setSendError] = useState<{ text: string } | null>(null);
@@ -277,7 +278,23 @@ export default function ChatScreen() {
     const safetyReply = getSafetyReply(text, { ageAppropriate: ageAppropriateMode, regionCode: deviceRegion });
     if (safetyReply) return safetyReply;
 
-    const jesusMessage = await withAuthRetry((token) => sendMessage(token, conversationIdRef.current, text, language));
+    // `messages` here still reflects history from BEFORE this message
+    // (sendText adds the new user message to state, but this closure was
+    // captured at render time, prior to that update) -- exactly the
+    // "history so far" these two flags need. No new persisted state:
+    // reuses the message list that's already tracked.
+    const isFirstMessageEver = messages.length === 0;
+    const lastMessage = messages[messages.length - 1];
+    const isFirstMessageToday =
+      isFirstMessageEver || new Date(lastMessage.createdAt).toDateString() !== new Date().toDateString();
+
+    const jesusMessage = await withAuthRetry((token) =>
+      sendMessage(token, conversationIdRef.current, text, language, {
+        displayName: displayName || undefined,
+        isFirstMessageToday,
+        isFirstMessageEver,
+      })
+    );
     return { text: jesusMessage.text, mood: jesusMessage.mood ?? 'neutral' };
   }
 
