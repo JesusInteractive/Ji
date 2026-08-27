@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDayOfYear, getDevotionForDay, BIBLE_BOOKS, type DevotionDay } from '../constants/devotionalReadingPlan';
 import { getChapter } from './bibleApi';
 import { withAuthRetry } from './backendAuth';
-import { PROMISES_OF_GOD, type PromiseReference } from '../constants/promisesOfGod';
+import { PROMISES_OF_GOD_BY_YEAR, type PromiseReference } from '../constants/promisesOfGod';
 
 const API_BASE_URL: string = process.env.EXPO_PUBLIC_API_BASE ?? 'https://api.jesusinteractive.com';
 // v2: verses now carry a `chapter` field (see fetchPassageVerses) --
@@ -172,17 +172,22 @@ async function fetchPassageVerses(
 }
 
 // ---------------------------------------------------------------------
-// Today's Promise -- a curated, independently-assembled list of 365 real
-// Bible promise references (see constants/promisesOfGod.ts for the full
-// provenance note on why this is safe from a copyright standpoint: only
-// bare book/chapter/verse references are stored, never any third
-// party's paraphrase, and the actual inspired text is always fetched
-// live here exactly like every other Scripture feature in this app).
+// Today's Promise -- a curated, independently-assembled set of rotating
+// 365-entry lists of real Bible promise references (see
+// constants/promisesOfGod.ts for the full provenance note on why this is
+// safe from a copyright standpoint: only bare book/chapter/verse
+// references are stored, never any third party's paraphrase, and the
+// actual inspired text is always fetched live here exactly like every
+// other Scripture feature in this app).
 // This is a sibling to getDailyVerse() above, NOT a replacement for it
 // in this file -- it follows the identical fetch/cache pattern but reads
-// from PROMISES_OF_GOD instead of the devotional reading plan, so a
-// given day's "promise" is a real, on-topic promise verse rather than
-// wherever the 365-day reading plan happens to land that day.
+// from PROMISES_OF_GOD_BY_YEAR instead of the devotional reading plan, so
+// a given day's "promise" is a real, on-topic promise verse rather than
+// wherever the 365-day reading plan happens to land that day. Which
+// yearly set to read from is chosen via the same getDevotionYear()
+// calendar-year rotation getDevotion() above already uses, so returning
+// users get fresh promises year over year instead of an exact repeat --
+// see the header comment in promisesOfGod.ts for the full rationale.
 // ---------------------------------------------------------------------
 
 export interface DailyPromise {
@@ -191,7 +196,12 @@ export interface DailyPromise {
   text: string;
 }
 
-const DAILY_PROMISE_CACHE_PREFIX = 'ji_daily_promise_v1_';
+// v2: promises now come from a rotating set of yearly lists
+// (PROMISES_OF_GOD_BY_YEAR) instead of one fixed flat list, so a given
+// day+year no longer maps to the same reference it did under v1 -- bumped
+// so a v1-cached promise never gets read back as if it were computed
+// under the new per-year scheme.
+const DAILY_PROMISE_CACHE_PREFIX = 'ji_daily_promise_v2_';
 
 // Same 3-letter -> display-name lookup the rest of this app already
 // uses (BIBLE_BOOKS from devotionalReadingPlan.ts) -- reused here rather
@@ -202,8 +212,9 @@ function getBookDisplayName(bookId: string): string {
 
 export async function getDailyPromise(translationId: string, date: Date = new Date()): Promise<DailyPromise> {
   const day = getDayOfYear(date);
-  const entry: PromiseReference = PROMISES_OF_GOD[day - 1];
-  const cacheKey = `${DAILY_PROMISE_CACHE_PREFIX}${day}_${translationId}`;
+  const promiseYear = getDevotionYear(date) % PROMISES_OF_GOD_BY_YEAR.length;
+  const entry: PromiseReference = PROMISES_OF_GOD_BY_YEAR[promiseYear][day - 1];
+  const cacheKey = `${DAILY_PROMISE_CACHE_PREFIX}${promiseYear}_${day}_${translationId}`;
 
   const cached = await AsyncStorage.getItem(cacheKey);
   if (cached) {
