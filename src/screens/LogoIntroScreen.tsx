@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, Image, StyleSheet, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as SplashScreen from 'expo-splash-screen';
 import Colors from '../theme/colors';
 
 interface Props {
@@ -9,6 +10,16 @@ interface Props {
 }
 
 const LOGO_VIDEO = require('../../assets/video/logo-intro.mp4');
+// A tight, icon-only crop of the native splash image (assets/splash.png
+// includes the "Jesus interactive" wordmark below the icon, framed at a
+// different scale/position than the video's first frame) -- cropped to
+// match the video's own square, icon-filling composition so the
+// crossfade below doesn't visibly change the logo's size/position
+// mid-fade. The one-frame swap from the native splash (full image, with
+// text) to this cropped bridge is a much smaller, instantaneous seam
+// than the sustained multi-hundred-ms mismatch the full image caused
+// during the actual video crossfade.
+const STATIC_LOGO = require('../../assets/logo-intro-bridge.png');
 
 const FADE_IN_MS = 500; // the motion graphic's own fade-in, over the glow/cloud background
 const FADE_OUT_MS = 550; // graceful close: dissolve video+glow+clouds to navy instead of cutting on the last frame
@@ -40,12 +51,25 @@ export default function LogoIntroScreen({ onFinish }: Props) {
   const glowScale = useRef(new Animated.Value(0.8)).current;
   const cloudDrift = useRef(new Animated.Value(0)).current;
   const videoOpacity = useRef(new Animated.Value(0)).current;
+  // Starts fully opaque -- it's what's actually on screen the instant this
+  // component mounts, standing in for the native splash for one frame so
+  // hiding the native splash never exposes a blank gap underneath it.
+  const staticLogoOpacity = useRef(new Animated.Value(1)).current;
   const player = useVideoPlayer(LOGO_VIDEO, (p) => {
     p.loop = false;
   });
 
   useEffect(() => {
+    // Only now, once this screen's own static logo is already mounted and
+    // covering the whole view, is it safe to reveal it by hiding the
+    // native splash -- the two images are identical, so the swap itself
+    // is imperceptible. Then cross-fade: the static logo dissolves out at
+    // the same time the glow/video fade in, rather than one finishing
+    // before the other starts.
+    SplashScreen.hideAsync().catch(() => {});
+
     Animated.parallel([
+      Animated.timing(staticLogoOpacity, { toValue: 0, duration: FADE_IN_MS, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       Animated.timing(glowOpacity, { toValue: 1, duration: 1200, useNativeDriver: true }),
       Animated.timing(glowScale, { toValue: 1, duration: 1800, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
     ]).start();
@@ -149,6 +173,9 @@ export default function LogoIntroScreen({ onFinish }: Props) {
         <Animated.View style={[styles.video, { opacity: videoOpacity }]}>
           <VideoView player={player} style={styles.video} contentFit="contain" nativeControls={false} />
         </Animated.View>
+        <Animated.View pointerEvents="none" style={[styles.staticLogo, { opacity: staticLogoOpacity }]}>
+          <Image source={STATIC_LOGO} resizeMode="contain" style={styles.staticLogo} />
+        </Animated.View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -175,6 +202,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   video: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  staticLogo: {
     position: 'absolute',
     width: '100%',
     height: '100%',
