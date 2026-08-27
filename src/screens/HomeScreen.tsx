@@ -13,6 +13,10 @@ import type { RootStackParamList } from '../navigation/RootNavigator';
 import { getDailyPromise, type DailyPromise } from '../services/devotions';
 import { ABOUT_APP, ABOUT_APP_CARD } from '../constants/aboutApp';
 
+// Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
+// below) instead of sitting inline in the header -- was 34.
+const PROFILE_SIZE = 56;
+
 const QUICK_LINKS: {
   tab: Exclude<keyof MainTabParamList, 'HomeTab' | 'Profile'>;
   icon: keyof typeof Ionicons.glyphMap;
@@ -50,6 +54,11 @@ export default function HomeScreen() {
   const { profilePhotoUri } = useApp();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const [dailyPromise, setDailyPromise] = useState<DailyPromise>(FALLBACK_PROMISE);
+  // Measured (not hardcoded) so the profile circle lines up with the
+  // Prayer Wall card's actual horizontal center regardless of screen
+  // width -- null until the grid has laid out once, so it doesn't flash
+  // at some wrong position on first paint.
+  const [prayerCardCenterX, setPrayerCardCenterX] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,18 +81,6 @@ export default function HomeScreen() {
           <Text style={styles.title}>{t.home.title}</Text>
           <Text style={styles.subtitle}>{t.home.subtitle}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.profileBtn}
-          onPress={() => navigation.navigate('Profile')}
-          accessibilityRole="button"
-          accessibilityLabel={t.tabs.profile}
-        >
-          {profilePhotoUri ? (
-            <Image source={{ uri: profilePhotoUri }} style={styles.profilePhoto} />
-          ) : (
-            <Ionicons name="person-circle" size={34} color={Colors.gold} />
-          )}
-        </TouchableOpacity>
       </View>
 
       <View style={styles.grid}>
@@ -94,6 +91,11 @@ export default function HomeScreen() {
             onPress={() => navigation.navigate(tab)}
             accessibilityRole="button"
             accessibilityLabel={t.tabs[labelKey]}
+            onLayout={
+              tab === 'PrayerWall'
+                ? (e) => setPrayerCardCenterX(e.nativeEvent.layout.x + e.nativeEvent.layout.width / 2)
+                : undefined
+            }
           >
             {tab === 'PrayerWall' ? (
               <MaterialCommunityIcons name="hands-pray" size={32} color={Colors.gold} />
@@ -103,6 +105,21 @@ export default function HomeScreen() {
             <Text style={styles.cardLabel}>{t.tabs[labelKey]}</Text>
           </TouchableOpacity>
         ))}
+
+        {prayerCardCenterX !== null && (
+          <TouchableOpacity
+            style={[styles.profileBtn, { left: prayerCardCenterX - PROFILE_SIZE / 2 }]}
+            onPress={() => navigation.navigate('Profile')}
+            accessibilityRole="button"
+            accessibilityLabel={t.tabs.profile}
+          >
+            {profilePhotoUri ? (
+              <Image source={{ uri: profilePhotoUri }} style={styles.profilePhoto} />
+            ) : (
+              <Ionicons name="person-circle" size={PROFILE_SIZE} color={Colors.gold} />
+            )}
+          </TouchableOpacity>
+        )}
       </View>
 
       <View
@@ -158,13 +175,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileBtn: {
-    marginLeft: 12,
-    marginTop: 2,
+    position: 'absolute',
+    // Floats above the grid, centered (via the measured `left` passed
+    // inline) on the Prayer Wall card underneath it. -24 accounts for
+    // headerRow's own marginBottom, so the circle's BOTTOM edge lines up
+    // with the "Where would you like to go?" subtitle just above the
+    // grid, not the grid's own top edge.
+    top: -(PROFILE_SIZE + 24),
+    zIndex: 2,
   },
   profilePhoto: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: PROFILE_SIZE,
+    height: PROFILE_SIZE,
+    borderRadius: PROFILE_SIZE / 2,
     borderWidth: 2,
     borderColor: Colors.gold,
   },
@@ -182,6 +205,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 14,
+    position: 'relative',
   },
   card: {
     width: '47%',

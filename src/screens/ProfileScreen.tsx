@@ -96,11 +96,11 @@ export default function ProfileScreen() {
             <Image source={{ uri: profilePhotoUri }} style={styles.photo} />
           ) : (
             <View style={styles.photoPlaceholder}>
-              <Ionicons name="person" size={48} color={Colors.muted} />
+              <Ionicons name="person" size={84} color={Colors.muted} />
             </View>
           )}
           <View style={styles.photoBadge}>
-            <Ionicons name="camera" size={16} color={Colors.white} />
+            <Ionicons name="camera" size={20} color={Colors.white} />
           </View>
         </TouchableOpacity>
         {profilePhotoUri && (
@@ -236,22 +236,22 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F6FA' },
   content: { padding: 20, paddingBottom: 40 },
   photoSection: { alignItems: 'center', marginBottom: 24 },
-  photo: { width: 110, height: 110, borderRadius: 55 },
+  photo: { width: 200, height: 200, borderRadius: 100 },
   photoPlaceholder: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     backgroundColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
   photoBadge: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    bottom: 4,
+    right: 4,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: Colors.royal,
     alignItems: 'center',
     justifyContent: 'center',
