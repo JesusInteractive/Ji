@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -178,6 +178,7 @@ export default function ProfileScreen() {
         />
         <Row
           icon="hand-left-outline"
+          iconElement={<MaterialCommunityIcons name="hands-pray" size={18} color={Colors.gold} style={styles.rowIcon} />}
           label="Prayer notes"
           value={String(prayerNotes.length)}
           onPress={() => navigation.navigate('PrayerWall')}
@@ -203,11 +204,16 @@ export default function ProfileScreen() {
 
 function Row({
   icon,
+  iconElement,
   label,
   value,
   onPress,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
+  // Overrides `icon` when the icon isn't from Ionicons (e.g. Prayer
+  // Wall's cupped-hands MaterialCommunityIcons glyph) -- `icon` stays
+  // required so every other call site is unaffected.
+  iconElement?: React.ReactNode;
   label: string;
   value: string;
   // Rows are plain, non-interactive display by default (Favorites,
@@ -218,7 +224,7 @@ function Row({
   const Wrapper = onPress ? TouchableOpacity : View;
   return (
     <Wrapper style={styles.row} onPress={onPress} accessibilityRole={onPress ? 'button' : undefined}>
-      <Ionicons name={icon} size={18} color={Colors.gold} style={styles.rowIcon} />
+      {iconElement ?? <Ionicons name={icon} size={18} color={Colors.gold} style={styles.rowIcon} />}
       <Text style={styles.rowLabel}>{label}</Text>
       <Text style={styles.rowValue}>{value}</Text>
       {onPress && <Ionicons name="chevron-forward" size={16} color="#A0AEC0" style={styles.rowChevron} />}

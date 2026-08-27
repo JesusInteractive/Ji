@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import HomeScreen from '../screens/HomeScreen';
@@ -54,6 +54,9 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 const ICONS: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
   HomeTab: 'home',
   ChatTab: 'chatbubble-ellipses',
+  // Rendered via MaterialCommunityIcons instead (cupped praying hands,
+  // not a single raised hand) -- see tabBarIcon below. Kept here too
+  // just so this Record stays total over every tab; never actually read.
   PrayerWall: 'hand-left',
   Bible: 'book',
   Journal: 'journal',
@@ -74,9 +77,12 @@ export default function MainTabs() {
         tabBarActiveTintColor: Colors.gold,
         tabBarInactiveTintColor: Colors.muted,
         tabBarStyle: { backgroundColor: Colors.royal, borderTopColor: Colors.royalLight },
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name={ICONS[route.name as keyof MainTabParamList]} size={size} color={color} />
-        ),
+        tabBarIcon: ({ color, size }) =>
+          route.name === 'PrayerWall' ? (
+            <MaterialCommunityIcons name="hands-pray" size={size} color={color} />
+          ) : (
+            <Ionicons name={ICONS[route.name as keyof MainTabParamList]} size={size} color={color} />
+          ),
       })}
     >
       <Tab.Screen name="HomeTab" component={FadedHome} options={{ title: t.tabs.home }} />

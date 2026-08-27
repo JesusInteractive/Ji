@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Colors from '../theme/colors';
@@ -156,7 +156,7 @@ export default function PrayerWallScreen() {
           <Switch value={shared} onValueChange={setShared} accessibilityLabel="Share on the public wall" />
         </View>
         <TouchableOpacity style={styles.placeBtn} onPress={handlePlace} accessibilityRole="button" accessibilityLabel="Place prayer in the wall">
-          <Ionicons name="hand-left-outline" size={18} color={Colors.white} />
+          <MaterialCommunityIcons name="hands-pray" size={18} color={Colors.white} />
           <Text style={styles.placeBtnText}>Place prayer</Text>
         </TouchableOpacity>
       </View>
