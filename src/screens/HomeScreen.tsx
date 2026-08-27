@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
+import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
 import type { RootStackParamList } from '../navigation/RootNavigator';
@@ -46,6 +47,7 @@ const FALLBACK_PROMISE: DailyPromise = {
 
 export default function HomeScreen() {
   const { t } = useI18n();
+  const { profilePhotoUri } = useApp();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const [dailyPromise, setDailyPromise] = useState<DailyPromise>(FALLBACK_PROMISE);
 
@@ -76,7 +78,11 @@ export default function HomeScreen() {
           accessibilityRole="button"
           accessibilityLabel={t.tabs.profile}
         >
-          <Ionicons name="person-circle" size={34} color={Colors.gold} />
+          {profilePhotoUri ? (
+            <Image source={{ uri: profilePhotoUri }} style={styles.profilePhoto} />
+          ) : (
+            <Ionicons name="person-circle" size={34} color={Colors.gold} />
+          )}
         </TouchableOpacity>
       </View>
 
@@ -154,6 +160,13 @@ const styles = StyleSheet.create({
   profileBtn: {
     marginLeft: 12,
     marginTop: 2,
+  },
+  profilePhoto: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 2,
+    borderColor: Colors.gold,
   },
   title: {
     fontSize: 28,
