@@ -60,7 +60,12 @@ app.use(helmet());
 // web frontend is ever added, allow its specific origin here instead of
 // widening this to '*'.
 app.use(cors({ origin: false }));
-app.use(express.json());
+// Explicit rather than relying on Express's default (~100kb) -- every
+// real payload here is a short chat message, prayer note, or sermon
+// topic; 64kb is generous headroom for that while still bounding how
+// much any single request can force this server to parse/hold in
+// memory.
+app.use(express.json({ limit: '64kb' }));
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
@@ -1265,6 +1270,11 @@ app.post('/v1/chat/messages', chatLimiter, requireAuth, async (req, res) => {
     if (!text || typeof text !== 'string') {
       return res.status(400).json({ error: 'text is required' });
     }
+    // No real chat message is anywhere near this long -- bounds how much
+    // any single request can force the paid Anthropic call to process.
+    if (text.length > 4000) {
+      return res.status(400).json({ error: 'text is too long' });
+    }
 
     if (!ANTHROPIC_API_KEY) {
       return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' });
@@ -1420,7 +1430,11 @@ app.post('/v1/tts/synthesize', ttsLimiter, requireAuth, async (req, res) => {
   } catch (err) {
     console.error('TTS error:', err);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'TTS synthesis failed', details: err.message });
+      // err.message deliberately not sent to the client -- it can carry
+      // internal details (third-party API error text, file paths) that
+      // shouldn't leave the server; the full error is already logged
+      // above via console.error for debugging.
+      res.status(500).json({ error: 'TTS synthesis failed' });
     } else {
       // Already streaming when it failed -- can't send a JSON error body
       // over a response that's mid-stream, just cut the connection.
@@ -1468,7 +1482,9 @@ app.post('/v1/stt/transcribe', sttLimiter, requireAuth, sttUpload.single('audio'
     res.json({ text: (transcript.text || '').trim() });
   } catch (err) {
     console.error('STT error:', err);
-    res.status(500).json({ error: 'Transcription failed', details: err.message });
+    // err.message not sent to the client -- see the TTS handler's
+    // identical comment above.
+    res.status(500).json({ error: 'Transcription failed' });
   }
 });
 
