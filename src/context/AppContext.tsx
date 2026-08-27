@@ -6,6 +6,7 @@ import type {
   JournalEntry,
   PlanId,
   PrayerNote,
+  TestimonyNote,
 } from '../types';
 import { PLANS } from '../constants/pricing';
 import { encryptLocalText, decryptLocalText } from '../services/security';
@@ -26,6 +27,7 @@ export const STORAGE_KEYS = {
   journal: 'ji_journal_v2',
   favorites: 'ji_favorites_v2',
   prayers: 'ji_prayers_v2',
+  testimonies: 'ji_testimonies_v1',
   profile: 'ji_profile_v1',
   dailyQuota: 'ji_daily_quota_v1',
 };
@@ -110,6 +112,8 @@ interface AppContextValue {
   // Prayer wall (local-first; see PrayerWallScreen for the privacy model)
   prayerNotes: PrayerNote[];
   addPrayerNote: (n: PrayerNote) => void;
+  testimonyNotes: TestimonyNote[];
+  addTestimonyNote: (n: TestimonyNote) => void;
 
   // Full local wipe: messages, journal, favorites, prayers, tokens, plan,
   // and onboarding state, resetting the app to first-launch. Used by
@@ -167,6 +171,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [prayerNotes, setPrayerNotes] = useState<PrayerNote[]>([]);
+  const [testimonyNotes, setTestimonyNotes] = useState<TestimonyNote[]>([]);
   const [ageAppropriateMode, setAgeAppropriateMode] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   const [voiceRepliesEnabled, setVoiceRepliesEnabled] = useState(true);
@@ -178,7 +183,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [onboardingRaw, planRaw, tokensRaw, messagesRaw, journalRaw, favRaw, prayersRaw, profileRaw, dailyQuotaRaw] =
+        const [onboardingRaw, planRaw, tokensRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, dailyQuotaRaw] =
           await Promise.all([
             AsyncStorage.getItem(STORAGE_KEYS.onboarding),
             AsyncStorage.getItem(STORAGE_KEYS.plan),
@@ -187,6 +192,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             AsyncStorage.getItem(STORAGE_KEYS.journal),
             AsyncStorage.getItem(STORAGE_KEYS.favorites),
             AsyncStorage.getItem(STORAGE_KEYS.prayers),
+            AsyncStorage.getItem(STORAGE_KEYS.testimonies),
             AsyncStorage.getItem(STORAGE_KEYS.profile),
             AsyncStorage.getItem(STORAGE_KEYS.dailyQuota),
           ]);
@@ -246,6 +252,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
         const prayers = await readEncryptedJson<PrayerNote[]>(prayersRaw);
         if (prayers) setPrayerNotes(prayers);
+        const testimonies = await readEncryptedJson<TestimonyNote[]>(testimoniesRaw);
+        if (testimonies) setTestimonyNotes(testimonies);
       } finally {
         setReady(true);
       }
@@ -383,6 +391,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const addTestimonyNote = useCallback((n: TestimonyNote) => {
+    setTestimonyNotes((prev) => {
+      const next = [n, ...prev];
+      writeEncryptedJson(STORAGE_KEYS.testimonies, next).catch(() => {});
+      return next;
+    });
+  }, []);
+
   // Profile is purely local (see AppContextValue's own comment) -- both
   // fields persisted together under one key.
   const persistProfile = useCallback(
@@ -459,6 +475,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       removeFavorite,
       prayerNotes,
       addPrayerNote,
+      testimonyNotes,
+      addTestimonyNote,
       wipeAllLocalData,
       ageAppropriateMode,
       setAgeAppropriateMode,
@@ -479,7 +497,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hasAcceptedAgreement, acceptAgreement, hasSeenEntrance, markEntranceSeen, plan, selectPlan,
       remainingQuestionsToday, tokenBalance, addTokens, spendToken, messages, addMessage, clearMessages,
       journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
-      prayerNotes, addPrayerNote, wipeAllLocalData, ageAppropriateMode, offlineMode,
+      prayerNotes, addPrayerNote, testimonyNotes, addTestimonyNote, wipeAllLocalData, ageAppropriateMode, offlineMode,
       voiceRepliesEnabled,
       textZoom, setTextZoom,
       displayName, setDisplayName, profilePhotoUri, setProfilePhotoUri, ready,

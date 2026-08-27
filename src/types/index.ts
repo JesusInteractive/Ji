@@ -84,6 +84,18 @@ export interface PrayerNote {
   sharedPublicly: boolean;
 }
 
+// Same shape and same local-first privacy model as PrayerNote (see its
+// own comment) -- "sharedPublicly" is honest about intent for a future
+// real public stream, but today nothing leaves the device; there's no
+// backend to receive it yet.
+export interface TestimonyNote {
+  id: string;
+  text: string;
+  isAnonymous: boolean;
+  createdAt: string;
+  sharedPublicly: boolean;
+}
+
 export type ProphecyCategory =
   | 'Birth & Early Life'
   | 'Ministry & Character'
