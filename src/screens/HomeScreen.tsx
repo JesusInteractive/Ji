@@ -7,7 +7,7 @@ import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
-import { getDailyVerse, type DailyVerse } from '../services/devotions';
+import { getDailyPromise, type DailyPromise } from '../services/devotions';
 
 const QUICK_LINKS: {
   tab: Exclude<keyof MainTabParamList, 'HomeTab' | 'Profile'>;
@@ -25,16 +25,17 @@ const QUICK_LINKS: {
   { tab: 'DailyDevotions', icon: 'sunny', labelKey: 'devotions' },
 ];
 
-// Same default translation Daily Devotions itself uses (see its own
-// comment) -- keeps this teaser's text consistent with what tapping
-// through to the full devotion shows.
+// Same default translation the rest of the app's devotional features use
+// (see services/devotions.ts) -- keeps this card's text in the same
+// translation as everything else, even though it no longer links to the
+// full devotion.
 const DEFAULT_TRANSLATION_ID = 'BSB';
 
-// Matthew 7:7 -- shown until the real daily verse loads, and again if
+// Matthew 7:7 -- shown until the real daily promise loads, and again if
 // fetching it fails for any reason (offline, API hiccup). Never leaves
 // this card blank or erroring; worst case it's just not "today's"
-// verse specifically.
-const FALLBACK_VERSE: DailyVerse = {
+// promise specifically.
+const FALLBACK_PROMISE: DailyPromise = {
   day: 0,
   reference: 'Matthew 7:7',
   text: "Ask and it will be given to you; seek and you will find; knock and the door will be opened to you.",
@@ -43,16 +44,16 @@ const FALLBACK_VERSE: DailyVerse = {
 export default function HomeScreen() {
   const { t } = useI18n();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
-  const [dailyVerse, setDailyVerse] = useState<DailyVerse>(FALLBACK_VERSE);
+  const [dailyPromise, setDailyPromise] = useState<DailyPromise>(FALLBACK_PROMISE);
 
   useEffect(() => {
     let cancelled = false;
-    getDailyVerse(DEFAULT_TRANSLATION_ID)
-      .then((verse) => {
-        if (!cancelled) setDailyVerse(verse);
+    getDailyPromise(DEFAULT_TRANSLATION_ID)
+      .then((promise) => {
+        if (!cancelled) setDailyPromise(promise);
       })
       .catch(() => {
-        // Stay on FALLBACK_VERSE -- see its own comment.
+        // Stay on FALLBACK_PROMISE -- see its own comment.
       });
     return () => {
       cancelled = true;
@@ -91,19 +92,17 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      <TouchableOpacity
+      <View
         style={styles.verseCard}
-        onPress={() => navigation.navigate('DailyDevotions')}
-        accessibilityRole="button"
-        accessibilityLabel={`Daily verse, ${dailyVerse.reference}. Tap for the full devotion.`}
+        accessibilityLabel={`Today's promise, ${dailyPromise.reference}`}
       >
         <View style={styles.verseCardLabel}>
           <Ionicons name="sunny" size={13} color={Colors.gold} />
-          <Text style={styles.verseCardLabelText}>Today's Verse</Text>
+          <Text style={styles.verseCardLabelText}>Today's Promise</Text>
         </View>
-        <Text style={styles.verseText}>"{dailyVerse.text}"</Text>
-        <Text style={styles.verseRef}>{dailyVerse.reference}</Text>
-      </TouchableOpacity>
+        <Text style={styles.verseText}>"{dailyPromise.text}"</Text>
+        <Text style={styles.verseRef}>{dailyPromise.reference}</Text>
+      </View>
     </SafeAreaView>
   );
 }
