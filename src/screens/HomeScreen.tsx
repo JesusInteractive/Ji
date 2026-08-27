@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -53,12 +53,21 @@ export default function HomeScreen() {
   const { t } = useI18n();
   const { profilePhotoUri } = useApp();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
+  const { width: screenWidth } = useWindowDimensions();
   const [dailyPromise, setDailyPromise] = useState<DailyPromise>(FALLBACK_PROMISE);
-  // Measured (not hardcoded) so the profile circle lines up with the
-  // Prayer Wall card's actual horizontal center regardless of screen
-  // width -- null until the grid has laid out once, so it doesn't flash
-  // at some wrong position on first paint.
-  const [prayerCardCenterX, setPrayerCardCenterX] = useState<number | null>(null);
+  // Estimated from the grid's own layout constants (container padding
+  // 20, two 47%-wide columns, 14 gap) so the button has a sane position
+  // from the very first frame, then corrected to the exact measured
+  // value once the Prayer Wall card's onLayout fires below. Profile has
+  // no other entry point (its tab-bar button is suppressed), so this
+  // can never be null/absent -- a wrong-but-close estimate is far
+  // safer than Profile silently becoming unreachable if that onLayout
+  // measurement is ever delayed or doesn't fire.
+  const estimatedCenterX = useMemo(() => {
+    const innerWidth = screenWidth - 40;
+    return 20 + 0.47 * innerWidth + 14 + 0.235 * innerWidth;
+  }, [screenWidth]);
+  const [prayerCardCenterX, setPrayerCardCenterX] = useState<number>(estimatedCenterX);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,20 +115,18 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ))}
 
-        {prayerCardCenterX !== null && (
-          <TouchableOpacity
-            style={[styles.profileBtn, { left: prayerCardCenterX - PROFILE_SIZE / 2 }]}
-            onPress={() => navigation.navigate('Profile')}
-            accessibilityRole="button"
-            accessibilityLabel={t.tabs.profile}
-          >
-            {profilePhotoUri ? (
-              <Image source={{ uri: profilePhotoUri }} style={styles.profilePhoto} />
-            ) : (
-              <Ionicons name="person-circle" size={PROFILE_SIZE} color={Colors.gold} />
-            )}
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={[styles.profileBtn, { left: prayerCardCenterX - PROFILE_SIZE / 2 }]}
+          onPress={() => navigation.navigate('Profile')}
+          accessibilityRole="button"
+          accessibilityLabel={t.tabs.profile}
+        >
+          {profilePhotoUri ? (
+            <Image source={{ uri: profilePhotoUri }} style={styles.profilePhoto} />
+          ) : (
+            <Ionicons name="person-circle" size={PROFILE_SIZE} color={Colors.gold} />
+          )}
+        </TouchableOpacity>
       </View>
 
       <View

@@ -440,6 +440,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setJournalEntries([]);
     setFavorites([]);
     setPrayerNotes([]);
+    setTestimonyNotes([]);
     setDisplayNameState('');
     setProfilePhotoUriState(null);
   }, []);

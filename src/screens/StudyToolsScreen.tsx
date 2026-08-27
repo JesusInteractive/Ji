@@ -415,7 +415,7 @@ const CATEGORIES: StudyCategory[] = [
         author: 'Jesse Lyman Hurlbut',
         era: '1904',
         description: '168 Bible stories told in plain, accessible language from Genesis to Revelation, with the original illustrations -- still in print and referenced today for a reason.',
-        url: 'https://archive.org/details/hurlbutsstoryofb00hurl',
+        url: 'https://archive.org/details/cihm_76911',
       },
       {
         title: 'Peep of Day',
