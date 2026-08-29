@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -85,6 +85,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.headerRow}>
         <View style={styles.headerText}>
           <Text style={styles.title}>{t.home.title}</Text>
@@ -161,6 +162,7 @@ export default function HomeScreen() {
         </View>
         <Ionicons name="chevron-forward" size={18} color={Colors.muted} />
       </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -169,8 +171,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.royal,
+  },
+  // Home used to be a fixed (non-scrolling) View -- fine on the tall
+  // simulator screens this was tested on, but on a real device with a
+  // shorter usable height (e.g. Android's on-screen nav bar eating into
+  // it), the About This App card at the bottom could get clipped behind
+  // the tab bar with no way to scroll down and reach it. paddingBottom
+  // here is deliberately generous so the last card always clears the
+  // tab bar with room to spare, regardless of device height.
+  scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 24,
+    paddingBottom: 32,
   },
   headerRow: {
     flexDirection: 'row',
@@ -236,7 +248,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginTop: 20,
+    marginTop: 10,
     backgroundColor: Colors.royalLight,
     borderRadius: 14,
     paddingVertical: 14,
