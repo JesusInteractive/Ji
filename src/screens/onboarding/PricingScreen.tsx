@@ -2,25 +2,37 @@ import React, { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../../theme/colors';
 import PlanCard from '../../components/PlanCard';
 import DraggableScrollbar from '../../components/DraggableScrollbar';
-import { PLANS, TOKEN_PACKS, MONETIZATION_EXPLAINER } from '../../constants/pricing';
+import { PLANS, MONETIZATION_EXPLAINER } from '../../constants/pricing';
 import { useI18n } from '../../i18n';
 import { useApp } from '../../context/AppContext';
-import { presentProPaywall, purchasePlan } from '../../services/purchases';
+import { purchasePlan } from '../../services/purchases';
 import type { PlanId } from '../../types';
-import type { OnboardingStackParamList } from '../../navigation/RootNavigator';
 
-type Props = NativeStackScreenProps<OnboardingStackParamList, 'Pricing'>;
+// Registered in BOTH OnboardingStackParamList (first-run plan choice)
+// and RootStackParamList (reachable later -- see RootNavigator.tsx's own
+// comment) as the same component and route name, so this only needs a
+// structural navigation type rather than picking one stack's params.
+type Props = { navigation: { goBack: () => void } };
 
 export default function PricingScreen({ navigation }: Props) {
   const { t } = useI18n();
-  const { selectPlan } = useApp();
+  const { selectPlan, hasSelectedPlan } = useApp();
   const [selected, setSelected] = useState<PlanId>('free');
   const [error, setError] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
+
+  // During first-run onboarding there's nothing to go back TO yet --
+  // RootNavigator swaps Onboarding for Main once onboardingComplete
+  // flips true (see its own comment), so this screen just needs to call
+  // selectPlan() and let that happen. Reached later (upgrade path), it's
+  // a modal pushed on top of the already-running app, so it needs to
+  // dismiss itself once a plan choice actually lands.
+  const finish = () => {
+    if (hasSelectedPlan) navigation.goBack();
+  };
 
   const scrollRef = useRef<ScrollView>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -33,47 +45,20 @@ export default function PricingScreen({ navigation }: Props) {
     }
   };
 
-  // Free just records a local choice -- nothing to purchase. Basic/Pro
-  // buy their single monthly product directly via purchasePlan().
-  // Platinum has three durations (monthly/yearly/lifetime) bundled into
-  // one RevenueCat offering, so it launches the prebuilt paywall instead
-  // of a single purchasePlan() call, letting the user pick a duration
-  // there. REVENUECAT_PRODUCT_IDS/PRO_PRODUCT_IDS still need real
-  // product ids from App Store Connect / Play Console before any of
+  // Free just records a local choice -- nothing to purchase. Basic, Pro,
+  // and Platinum are now all single monthly products (Platinum's old
+  // extra yearly/lifetime durations are gone), so all three buy through
+  // the same purchasePlan() call. REVENUECAT_PRODUCT_IDS still needs
+  // real product ids from App Store Connect / Play Console before any of
   // this can charge anyone -- see services/purchases.ts.
   const handleContinue = async () => {
     if (selected === 'free') {
       selectPlan('free');
+      finish();
       return;
     }
 
     setPurchasing(true);
-    if (selected === 'platinum') {
-      const outcome = await presentProPaywall();
-      setPurchasing(false);
-
-      switch (outcome) {
-        case 'purchased':
-        case 'restored':
-        case 'not_presented':
-          // not_presented covers two real cases: the entitlement is
-          // already active (e.g. the founder code already granted it --
-          // see services/founderAccess.ts), or this is Expo Go, where
-          // purchases.ts no-ops entirely (see its own top comment) --
-          // either way, proceeding locally is correct, not a bug.
-          selectPlan('platinum');
-          break;
-        case 'cancelled':
-          // Stay on this screen -- they can pick a different tier or try
-          // again, no error needed for a plain cancel.
-          break;
-        case 'error':
-          Alert.alert('Something went wrong', 'Could not complete the purchase. Please try again.');
-          break;
-      }
-      return;
-    }
-
     const result = await purchasePlan(selected);
     setPurchasing(false);
     if (result.userCancelled) return;
@@ -82,9 +67,10 @@ export default function PricingScreen({ navigation }: Props) {
       return;
     }
     selectPlan(selected);
-    // Onboarding is complete once a plan is chosen; RootNavigator will
-    // switch to the Main tab stack automatically once onboardingComplete
-    // flips true in AppContext.
+    // During onboarding, RootNavigator swaps Onboarding for Main
+    // automatically once onboardingComplete flips true in AppContext --
+    // finish() only needs to act (goBack) for the later upgrade path.
+    finish();
   };
 
   return (
@@ -121,15 +107,6 @@ export default function PricingScreen({ navigation }: Props) {
         <View style={styles.tokenSection}>
           <Text style={styles.tokenTitle}>{t.pricing.tokenTitle}</Text>
           <Text style={styles.tokenSubtitle}>{t.pricing.tokenSubtitle}</Text>
-          <View style={styles.tokenRow}>
-            {TOKEN_PACKS.map((pack) => (
-              <View key={pack.id} style={styles.tokenCard}>
-                <Text style={styles.tokenCount}>{pack.tokens}</Text>
-                <Text style={styles.tokenLabel}>questions</Text>
-                <Text style={styles.tokenPrice}>{pack.priceLabel}</Text>
-              </View>
-            ))}
-          </View>
         </View>
       </ScrollView>
       <DraggableScrollbar
@@ -175,19 +152,6 @@ const styles = StyleSheet.create({
   tokenSection: { marginTop: 8, marginBottom: 12 },
   tokenTitle: { fontSize: 16, fontWeight: '700', color: Colors.royal, marginBottom: 4 },
   tokenSubtitle: { fontSize: 12.5, color: '#718096', marginBottom: 12 },
-  tokenRow: { flexDirection: 'row', gap: 10 },
-  tokenCard: {
-    flex: 1,
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  tokenCount: { fontSize: 20, fontWeight: '800', color: Colors.royal },
-  tokenLabel: { fontSize: 11, color: '#718096', marginBottom: 6 },
-  tokenPrice: { fontSize: 13, fontWeight: '700', color: Colors.gold },
   footer: { padding: 20, borderTopWidth: 1, borderTopColor: '#E2E8F0', backgroundColor: '#F4F6FA' },
   error: { color: Colors.danger, fontSize: 12, marginBottom: 8, textAlign: 'center' },
   cta: { backgroundColor: Colors.royal, borderRadius: 26, paddingVertical: 16, alignItems: 'center' },

@@ -262,7 +262,7 @@ export default function PrayerWallScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#EFE7D6' },
+  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
   half: { flex: 1 },
   divider: { height: 3, backgroundColor: Colors.royal },
   halfHeader: {

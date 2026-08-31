@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import type { MainTabParamList } from '../navigation/MainTabs';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { getDailyPromise, type DailyPromise } from '../services/devotions';
 import { ABOUT_APP, ABOUT_APP_CARD } from '../constants/aboutApp';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
 // below) instead of sitting inline in the header -- was 34.
@@ -69,6 +70,11 @@ export default function HomeScreen() {
   }, [screenWidth]);
   const [prayerCardCenterX, setPrayerCardCenterX] = useState<number>(estimatedCenterX);
 
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+
   useEffect(() => {
     let cancelled = false;
     getDailyPromise(DEFAULT_TRANSLATION_ID)
@@ -85,7 +91,16 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <View style={{ flex: 1 }}>
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+        onContentSizeChange={(_width, height) => setContentHeight(height)}
+        onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+        scrollEventThrottle={16}
+      >
       <View style={styles.headerRow}>
         <View style={styles.headerText}>
           <Text style={styles.title}>{t.home.title}</Text>
@@ -143,6 +158,25 @@ export default function HomeScreen() {
       </View>
 
       <TouchableOpacity
+        style={[styles.aboutCard, styles.firstBottomCard]}
+        onPress={() =>
+          // Same root-level-modal pattern as AboutApp below -- see
+          // RootNavigator.tsx's own comment on why WordSearch lives there
+          // instead of nested in a tab stack.
+          navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('WordSearch')
+        }
+        accessibilityRole="button"
+        accessibilityLabel="Bible Word Search -- find hidden biblical words in a letter grid"
+      >
+        <Ionicons name="grid-outline" size={16} color={Colors.gold} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.aboutCardTitle}>Bible Word Search</Text>
+          <Text style={styles.aboutCardSubtitle}>Find hidden names, places, and words</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={styles.aboutCard}
         onPress={() =>
           // Navigates up to the root stack's own "AboutApp" modal (see
@@ -155,14 +189,24 @@ export default function HomeScreen() {
         accessibilityRole="button"
         accessibilityLabel={`${ABOUT_APP_CARD.title} -- ${ABOUT_APP_CARD.subtitle}`}
       >
-        <Ionicons name="apps-outline" size={18} color={Colors.gold} />
+        <Ionicons name="apps-outline" size={16} color={Colors.gold} />
         <View style={{ flex: 1 }}>
           <Text style={styles.aboutCardTitle}>{ABOUT_APP_CARD.title}</Text>
           <Text style={styles.aboutCardSubtitle}>{ABOUT_APP_CARD.subtitle}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={Colors.muted} />
+        <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
       </TouchableOpacity>
       </ScrollView>
+      <DraggableScrollbar
+        contentHeight={contentHeight}
+        viewportHeight={viewportHeight}
+        scrollOffset={scrollOffset}
+        onScrollTo={(offset) => {
+          scrollRef.current?.scrollTo({ y: offset, animated: false });
+          setScrollOffset(offset);
+        }}
+      />
+      </View>
     </SafeAreaView>
   );
 }
@@ -175,14 +219,16 @@ const styles = StyleSheet.create({
   // Home used to be a fixed (non-scrolling) View -- fine on the tall
   // simulator screens this was tested on, but on a real device with a
   // shorter usable height (e.g. Android's on-screen nav bar eating into
-  // it), the About This App card at the bottom could get clipped behind
-  // the tab bar with no way to scroll down and reach it. paddingBottom
-  // here is deliberately generous so the last card always clears the
-  // tab bar with room to spare, regardless of device height.
+  // it), the last card could get clipped behind the tab bar with no way
+  // to scroll down and reach it. paddingBottom here is deliberately
+  // generous so the last card (now Bible Word Search, stacked below
+  // About This App) always clears the tab bar with room to spare,
+  // regardless of device height -- bumped from 32 to 48 once a second
+  // card was added here, since the tab bar was visibly crowding it at 32.
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom: 32,
+    paddingBottom: 48,
   },
   headerRow: {
     flexDirection: 'row',
@@ -241,26 +287,38 @@ const styles = StyleSheet.create({
     color: Colors.ivory,
   },
   verseCard: {
-    marginTop: 28,
+    marginTop: 16,
     paddingHorizontal: 16,
   },
+  // Both "About This App" and "Bible Word Search" (Home's two stacked
+  // bottom cards) share this style -- sized compact enough that both fit
+  // in view together on typical device heights without needing to
+  // scroll, rather than requiring a scroll to reach the second one.
   aboutCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginTop: 10,
+    gap: 10,
+    marginTop: 8,
     backgroundColor: Colors.royalLight,
-    borderRadius: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  // Nudges just the first of the two stacked bottom cards further from
+  // the verse above it, so the pair sits centered in the leftover space
+  // between the verse and the tab bar instead of hugging the verse --
+  // the second card's own marginTop (shared aboutCard style) still
+  // controls the gap between the two cards themselves.
+  firstBottomCard: {
+    marginTop: 18,
   },
   aboutCardTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: Colors.ivory,
   },
   aboutCardSubtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: Colors.muted,
     marginTop: 2,
   },

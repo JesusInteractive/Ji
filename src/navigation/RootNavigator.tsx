@@ -12,6 +12,7 @@ import UserAgreementScreen from '../screens/onboarding/UserAgreementScreen';
 import EntranceScreen from '../screens/onboarding/EntranceScreen';
 import PricingScreen from '../screens/onboarding/PricingScreen';
 import LegalDocScreen from '../screens/LegalDocScreen';
+import BibleWordSearchScreen from '../screens/BibleWordSearchScreen';
 import MainTabs from './MainTabs';
 import type { LegalDocParams } from './SettingsStack';
 
@@ -35,6 +36,18 @@ export type RootStackParamList = {
   // on this screen instead of the settings list, since tab navigators
   // remember each tab's last-active screen).
   AboutApp: LegalDocParams;
+  // Same PricingScreen component used during onboarding (see
+  // OnboardingStackParamList below), registered a second time here so
+  // it's reachable AFTER onboarding too -- from ChatScreen when the free
+  // introductory offer's questions run out, and from Profile/Settings'
+  // "Plan" row. PricingScreen itself tells the two apart via
+  // hasSelectedPlan (see its own comment), not a route param.
+  Pricing: undefined;
+  // Its own dedicated page, reached from a teaser card on Home directly
+  // below "About This App" -- same root-level-modal pattern as AboutApp
+  // above, not nested in a tab stack, since it's a standalone diversion
+  // rather than part of any tab's own flow.
+  WordSearch: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -99,6 +112,38 @@ export default function RootNavigator() {
               presentation: 'modal',
               animation: 'slide_from_bottom',
               title: route.params.title,
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="Pricing"
+            component={PricingScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Choose your plan',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="WordSearch"
+            component={BibleWordSearchScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Bible Word Search',
               headerTintColor: Colors.royal,
               headerRight: () => (
                 <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">

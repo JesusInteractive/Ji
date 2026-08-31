@@ -2,83 +2,152 @@ import React, { useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
-import { TOKEN_PACKS, MONETIZATION_EXPLAINER } from '../constants/pricing';
+import { GIFT_CERTIFICATES, MONETIZATION_EXPLAINER, PLANS } from '../constants/pricing';
 import { useApp } from '../context/AppContext';
 import { generateGiftCodeLocally, redeemGiftCode } from '../services/tokenGifting';
 import { isFounderCode, isFamilyCode } from '../services/founderAccess';
-import { purchaseTokenPack } from '../services/purchases';
+import { purchaseGiftCertificate } from '../services/purchases';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import { useI18n, interpolate } from '../i18n';
 
-// Token / gift code system (spec sections 2 & 7): buy access, gift it to
-// someone who can't afford it. Both buy and gift purchase a real token
-// pack via RevenueCat (see services/purchases.ts) before touching local
-// state -- REVENUECAT_TOKEN_PACK_IDS still needs real product ids from
-// App Store Connect / Play Console before this can charge anyone.
+const planName = (planId: string) => PLANS.find((p) => p.id === planId)?.name ?? planId;
+
+// PLANS is ordered lowest-to-highest tier (free, basic, pro, platinum) --
+// used to detect a gift certificate that would downgrade whatever the
+// user already has, so they can be warned before it silently happens.
+const planTier = (planId: string) => PLANS.findIndex((p) => p.id === planId);
+
+// Gift certificates grant a plan for a fixed window, not an ongoing
+// subscription -- computes the local expiration AppContext's selectPlan
+// checks on every future launch (see its own comment).
+function computeExpiresAt(durationMonths: number): string {
+  const expires = new Date();
+  expires.setMonth(expires.getMonth() + durationMonths);
+  return expires.toISOString();
+}
+
+// Gift certificate system (spec sections 2 & 7): buy a real plan, gift
+// it to someone who can't afford it. Both buy and gift purchase a real
+// gift certificate via RevenueCat (see services/purchases.ts) before
+// touching local state -- REVENUECAT_GIFT_CERTIFICATE_IDS still needs
+// real product ids from App Store Connect / Play Console before this
+// can charge anyone.
 export default function TokenGiftScreen() {
-  const { addTokens, tokenBalance, selectPlan } = useApp();
+  const { t } = useI18n();
+  const { plan, selectPlan } = useApp();
   const [redeemInput, setRedeemInput] = useState('');
   const [lastGiftCode, setLastGiftCode] = useState<string | null>(null);
-  const [purchasingPackId, setPurchasingPackId] = useState<string | null>(null);
+  const [purchasingCertId, setPurchasingCertId] = useState<string | null>(null);
 
   const scrollRef = useRef<ScrollView>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
 
-  const handleBuy = async (packId: string, tokens: number) => {
-    setPurchasingPackId(packId);
-    const result = await purchaseTokenPack(packId);
-    setPurchasingPackId(null);
-
-    if (result.userCancelled) return;
-    if (!result.success) {
-      Alert.alert('Couldn\'t complete purchase', result.error ?? 'Please try again.');
+  const handleBuyForSelf = async (
+    certId: string,
+    planId: typeof PLANS[number]['id'],
+    durationMonths: number
+  ) => {
+    // A gift certificate is Basic-only -- if the account already has a
+    // higher tier (Pro/Platinum, a real ongoing subscription), applying
+    // this certificate would downgrade it. Warn and require explicit
+    // confirmation rather than silently overwriting a paid-for plan.
+    if (planTier(planId) < planTier(plan)) {
+      const months = `${durationMonths} month${durationMonths === 1 ? '' : 's'}`;
+      Alert.alert(
+        t.tokenGift.downgradeWarningTitle,
+        interpolate(t.tokenGift.downgradeWarningMessageCertificate, {
+          planName: planName(plan),
+          newPlanName: planName(planId),
+          months,
+        }),
+        [
+          { text: t.tokenGift.cancelButton, style: 'cancel' },
+          { text: t.tokenGift.continueAnywayButton, style: 'destructive', onPress: () => buyForSelf(certId, planId, durationMonths) },
+        ]
+      );
       return;
     }
-    addTokens(tokens);
-    Alert.alert('Purchase complete', `${tokens} tokens added to your balance.`);
+    await buyForSelf(certId, planId, durationMonths);
   };
 
-  const handleGift = async (packId: string, tokens: number) => {
-    setPurchasingPackId(packId);
-    const result = await purchaseTokenPack(packId);
-    setPurchasingPackId(null);
+  const buyForSelf = async (certId: string, planId: typeof PLANS[number]['id'], durationMonths: number) => {
+    setPurchasingCertId(certId);
+    const result = await purchaseGiftCertificate(certId);
+    setPurchasingCertId(null);
 
     if (result.userCancelled) return;
     if (!result.success) {
-      Alert.alert('Couldn\'t complete purchase', result.error ?? 'Please try again.');
+      Alert.alert(t.tokenGift.purchaseFailedTitle, result.error ?? t.tokenGift.purchaseFailedFallback);
+      return;
+    }
+    selectPlan(planId, computeExpiresAt(durationMonths));
+    Alert.alert(t.tokenGift.purchaseCompleteTitle, interpolate(t.tokenGift.planActiveMessage, { planName: planName(planId) }));
+  };
+
+  const handleGift = async (certId: string, planId: string, durationMonths: number) => {
+    setPurchasingCertId(certId);
+    const result = await purchaseGiftCertificate(certId);
+    setPurchasingCertId(null);
+
+    if (result.userCancelled) return;
+    if (!result.success) {
+      Alert.alert(t.tokenGift.purchaseFailedTitle, result.error ?? t.tokenGift.purchaseFailedFallback);
       return;
     }
     const code = generateGiftCodeLocally();
     setLastGiftCode(code);
+    const months = `${durationMonths} month${durationMonths === 1 ? '' : 's'}`;
     Alert.alert(
-      'Gift code created',
-      `Share this code with someone who needs it:\n\n${code}\n\nWorth ${tokens} questions.`
+      t.tokenGift.giftCodeCreatedTitle,
+      interpolate(t.tokenGift.giftCodeCreatedMessage, { code, months, planName: planName(planId) })
     );
   };
 
   const handleRedeem = async () => {
     if (isFounderCode(redeemInput)) {
       selectPlan('platinum');
-      Alert.alert('Welcome, founder', 'Platinum access unlocked -- no charge, no expiration.');
+      Alert.alert(t.tokenGift.founderWelcomeTitle, t.tokenGift.platinumUnlockedMessage);
       setRedeemInput('');
       return;
     }
 
     if (isFamilyCode(redeemInput)) {
       selectPlan('platinum');
-      Alert.alert('Welcome to the family', 'Platinum access unlocked -- no charge, no expiration.');
+      Alert.alert(t.tokenGift.familyWelcomeTitle, t.tokenGift.platinumUnlockedMessage);
       setRedeemInput('');
       return;
     }
 
     const result = await redeemGiftCode(redeemInput.trim());
-    if (result.success && result.tokensAdded) {
-      addTokens(result.tokensAdded);
-      Alert.alert('Redeemed!', `${result.tokensAdded} tokens added to your balance.`);
-      setRedeemInput('');
+    if (result.success && result.planId) {
+      const planId = result.planId;
+      const durationMonths = result.durationMonths ?? 1;
+      const applyRedemption = () => {
+        selectPlan(planId, computeExpiresAt(durationMonths));
+        Alert.alert(t.tokenGift.redeemedTitle, interpolate(t.tokenGift.planActiveMessage, { planName: planName(planId) }));
+        setRedeemInput('');
+      };
+      if (planTier(planId) < planTier(plan)) {
+        const months = `${durationMonths} month${durationMonths === 1 ? '' : 's'}`;
+        Alert.alert(
+          t.tokenGift.downgradeWarningTitle,
+          interpolate(t.tokenGift.downgradeWarningMessageRedeem, {
+            planName: planName(plan),
+            newPlanName: planName(planId),
+            months,
+          }),
+          [
+            { text: t.tokenGift.cancelButton, style: 'cancel' },
+            { text: t.tokenGift.continueAnywayButton, style: 'destructive', onPress: applyRedemption },
+          ]
+        );
+      } else {
+        applyRedemption();
+      }
     } else {
-      Alert.alert('Couldn\'t redeem', result.error ?? 'Please check the code and try again.');
+      Alert.alert(t.tokenGift.redeemFailedTitle, result.error ?? t.tokenGift.redeemFailedFallback);
     }
   };
 
@@ -93,48 +162,46 @@ export default function TokenGiftScreen() {
       onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
       scrollEventThrottle={16}
     >
-      <Text style={styles.title}>Buy & Gift</Text>
-      <Text style={styles.balance}>Your balance: {tokenBalance} tokens</Text>
+      <Text style={styles.title}>{t.tokenGift.title}</Text>
+      <Text style={styles.balance}>{interpolate(t.tokenGift.currentPlan, { planName: planName(plan) })}</Text>
       <Text style={styles.explainer}>{MONETIZATION_EXPLAINER.tokens}</Text>
       <Text style={styles.explainer}>{MONETIZATION_EXPLAINER.gifting}</Text>
 
-      <Text style={styles.sectionTitle}>Buy for yourself</Text>
-      {TOKEN_PACKS.map((pack) => (
-        <View key={pack.id} style={styles.row}>
+      <Text style={styles.sectionTitle}>{t.tokenGift.sectionBuyForSelf}</Text>
+      {GIFT_CERTIFICATES.map((cert) => (
+        <View key={cert.id} style={styles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.rowTitle}>{pack.tokens} questions</Text>
-            <Text style={styles.rowSub}>{pack.description}</Text>
+            <Text style={styles.rowTitle}>{cert.description}</Text>
+            <Text style={styles.rowSub}>{t.tokenGift.rowSubNoAutoRenewal}</Text>
           </View>
           <TouchableOpacity
             style={styles.buyBtn}
-            onPress={() => handleBuy(pack.id, pack.tokens)}
-            disabled={purchasingPackId !== null}
+            onPress={() => handleBuyForSelf(cert.id, cert.planId, cert.durationMonths)}
+            disabled={purchasingCertId !== null}
           >
             <Text style={styles.buyBtnText}>
-              {purchasingPackId === pack.id ? 'Purchasing...' : pack.priceLabel}
+              {purchasingCertId === cert.id ? t.tokenGift.purchasing : cert.priceLabel}
             </Text>
           </TouchableOpacity>
         </View>
       ))}
 
-      <Text style={styles.sectionTitle}>Gift to someone else</Text>
-      <Text style={styles.helpText}>
-        Buy a pack and generate a redeemable code for someone who can't afford a plan.
-      </Text>
-      {TOKEN_PACKS.map((pack) => (
-        <View key={`gift-${pack.id}`} style={styles.row}>
+      <Text style={styles.sectionTitle}>{t.tokenGift.sectionGiftToSomeoneElse}</Text>
+      <Text style={styles.helpText}>{t.tokenGift.giftHelpText}</Text>
+      {GIFT_CERTIFICATES.map((cert) => (
+        <View key={`gift-${cert.id}`} style={styles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.rowTitle}>Gift {pack.tokens} questions</Text>
-            <Text style={styles.rowSub}>{pack.priceLabel}</Text>
+            <Text style={styles.rowTitle}>{interpolate(t.tokenGift.giftRowTitlePrefix, { description: cert.description })}</Text>
+            <Text style={styles.rowSub}>{cert.priceLabel}</Text>
           </View>
           <TouchableOpacity
             style={styles.giftBtn}
-            onPress={() => handleGift(pack.id, pack.tokens)}
-            disabled={purchasingPackId !== null}
+            onPress={() => handleGift(cert.id, cert.planId, cert.durationMonths)}
+            disabled={purchasingCertId !== null}
           >
             <Ionicons name="gift-outline" size={16} color={Colors.white} />
             <Text style={styles.giftBtnText}>
-              {purchasingPackId === pack.id ? 'Purchasing...' : 'Gift'}
+              {purchasingCertId === cert.id ? t.tokenGift.purchasing : t.tokenGift.giftButtonLabel}
             </Text>
           </TouchableOpacity>
         </View>
@@ -142,22 +209,22 @@ export default function TokenGiftScreen() {
 
       {lastGiftCode && (
         <View style={styles.codeBox}>
-          <Text style={styles.codeLabel}>Last gift code created</Text>
+          <Text style={styles.codeLabel}>{t.tokenGift.lastGiftCodeLabel}</Text>
           <Text style={styles.codeValue}>{lastGiftCode}</Text>
         </View>
       )}
 
-      <Text style={styles.sectionTitle}>Redeem a code</Text>
+      <Text style={styles.sectionTitle}>{t.tokenGift.sectionRedeemCode}</Text>
       <View style={styles.redeemRow}>
         <TextInput
           style={styles.redeemInput}
-          placeholder="XXXX-XXXX-XXXX"
+          placeholder={t.tokenGift.redeemPlaceholder}
           autoCapitalize="characters"
           value={redeemInput}
           onChangeText={setRedeemInput}
         />
         <TouchableOpacity style={styles.redeemBtn} onPress={handleRedeem}>
-          <Text style={styles.redeemBtnText}>Redeem</Text>
+          <Text style={styles.redeemBtnText}>{t.tokenGift.redeemButton}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

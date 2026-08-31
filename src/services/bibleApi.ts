@@ -30,6 +30,12 @@ export interface BibleTranslation {
   id: string;
   name: string;
   language: string;
+  // Native-script and English names for `language` (ISO 639-3, e.g.
+  // 'swh' -> 'Kiswahili' / 'Swahili') -- used by services/bibleLibrary.ts
+  // to group/label translations by language without a second API call.
+  languageName?: string;
+  languageEnglishName?: string;
+  textDirection?: 'ltr' | 'rtl';
 }
 
 const BASE = 'https://bible.helloao.org/api';
@@ -103,6 +109,9 @@ export async function getTranslations(): Promise<BibleTranslation[]> {
       id: t.id || t.abbreviation || t.shortName,
       name: t.name || t.englishName || t.title || t.id,
       language: t.language || t.languageName || 'eng',
+      languageName: t.languageName,
+      languageEnglishName: t.languageEnglishName,
+      textDirection: t.textDirection === 'rtl' ? 'rtl' : 'ltr',
     }));
     return translations.length ? englishFirst(translations) : FALLBACK_TRANSLATIONS;
   } catch {

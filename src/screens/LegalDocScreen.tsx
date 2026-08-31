@@ -60,7 +60,7 @@ export default function LegalDocScreen({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.ivory },
+  container: { flex: 1, backgroundColor: Colors.ivory, borderWidth: 5, borderColor: Colors.royal },
   scroll: { padding: 20, paddingBottom: 40 },
   updated: { fontSize: 12, color: '#8A8474', marginBottom: 16 },
   section: { marginBottom: 14 },

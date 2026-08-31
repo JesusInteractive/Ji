@@ -3,15 +3,17 @@ import { FlatList, Share, StyleSheet, Text, TouchableOpacity, View } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useI18n } from '../i18n';
 
 // Favorites/bookmarks + "share a verse or moment" (spec section 7).
 export default function FavoritesScreen() {
   const { favorites, removeFavorite } = useApp();
+  const { t } = useI18n();
 
   const handleShare = async (text: string, reference?: string) => {
     try {
       await Share.share({
-        message: reference ? `"${text}" — ${reference}\n\nShared from Jesus Interactive` : `${text}\n\nShared from Jesus Interactive`,
+        message: reference ? `"${text}" — ${reference}\n\n${t.favorites.shareSuffix}` : `${text}\n\n${t.favorites.shareSuffix}`,
       });
     } catch {
       // User cancelled or share failed silently -- non-critical.
@@ -20,14 +22,14 @@ export default function FavoritesScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Favorites</Text>
+      <Text style={styles.title}>{t.favorites.title}</Text>
       <FlatList
         data={favorites}
         keyExtractor={(f) => f.id}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <Text style={styles.empty}>
-            Nothing saved yet. Long-press a verse in Scripture, or tap the bookmark on a chat reply.
+            {t.favorites.emptyState}
           </Text>
         }
         renderItem={({ item }) => (

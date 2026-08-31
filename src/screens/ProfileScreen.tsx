@@ -4,10 +4,13 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useI18n, interpolate } from '../i18n';
 import { PLANS } from '../constants/pricing';
 import type { MainTabParamList } from '../navigation/MainTabs';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 
 // Profile is purely local -- see AppContext.tsx's own note on
@@ -22,13 +25,13 @@ export default function ProfileScreen() {
     profilePhotoUri,
     setProfilePhotoUri,
     plan,
-    tokenBalance,
-    remainingQuestionsToday,
+    remainingQuestions,
     favorites,
     journalEntries,
     prayerNotes,
     selectPlan,
   } = useApp();
+  const { t } = useI18n();
   const [nameInput, setNameInput] = useState(displayName);
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
 
@@ -47,7 +50,7 @@ export default function ProfileScreen() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Photo access needed', 'Enable photo library access in Settings to upload a profile photo.');
+        Alert.alert(t.profile.photoAccessNeededTitle, t.profile.photoAccessNeededMessage);
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -62,16 +65,16 @@ export default function ProfileScreen() {
     } catch (e) {
       console.error('Photo picker error:', e);
       Alert.alert(
-        'Couldn\'t open the photo picker',
-        e instanceof Error ? e.message : 'Please try again.'
+        t.profile.photoPickerErrorTitle,
+        e instanceof Error ? e.message : t.profile.photoPickerErrorFallback
       );
     }
   };
 
   const handleRemovePhoto = () => {
-    Alert.alert('Remove photo', 'Remove your profile photo?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: () => setProfilePhotoUri(null) },
+    Alert.alert(t.profile.removePhotoAlertTitle, t.profile.removePhotoAlertMessage, [
+      { text: t.profile.cancelButton, style: 'cancel' },
+      { text: t.profile.removeButton, style: 'destructive', onPress: () => setProfilePhotoUri(null) },
     ]);
   };
 
@@ -91,7 +94,7 @@ export default function ProfileScreen() {
       scrollEventThrottle={16}
     >
       <View style={styles.photoSection}>
-        <TouchableOpacity onPress={handlePickPhoto} accessibilityRole="button" accessibilityLabel="Upload profile photo">
+        <TouchableOpacity onPress={handlePickPhoto} accessibilityRole="button" accessibilityLabel={t.profile.uploadPhotoA11yLabel}>
           {profilePhotoUri ? (
             <Image source={{ uri: profilePhotoUri }} style={styles.photo} />
           ) : (
@@ -104,90 +107,83 @@ export default function ProfileScreen() {
           </View>
         </TouchableOpacity>
         {profilePhotoUri && (
-          <TouchableOpacity onPress={handleRemovePhoto} accessibilityRole="button" accessibilityLabel="Remove profile photo">
-            <Text style={styles.removeText}>Remove photo</Text>
+          <TouchableOpacity onPress={handleRemovePhoto} accessibilityRole="button" accessibilityLabel={t.profile.removePhotoA11yLabel}>
+            <Text style={styles.removeText}>{t.profile.removePhotoText}</Text>
           </TouchableOpacity>
         )}
         {!!displayName && <Text style={styles.photoName}>{displayName}</Text>}
       </View>
 
       <View style={styles.nameSection}>
-        <Text style={styles.label}>Name</Text>
+        <Text style={styles.label}>{t.profile.nameLabel}</Text>
         <TextInput
           style={styles.nameInput}
           value={nameInput}
           onChangeText={setNameInput}
           onBlur={handleNameBlur}
-          placeholder="Add your name"
+          placeholder={t.profile.namePlaceholder}
           placeholderTextColor="#A0AEC0"
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Account</Text>
+        <Text style={styles.sectionTitle}>{t.profile.accountSectionTitle}</Text>
         <Row
           icon="card-outline"
-          label="Plan"
-          value={`${currentPlan.name} · ${currentPlan.priceLabel}`}
-          onPress={() => navigation.navigate('SettingsTab', { screen: 'TokenGift' })}
+          label={t.profile.planLabel}
+          value={interpolate(t.profile.planValue, { name: currentPlan.name, price: currentPlan.priceLabel })}
+          onPress={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
         />
         <Row
           icon="chatbox-ellipses-outline"
-          label="Questions left today"
-          value={remainingQuestionsToday === Infinity ? 'Unlimited' : String(Math.max(remainingQuestionsToday, 0))}
-        />
-        <Row
-          icon="ticket-outline"
-          label="Token balance"
-          value={String(tokenBalance)}
-          onPress={() => navigation.navigate('SettingsTab', { screen: 'TokenGift' })}
+          label={plan === 'free' ? t.profile.freeQuestionsLeftLabel : t.profile.questionsLeftTodayLabel}
+          value={remainingQuestions === Infinity ? t.profile.unlimitedValue : String(Math.max(remainingQuestions, 0))}
         />
       </View>
 
       {__DEV__ && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Dev only</Text>
+          <Text style={styles.sectionTitle}>{t.profile.devOnlySectionTitle}</Text>
           <TouchableOpacity
             style={styles.devButton}
             onPress={() => selectPlan('platinum')}
             accessibilityRole="button"
-            accessibilityLabel="Unlock unlimited questions (dev only)"
+            accessibilityLabel={t.profile.unlockUnlimitedA11yLabel}
           >
             <Ionicons name="infinite-outline" size={18} color={Colors.white} style={styles.rowIcon} />
-            <Text style={styles.devButtonText}>Unlock unlimited questions</Text>
+            <Text style={styles.devButtonText}>{t.profile.unlockUnlimitedButton}</Text>
           </TouchableOpacity>
           <Text style={styles.devNote}>
-            Only visible in dev builds -- sets your plan to Platinum locally, same as redeeming the founder
-            code. Won't appear in a real release build.
+            {t.profile.devNote}
           </Text>
         </View>
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Saved on this device</Text>
+        <Text style={styles.sectionTitle}>{t.profile.savedSectionTitle}</Text>
         <Row
           icon="bookmark-outline"
-          label="Favorites"
+          label={t.profile.favoritesLabel}
           value={String(favorites.length)}
           onPress={() => navigation.navigate('ChatTab', { screen: 'Favorites' })}
         />
         <Row
           icon="book-outline"
-          label="Journal entries"
+          label={t.profile.journalEntriesLabel}
           value={String(journalEntries.length)}
           onPress={() => navigation.navigate('Journal')}
         />
         <Row
           icon="hand-left-outline"
           iconElement={<MaterialCommunityIcons name="hands-pray" size={18} color={Colors.gold} style={styles.rowIcon} />}
-          label="Prayer notes"
+          label={t.profile.prayerNotesLabel}
           value={String(prayerNotes.length)}
           onPress={() => navigation.navigate('PrayerWall')}
         />
       </View>
 
       <Text style={styles.footerNote}>
-        Your name and photo are stored only on this device -- there's no account server behind them yet.
+        {t.profile.footerNote}
       </Text>
     </ScrollView>
     <DraggableScrollbar

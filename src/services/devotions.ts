@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDayOfYear, getDevotionForDay, BIBLE_BOOKS, type DevotionDay } from '../constants/devotionalReadingPlan';
 import { getChapter } from './bibleApi';
 import { withAuthRetry } from './backendAuth';
+import { languageDisplayName } from '../i18n/languages';
 import { PROMISES_OF_GOD_BY_YEAR, type PromiseReference } from '../constants/promisesOfGod';
 
 const API_BASE_URL: string = process.env.EXPO_PUBLIC_API_BASE ?? 'https://api.jesusinteractive.com';
@@ -53,7 +54,16 @@ async function generateReflectionAndPrayer(
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ reference, year, languageCode }),
+      // Human-readable name, not just the bare code -- the backend's
+      // small LANGUAGE_NAMES map doesn't cover every language in the
+      // picker (src/i18n/languages.ts), same reasoning as api.ts's chat
+      // call.
+      body: JSON.stringify({
+        reference,
+        year,
+        languageCode,
+        languageName: languageDisplayName(languageCode),
+      }),
     });
     if (!res.ok) {
       const body = await res.text().catch(() => '');

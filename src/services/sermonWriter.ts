@@ -6,6 +6,7 @@
 // from, so nothing here is cached client-side the way a devotion is.
 
 import { withAuthRetry } from './backendAuth';
+import { languageDisplayName } from '../i18n/languages';
 
 const API_BASE_URL: string = process.env.EXPO_PUBLIC_API_BASE ?? 'https://api.jesusinteractive.com';
 
@@ -27,7 +28,9 @@ export async function generateSermon(params: GenerateSermonParams): Promise<stri
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(params),
+      // languageName: human-readable name (e.g. "Swahili (Kiswahili)"),
+      // not just the bare code -- same reasoning as api.ts's chat call.
+      body: JSON.stringify({ ...params, languageName: languageDisplayName(params.languageCode) }),
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));

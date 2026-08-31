@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { getDevotion, type Devotion } from '../services/devotions';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import { useI18n } from '../i18n';
 
 // Real translation is BSB by default, matching ScriptureSearchScreen.tsx's
 // own default -- keeps the passage text consistent with what Scripture
@@ -11,6 +12,7 @@ import DraggableScrollbar from '../components/DraggableScrollbar';
 const DEFAULT_TRANSLATION_ID = 'BSB';
 
 export default function DailyDevotionsScreen() {
+  const { language } = useI18n();
   const [devotion, setDevotion] = useState<Devotion | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,19 +36,14 @@ export default function DailyDevotionsScreen() {
     setLoading(true);
     setError(null);
     try {
-      // languageCode: the devotion's own reflection/prayer text is
-      // generated in English for now -- wiring this to the app's
-      // selected UI language (useI18n().language) is a one-line change
-      // once that's wanted, matching how ChatScreen passes languageCode
-      // through to the backend today.
-      const result = await getDevotion(DEFAULT_TRANSLATION_ID, 'en');
+      const result = await getDevotion(DEFAULT_TRANSLATION_ID, language);
       setDevotion(result);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     load();
@@ -155,7 +152,9 @@ export default function DailyDevotionsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6FA',
+    backgroundColor: '#EFE7D6',
+    borderWidth: 5,
+    borderColor: Colors.royal,
   },
   content: {
     padding: 20,
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
   },
   centerContainer: {
     flex: 1,
-    backgroundColor: '#F4F6FA',
+    backgroundColor: '#EFE7D6',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,

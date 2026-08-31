@@ -67,7 +67,7 @@ JesusInteractiveTS/
     ├── constants/
     │   ├── persona.ts              # Full Jesus system prompt -- server-side only in prod
     │   ├── legal.ts                # AI disclosure, User Agreement/Indemnity, privacy/terms summaries
-    │   ├── pricing.ts              # 4 subscription tiers + token packs
+    │   ├── pricing.ts              # 5-question intro offer + 3 monthly tiers + gift certificates
     │   ├── about.ts, lineage.ts, prophecies.ts   # About tab content
     │   └── sampleConversations.ts  # Reference Q&A pairs matching persona rules
     ├── context/AppContext.tsx      # Onboarding state, plan, tokens, messages, journal, favorites, prayers

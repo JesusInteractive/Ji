@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { MainTabParamList } from '../navigation/MainTabs';
 import Colors from '../theme/colors';
 import {
   getBooks,
@@ -22,6 +24,7 @@ import {
   type BibleTranslation,
 } from '../services/bibleApi';
 import { useApp } from '../context/AppContext';
+import { useI18n, interpolate } from '../i18n';
 import MagnifyButton from '../components/MagnifyButton';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 
@@ -33,8 +36,11 @@ type Filter = 'all' | 'torah';
 // first five books, filterable below. Talmud text isn't covered by the
 // Bible API this screen uses -- see the note in services/bibleApi.ts for
 // how to add a Sefaria-backed Talmud tab alongside this one.
-export default function ScriptureSearchScreen() {
+type Props = BottomTabScreenProps<MainTabParamList, 'Bible'>;
+
+export default function ScriptureSearchScreen({ route }: Props) {
   const { addFavorite, textZoom } = useApp();
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -48,8 +54,19 @@ export default function ScriptureSearchScreen() {
   const [chapterError, setChapterError] = useState<string | null>(null);
 
   const [translations, setTranslations] = useState<BibleTranslation[]>([]);
-  const [translation, setTranslation] = useState(DEFAULT_TRANSLATION_ID);
+  const [translation, setTranslation] = useState(route.params?.translationId ?? DEFAULT_TRANSLATION_ID);
   const [translationPickerOpen, setTranslationPickerOpen] = useState(false);
+
+  // GlobalLibraryScreen deep-links here with a translation id -- this tab
+  // stays mounted across navigations (React Navigation tabs don't
+  // remount), so the initial useState above only fires the very first
+  // time; re-applying on every params change is what actually makes a
+  // second "open this Bible" tap from the library work.
+  useEffect(() => {
+    if (route.params?.translationId) {
+      setTranslation(route.params.translationId);
+    }
+  }, [route.params?.translationId]);
 
   // Same pattern again for the translation picker modal's list -- it's
   // short enough on most translation counts to not need this, but the
@@ -101,7 +118,7 @@ export default function ScriptureSearchScreen() {
     try {
       setBooks(await getBooks(translationId));
     } catch {
-      setError("Couldn't load Scripture. Check your connection and try again.");
+      setError(t.scriptureSearch.loadBooksError);
     } finally {
       setLoading(false);
     }
@@ -120,11 +137,11 @@ export default function ScriptureSearchScreen() {
       setShowScrollToBottom(false);
       setVerseScrollOffset(0);
     } catch {
-      setChapterError("Couldn't load this chapter.");
+      setChapterError(t.scriptureSearch.loadChapterError);
     } finally {
       setChapterLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const openBook = (book: BibleBook) => {
     setSelectedBook(book);
@@ -155,7 +172,7 @@ export default function ScriptureSearchScreen() {
         onPress={() => setTranslationPickerOpen(false)}
       >
         <View style={styles.modalSheet}>
-          <Text style={styles.modalTitle}>Translation</Text>
+          <Text style={styles.modalTitle}>{t.scriptureSearch.translationModalTitle}</Text>
           <View style={{ maxHeight: 360 }}>
             <FlatList
               ref={translationListRef}
@@ -197,7 +214,7 @@ export default function ScriptureSearchScreen() {
         <View style={styles.backRow}>
           <TouchableOpacity style={styles.backRowLeft} onPress={() => setSelectedBook(null)}>
             <Ionicons name="arrow-back" size={22} color={Colors.gold} />
-            <Text style={styles.backText}>Back to books</Text>
+            <Text style={styles.backText}>{t.scriptureSearch.backToBooks}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.translationChip} onPress={() => setTranslationPickerOpen(true)}>
             <Text style={styles.translationChipText}>{translation}</Text>
@@ -214,7 +231,7 @@ export default function ScriptureSearchScreen() {
           </TouchableOpacity>
           <View style={styles.chapterTitleWrap}>
             <Text style={styles.bookTitle}>{selectedBook.name}</Text>
-            <Text style={styles.bookMeta}>Chapter {chapterNum}</Text>
+            <Text style={styles.bookMeta}>{interpolate(t.scriptureSearch.chapterLabel, { number: chapterNum })}</Text>
           </View>
           <TouchableOpacity
             disabled={selectedBook.chapters ? chapterNum >= selectedBook.chapters : false}
@@ -285,7 +302,7 @@ export default function ScriptureSearchScreen() {
               <TouchableOpacity
                 style={styles.scrollToBottomBtn}
                 onPress={() => verseListRef.current?.scrollToEnd({ animated: true })}
-                accessibilityLabel="Scroll to bottom of chapter"
+                accessibilityLabel={t.scriptureSearch.scrollToBottomChapterA11yLabel}
               >
                 <Ionicons name="arrow-down" size={20} color={Colors.white} />
               </TouchableOpacity>
@@ -305,7 +322,7 @@ export default function ScriptureSearchScreen() {
         <Ionicons name="search" size={18} color="#718096" />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search books..."
+          placeholder={t.scriptureSearch.searchBooksPlaceholder}
           placeholderTextColor="#A0AEC0"
           value={query}
           onChangeText={setQuery}
@@ -316,13 +333,13 @@ export default function ScriptureSearchScreen() {
           style={[styles.filterChip, filter === 'all' && styles.filterChipActive]}
           onPress={() => setFilter('all')}
         >
-          <Text style={[styles.filterChipText, filter === 'all' && styles.filterChipTextActive]}>All</Text>
+          <Text style={[styles.filterChipText, filter === 'all' && styles.filterChipTextActive]}>{t.scriptureSearch.filterAll}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.filterChip, filter === 'torah' && styles.filterChipActive]}
           onPress={() => setFilter('torah')}
         >
-          <Text style={[styles.filterChipText, filter === 'torah' && styles.filterChipTextActive]}>Torah</Text>
+          <Text style={[styles.filterChipText, filter === 'torah' && styles.filterChipTextActive]}>{t.scriptureSearch.filterTorah}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.filterChip, styles.translationFilterChip]}
@@ -339,7 +356,7 @@ export default function ScriptureSearchScreen() {
         <View style={styles.centerBox}>
           <Text style={styles.error}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => load(translation)}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t.scriptureSearch.retryButton}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -355,7 +372,7 @@ export default function ScriptureSearchScreen() {
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.bookName}>{item.name}</Text>
-                  <Text style={styles.bookMeta}>{item.testament} · {item.chapters} chapters</Text>
+                  <Text style={styles.bookMeta}>{interpolate(t.scriptureSearch.bookMeta, { testament: item.testament, chapters: item.chapters })}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#A0AEC0" />
               </TouchableOpacity>
@@ -390,7 +407,7 @@ export default function ScriptureSearchScreen() {
             <TouchableOpacity
               style={styles.scrollToBottomBtn}
               onPress={() => bookListRef.current?.scrollToEnd({ animated: true })}
-              accessibilityLabel="Scroll to bottom of book list"
+              accessibilityLabel={t.scriptureSearch.scrollToBottomBookListA11yLabel}
             >
               <Ionicons name="arrow-down" size={20} color={Colors.white} />
             </TouchableOpacity>
@@ -403,7 +420,7 @@ export default function ScriptureSearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4F6FA' },
+  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
   searchBar: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', margin: 16,
     borderRadius: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E2E8F0', gap: 8,

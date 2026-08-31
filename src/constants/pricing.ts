@@ -1,27 +1,30 @@
-import type { Plan, TokenPack } from '../types';
+import type { GiftCertificate, Plan } from '../types';
 
 export const PLANS: Plan[] = [
   {
     id: 'free',
-    name: 'Free',
+    name: 'Introductory Offer',
     priceLabel: '$0',
     dailyQuestionLimit: 5,
-    features: ['5 questions a day', 'Daily verse'],
+    resetsDaily: false,
+    features: ['5 questions, one time', 'Then choose a plan to keep going'],
   },
   {
     id: 'basic',
     name: 'Basic',
-    priceLabel: '$4.99/month',
-    dailyQuestionLimit: 50,
-    features: ['50 questions a day', 'Saved conversation history'],
+    priceLabel: '$5.99/month',
+    dailyQuestionLimit: 20,
+    resetsDaily: true,
+    features: ['20 questions a day', 'Saved conversation history'],
   },
   {
     id: 'pro',
     name: 'Pro',
     priceLabel: '$9.99/month',
-    dailyQuestionLimit: 300,
+    dailyQuestionLimit: 50,
+    resetsDaily: true,
     features: [
-      '300 questions a day',
+      '50 questions a day',
       'Priority responses',
       'Saved conversations across devices',
       'Bonus: sermon writer for pastors',
@@ -33,6 +36,7 @@ export const PLANS: Plan[] = [
     name: 'Platinum',
     priceLabel: '$19.99/month',
     dailyQuestionLimit: null,
+    resetsDaily: true,
     features: [
       'Everything in Pro',
       'Unlimited questions',
@@ -49,24 +53,30 @@ export const PLANS: Plan[] = [
 // Plain-language explainer of the whole monetization model, surfaced in
 // PricingScreen and TokenGiftScreen so the mechanics are never a mystery.
 export const MONETIZATION_EXPLAINER = {
-  free: 'Free gets you 5 questions a day and the daily verse, forever -- no trial, no credit card.',
-  paid: 'Paid plans (Basic/Pro/Platinum) raise or remove the daily question limit, add saved conversation history across devices, priority responses, and (Pro & up) the sermon writer for pastors.',
+  free: 'Start with 5 free questions, one time -- no trial, no credit card. Once they\'re used, choose a plan to keep talking with Jesus.',
+  paid: 'Basic, Pro, and Platinum are monthly subscriptions that raise or remove the daily question limit, add saved conversation history across devices, priority responses, and (Pro & up) the sermon writer for pastors.',
   tokens:
-    'Don\'t want a subscription? Buy a token pack instead -- each token unlocks one extra question beyond your daily limit, no expiration.',
+    'Don\'t want an ongoing subscription? Buy a gift certificate instead -- it activates a real plan on your account for a fixed number of months, no auto-renewal.',
   gifting:
-    'Gifting: buy a token pack and generate a one-time redeemable code (Settings or Buy & Gift) for someone who can\'t afford a plan themselves. They enter the code and get the tokens on their account -- no payment info needed on their end.',
+    'Gifting: buy a gift certificate and generate a one-time redeemable code (Settings or Buy & Gift) for someone who can\'t afford a plan themselves. They enter the code and get the plan active on their account -- no payment info needed on their end.',
 };
 
 // One-time purchases for people who don't want a subscription, and the
 // mechanism by which a subscriber can gift access to someone who can't
-// afford a plan (spec section 2 & 7: "token/gift code system").
-export const TOKEN_PACKS: TokenPack[] = [
-  { id: 'pack_20', tokens: 20, priceLabel: '$2.99', description: '20 questions, no expiration' },
-  { id: 'pack_60', tokens: 60, priceLabel: '$6.99', description: '60 questions, no expiration' },
-  { id: 'pack_150', tokens: 150, priceLabel: '$14.99', description: '150 questions, no expiration' },
+// afford a plan (spec section 2 & 7: "token/gift code system") --
+// redeeming one activates Basic for the chosen duration rather than
+// adding a token balance. Gift certificates only come in Basic (the
+// accessible entry tier, matching the App Store Connect products
+// actually created) -- the giver picks a duration, not a tier. Priced
+// so longer durations save a little per month.
+export const GIFT_CERTIFICATES: GiftCertificate[] = [
+  { id: 'gift_basic_1mo', planId: 'basic', durationMonths: 1, priceLabel: '$5.99', description: '1 month of Basic' },
+  { id: 'gift_basic_3mo', planId: 'basic', durationMonths: 3, priceLabel: '$14.99', description: '3 months of Basic' },
+  { id: 'gift_basic_12mo', planId: 'basic', durationMonths: 12, priceLabel: '$59.99', description: '12 months of Basic' },
 ];
 
-// A token or a gift code redemption is spent 1-for-1 against a single
-// question when the recipient is on the Free plan (or has no active
-// subscription). See src/services/tokenGifting.ts for the redemption flow;
-// actual balance/ledger enforcement must happen server-side.
+// A gift code redemption grants the recipient the code's plan for its
+// duration when the recipient has no active subscription of their own.
+// See src/services/tokenGifting.ts for the redemption flow; actual
+// balance/ledger enforcement (including expiring the plan when the
+// duration ends) must happen server-side.

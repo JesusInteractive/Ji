@@ -28,8 +28,7 @@ export default function SettingsScreen({ navigation }: Props) {
   const { t, language, setLanguage } = useI18n();
   const {
     plan,
-    remainingQuestionsToday,
-    tokenBalance,
+    remainingQuestions,
     ageAppropriateMode,
     setAgeAppropriateMode,
     offlineMode,
@@ -163,12 +162,18 @@ export default function SettingsScreen({ navigation }: Props) {
     );
   };
 
-  // Opens RevenueCat's prebuilt Customer Center (cancel, change plan,
-  // refund request, support) once this is running in a real build --
+  // Someone still on the free introductory offer has nothing to manage
+  // yet -- send them to the upgrade screen instead of RevenueCat's
+  // Customer Center (which is for cancelling/changing an EXISTING
+  // subscription). Everyone else opens Customer Center as before;
   // presentCustomerCenter() itself no-ops in Expo Go (see
-  // services/purchases.ts), so this falls back to explaining that
+  // services/purchases.ts), so that path falls back to explaining that
   // rather than doing nothing silently.
   const handleManagePlan = async () => {
+    if (plan === 'free') {
+      navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing');
+      return;
+    }
     const presented = await presentCustomerCenter();
     if (!presented) {
       Alert.alert(
@@ -237,11 +242,10 @@ export default function SettingsScreen({ navigation }: Props) {
         <Row icon="card-outline" label={t.settings.plan} value={`${currentPlan.name} · ${currentPlan.priceLabel}`} onPress={handleManagePlan} />
         <Row
           icon="chatbox-ellipses-outline"
-          label="Questions left today"
-          value={remainingQuestionsToday === Infinity ? 'Unlimited' : String(Math.max(remainingQuestionsToday, 0))}
+          label={plan === 'free' ? 'Free questions left' : 'Questions left today'}
+          value={remainingQuestions === Infinity ? 'Unlimited' : String(Math.max(remainingQuestions, 0))}
         />
-        <Row icon="ticket-outline" label={t.settings.tokens} value={String(tokenBalance)} onPress={() => navigation.navigate('TokenGift')} />
-        <Row icon="gift-outline" label={t.settings.giftTokens} onPress={() => navigation.navigate('TokenGift')} />
+        <Row icon="gift-outline" label={t.settings.giftPlan} onPress={() => navigation.navigate('TokenGift')} />
       </View>
 
       <View style={styles.section}>
@@ -391,7 +395,7 @@ export default function SettingsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4F6FA' },
+  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
   section: { backgroundColor: '#fff', marginTop: 16, marginHorizontal: 16, borderRadius: 12, paddingVertical: 6 },
   sectionTitle: {
     fontSize: 12.5, fontWeight: '700', color: '#718096', textTransform: 'uppercase',

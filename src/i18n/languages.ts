@@ -1,21 +1,142 @@
 import type { LanguageOption } from '../types';
 
-// Fully-translated launch languages. The i18n system (index.ts) is built so
-// adding a locale is just: add a locales/xx.ts file matching TranslationShape,
-// then add it here. Product spec calls for broad coverage (major African
-// languages, more Indian languages/dialects, etc.) -- ship those as
-// community/professionally-reviewed translation passes post-launch rather
-// than machine-translated placeholders, so nothing reaches users in a
-// language that reads as broken or disrespectful of the source text.
+// The full picker list: 117 languages a user can choose. Every one has a
+// full locales/xx.ts UI-translation file (src/i18n/locales/index.ts's
+// auto-generated CATALOG), and Jesus's actual chat replies/voice/
+// devotions/sermon writer (backend/server.js, not gated by any
+// translation file -- Grok can reply fluently in any of these) work for
+// all of them too. Codes are ISO 639-1; a few languages without a
+// two-letter code use their standard three-letter code instead (e.g.
+// 'yue' Cantonese).
 export const LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'English', nativeLabel: 'English' },
-  { code: 'he', label: 'Hebrew', nativeLabel: 'עברית', rtl: true },
-  { code: 'el', label: 'Greek', nativeLabel: 'Ελληνικά' },
   { code: 'es', label: 'Spanish', nativeLabel: 'Español' },
-  { code: 'fr', label: 'French', nativeLabel: 'Français' },
-  { code: 'pt', label: 'Portuguese', nativeLabel: 'Português' },
-  { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', rtl: true },
+  { code: 'zh', label: 'Chinese (Simplified)', nativeLabel: '中文(简体)' },
   { code: 'hi', label: 'Hindi', nativeLabel: 'हिन्दी' },
+  { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', rtl: true },
+  { code: 'pt', label: 'Portuguese', nativeLabel: 'Português' },
+  { code: 'bn', label: 'Bengali', nativeLabel: 'বাংলা' },
+  { code: 'ru', label: 'Russian', nativeLabel: 'Русский' },
+  { code: 'ja', label: 'Japanese', nativeLabel: '日本語' },
+  { code: 'pa', label: 'Punjabi', nativeLabel: 'ਪੰਜਾਬੀ' },
+  { code: 'de', label: 'German', nativeLabel: 'Deutsch' },
+  { code: 'jv', label: 'Javanese', nativeLabel: 'Basa Jawa' },
+  { code: 'ko', label: 'Korean', nativeLabel: '한국어' },
+  { code: 'fr', label: 'French', nativeLabel: 'Français' },
+  { code: 'te', label: 'Telugu', nativeLabel: 'తెలుగు' },
+  { code: 'mr', label: 'Marathi', nativeLabel: 'मराठी' },
+  { code: 'tr', label: 'Turkish', nativeLabel: 'Türkçe' },
+  { code: 'ta', label: 'Tamil', nativeLabel: 'தமிழ்' },
+  { code: 'vi', label: 'Vietnamese', nativeLabel: 'Tiếng Việt' },
+  { code: 'ur', label: 'Urdu', nativeLabel: 'اردو', rtl: true },
+  { code: 'it', label: 'Italian', nativeLabel: 'Italiano' },
+  { code: 'yue', label: 'Cantonese', nativeLabel: '粵語' },
+  { code: 'gu', label: 'Gujarati', nativeLabel: 'ગુજરાતી' },
+  { code: 'pl', label: 'Polish', nativeLabel: 'Polski' },
+  { code: 'uk', label: 'Ukrainian', nativeLabel: 'Українська' },
+  { code: 'fa', label: 'Persian (Farsi)', nativeLabel: 'فارسی', rtl: true },
+  { code: 'ml', label: 'Malayalam', nativeLabel: 'മലയാളം' },
+  { code: 'kn', label: 'Kannada', nativeLabel: 'ಕನ್ನಡ' },
+  { code: 'my', label: 'Burmese', nativeLabel: 'မြန်မာဘာသာ' },
+  { code: 'th', label: 'Thai', nativeLabel: 'ไทย' },
+  { code: 'or', label: 'Odia', nativeLabel: 'ଓଡ଼ିଆ' },
+  { code: 'am', label: 'Amharic', nativeLabel: 'አማርኛ' },
+  { code: 'nl', label: 'Dutch', nativeLabel: 'Nederlands' },
+  { code: 'yo', label: 'Yoruba', nativeLabel: 'Yorùbá' },
+  { code: 'ig', label: 'Igbo', nativeLabel: 'Igbo' },
+  { code: 'ha', label: 'Hausa', nativeLabel: 'Hausa' },
+  { code: 'zu', label: 'Zulu', nativeLabel: 'isiZulu' },
+  { code: 'xh', label: 'Xhosa', nativeLabel: 'isiXhosa' },
+  { code: 'af', label: 'Afrikaans', nativeLabel: 'Afrikaans' },
+  { code: 'sw', label: 'Swahili', nativeLabel: 'Kiswahili' },
+  { code: 'so', label: 'Somali', nativeLabel: 'Soomaali' },
+  { code: 'rw', label: 'Kinyarwanda', nativeLabel: 'Ikinyarwanda' },
+  { code: 'sn', label: 'Shona', nativeLabel: 'chiShona' },
+  { code: 'ny', label: 'Chichewa', nativeLabel: 'Chichewa' },
+  { code: 'st', label: 'Sesotho', nativeLabel: 'Sesotho' },
+  { code: 'uz', label: 'Uzbek', nativeLabel: "O'zbekcha" },
+  { code: 'sd', label: 'Sindhi', nativeLabel: 'سنڌي', rtl: true },
+  { code: 'ne', label: 'Nepali', nativeLabel: 'नेपाली' },
+  { code: 'si', label: 'Sinhala', nativeLabel: 'සිංහල' },
+  { code: 'ku', label: 'Kurdish', nativeLabel: 'Kurdî' },
+  { code: 'ps', label: 'Pashto', nativeLabel: 'پښتو', rtl: true },
+  { code: 'ro', label: 'Romanian', nativeLabel: 'Română' },
+  { code: 'el', label: 'Greek', nativeLabel: 'Ελληνικά' },
+  { code: 'cs', label: 'Czech', nativeLabel: 'Čeština' },
+  { code: 'sv', label: 'Swedish', nativeLabel: 'Svenska' },
+  { code: 'hu', label: 'Hungarian', nativeLabel: 'Magyar' },
+  { code: 'he', label: 'Hebrew', nativeLabel: 'עברית', rtl: true },
+  { code: 'be', label: 'Belarusian', nativeLabel: 'Беларуская' },
+  { code: 'az', label: 'Azerbaijani', nativeLabel: 'Azərbaycanca' },
+  { code: 'tg', label: 'Tajik', nativeLabel: 'Тоҷикӣ' },
+  { code: 'bg', label: 'Bulgarian', nativeLabel: 'Български' },
+  { code: 'kk', label: 'Kazakh', nativeLabel: 'Қазақша' },
+  { code: 'srp', label: 'Serbian', nativeLabel: 'Српски' },
+  { code: 'da', label: 'Danish', nativeLabel: 'Dansk' },
+  { code: 'fi', label: 'Finnish', nativeLabel: 'Suomi' },
+  { code: 'sk', label: 'Slovak', nativeLabel: 'Slovenčina' },
+  { code: 'no', label: 'Norwegian', nativeLabel: 'Norsk' },
+  { code: 'ky', label: 'Kyrgyz', nativeLabel: 'Кыргызча' },
+  { code: 'tk', label: 'Turkmen', nativeLabel: 'Türkmençe' },
+  { code: 'hr', label: 'Croatian', nativeLabel: 'Hrvatski' },
+  { code: 'lt', label: 'Lithuanian', nativeLabel: 'Lietuvių' },
+  { code: 'sq', label: 'Albanian', nativeLabel: 'Shqip' },
+  { code: 'lv', label: 'Latvian', nativeLabel: 'Latviešu' },
+  { code: 'et', label: 'Estonian', nativeLabel: 'Eesti' },
+  { code: 'sl', label: 'Slovenian', nativeLabel: 'Slovenščina' },
+  { code: 'mk', label: 'Macedonian', nativeLabel: 'Македонски' },
+  { code: 'ka', label: 'Georgian', nativeLabel: 'ქართული' },
+  { code: 'hy', label: 'Armenian', nativeLabel: 'Հայերեն' },
+  { code: 'mn', label: 'Mongolian', nativeLabel: 'Монгол' },
+  { code: 'bs', label: 'Bosnian', nativeLabel: 'Bosanski' },
+  { code: 'is', label: 'Icelandic', nativeLabel: 'Íslenska' },
+  { code: 'mt', label: 'Maltese', nativeLabel: 'Malti' },
+  { code: 'cy', label: 'Welsh', nativeLabel: 'Cymraeg' },
+  { code: 'ga', label: 'Irish', nativeLabel: 'Gaeilge' },
+  { code: 'gd', label: 'Scottish Gaelic', nativeLabel: 'Gàidhlig' },
+  { code: 'eu', label: 'Basque', nativeLabel: 'Euskara' },
+  { code: 'ca', label: 'Catalan', nativeLabel: 'Català' },
+  { code: 'gl', label: 'Galician', nativeLabel: 'Galego' },
+  { code: 'id', label: 'Indonesian', nativeLabel: 'Bahasa Indonesia' },
+  { code: 'ms', label: 'Malay', nativeLabel: 'Bahasa Melayu' },
+  { code: 'tl', label: 'Filipino (Tagalog)', nativeLabel: 'Filipino' },
+  { code: 'km', label: 'Khmer', nativeLabel: 'ខ្មែរ' },
+  { code: 'lo', label: 'Lao', nativeLabel: 'ລາວ' },
+  { code: 'as', label: 'Assamese', nativeLabel: 'অসমীয়া' },
+  { code: 'sa', label: 'Sanskrit', nativeLabel: 'संस्कृतम्' },
+  { code: 'lug', label: 'Luganda', nativeLabel: 'Luganda' },
+  { code: 'twi', label: 'Twi', nativeLabel: 'Twi' },
+  { code: 'wo', label: 'Wolof', nativeLabel: 'Wolof' },
+  { code: 'ff', label: 'Fulani', nativeLabel: 'Fulfulde' },
+  { code: 'ti', label: 'Tigrinya', nativeLabel: 'ትግርኛ' },
+  { code: 'om', label: 'Oromo', nativeLabel: 'Afaan Oromoo' },
+  { code: 'mg', label: 'Malagasy', nativeLabel: 'Malagasy' },
+  { code: 'ht', label: 'Haitian Creole', nativeLabel: 'Kreyòl Ayisyen' },
+  { code: 'qu', label: 'Quechua', nativeLabel: 'Runasimi' },
+  { code: 'gn', label: 'Guarani', nativeLabel: "Avañe'ẽ" },
+  { code: 'ay', label: 'Aymara', nativeLabel: 'Aymar aru' },
+  { code: 'yi', label: 'Yiddish', nativeLabel: 'ייִדיש', rtl: true },
+  { code: 'ceb', label: 'Cebuano', nativeLabel: 'Cebuano' },
+  { code: 'hmn', label: 'Hmong', nativeLabel: 'Hmoob' },
+  { code: 'su', label: 'Sundanese', nativeLabel: 'Basa Sunda' },
+  { code: 'ug', label: 'Uyghur', nativeLabel: 'ئۇيغۇرچە', rtl: true },
+  { code: 'dv', label: 'Dhivehi', nativeLabel: 'ދިވެހި', rtl: true },
+  { code: 'bo', label: 'Tibetan', nativeLabel: 'བོད་སྐད་' },
+  { code: 'mi', label: 'Māori', nativeLabel: 'Te Reo Māori' },
+  { code: 'sm', label: 'Samoan', nativeLabel: 'Gagana Sāmoa' },
+  { code: 'to', label: 'Tongan', nativeLabel: 'Lea Fakatonga' },
+  { code: 'fj', label: 'Fijian', nativeLabel: 'Vosa Vakaviti' },
 ];
 
-export const DEFAULT_LANGUAGE = 'en' as const;
+export const DEFAULT_LANGUAGE = 'en';
+
+// Human-readable name for a language code (e.g. "Swahili (Kiswahili)"),
+// used by every backend call that needs the AI to reply/generate in the
+// user's selected language -- sent instead of relying on the backend's
+// own small LANGUAGE_NAMES map, which doesn't cover the full 100+
+// language list here. Undefined for an unrecognized code (backend falls
+// back to its own map, then the raw code, in that case).
+export function languageDisplayName(code: string | undefined): string | undefined {
+  const option = code ? LANGUAGES.find((l) => l.code === code) : undefined;
+  return option ? `${option.label} (${option.nativeLabel})` : undefined;
+}

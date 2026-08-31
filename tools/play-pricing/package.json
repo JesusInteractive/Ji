@@ -1,0 +1,20 @@
+{
+  "name": "play-pricing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CLI + library for reading and updating Jesus Interactive's Google Play subscription base plan prices via the Android Publisher API v3. Not part of the shipped app or the running backend -- a standalone operator tool, same convention as tools/avatar-mocap and tools/backend-examples.",
+  "main": "dist/cli.js",
+  "scripts": {
+    "build": "tsc",
+    "prices": "ts-node src/cli.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}

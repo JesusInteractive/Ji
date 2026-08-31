@@ -10,7 +10,8 @@
 //   from the store's receipt/purchase record, not trusted from
 //   whatever the client sends.
 
-import type { ChatMessage, JesusMood, PlanId } from '../types';
+import type { JesusMood, PlanId } from '../types';
+import { languageDisplayName } from '../i18n/languages';
 
 // EXPO_PUBLIC_ vars are inlined into the client bundle at build time by
 // Expo/Metro -- see .env.example. Every service that needs the backend's
@@ -33,17 +34,96 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function sendMessage(
+export interface RecentMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+// Streams the reply so the first words can appear within a second or
+// two instead of waiting for the entire response -- backend/server.js's
+// /v1/chat/messages writes newline-delimited JSON chunks as the model
+// generates them. Plain `fetch` can't read a response body
+// incrementally in React Native (same limitation noted in
+// services/tts.ts), so this uses XMLHttpRequest's `onprogress`, which
+// DOES expose the growing `responseText` as data arrives -- the
+// standard RN-compatible streaming workaround.
+//
+// `onDelta` is called with the full accumulated text so far after every
+// chunk (already free of the trailing [[MOOD: ...]] tag -- the backend
+// holds that back until it knows the real mood, see its own
+// TAIL_RESERVE comment), so callers can just setState(accumulated)
+// directly rather than concatenating themselves.
+export function sendMessageStreaming(
   authToken: string,
-  conversationId: string,
   text: string,
-  languageCode?: string,
-  greeting?: { displayName?: string; isFirstMessageToday?: boolean; isFirstMessageEver?: boolean }
-): Promise<ChatMessage> {
-  return request<ChatMessage>('/v1/chat/messages', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${authToken}` },
-    body: JSON.stringify({ conversationId, text, languageCode, ...greeting }),
+  languageCode: string | undefined,
+  greeting: { displayName?: string; isFirstMessageToday?: boolean; isFirstMessageEver?: boolean } | undefined,
+  recentMessages: RecentMessage[],
+  onDelta: (textSoFar: string) => void
+): Promise<{ text: string; mood: JesusMood; createdAt: string }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_BASE_URL}/v1/chat/messages`);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+
+    let accumulated = '';
+    let processedLength = 0;
+    let pendingLine = '';
+    let settled = false;
+
+    const processNewText = () => {
+      const responseText: string = xhr.responseText || '';
+      if (responseText.length <= processedLength) return;
+      const newText = responseText.slice(processedLength);
+      processedLength = responseText.length;
+      const lines = (pendingLine + newText).split('\n');
+      pendingLine = lines.pop() ?? '';
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        let parsed: any;
+        try {
+          parsed = JSON.parse(line);
+        } catch {
+          continue; // A line split mid-chunk across two onprogress events -- rare, just skip.
+        }
+        if (parsed.type === 'delta') {
+          accumulated += parsed.text;
+          onDelta(accumulated);
+        } else if (parsed.type === 'done' && !settled) {
+          settled = true;
+          resolve({ text: accumulated, mood: parsed.mood ?? 'neutral', createdAt: parsed.createdAt });
+        } else if (parsed.type === 'error' && !settled) {
+          settled = true;
+          reject(new Error(parsed.error || 'Model request failed'));
+        }
+      }
+    };
+
+    xhr.onprogress = processNewText;
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== 4 /* DONE */) return;
+      processNewText();
+      if (settled) return;
+      if (xhr.status >= 200 && xhr.status < 300 && accumulated) {
+        // Connection closed before an explicit "done" line arrived --
+        // fall back to whatever text did stream in rather than losing it.
+        settled = true;
+        resolve({ text: accumulated, mood: 'neutral', createdAt: new Date().toISOString() });
+      } else {
+        settled = true;
+        reject(new Error(`API request failed (${xhr.status}): /v1/chat/messages`));
+      }
+    };
+    xhr.onerror = () => {
+      if (settled) return;
+      settled = true;
+      reject(new Error('Network error calling /v1/chat/messages'));
+    };
+
+    xhr.send(
+      JSON.stringify({ text, languageCode, languageName: languageDisplayName(languageCode), recentMessages, ...greeting })
+    );
   });
 }
 
@@ -94,26 +174,27 @@ export async function subscribeToPlan(
   });
 }
 
-export async function purchaseTokenPack(
+export async function purchaseGiftCertificate(
   authToken: string,
-  packId: string,
+  certId: string,
   storeReceipt: string
-): Promise<{ ok: true; tokenBalance: number }> {
-  return request('/v1/billing/token-pack', {
+): Promise<{ ok: true; planId: PlanId; durationMonths: number }> {
+  return request('/v1/billing/gift-certificate', {
     method: 'POST',
     headers: { Authorization: `Bearer ${authToken}` },
-    body: JSON.stringify({ packId, storeReceipt }),
+    body: JSON.stringify({ certId, storeReceipt }),
   });
 }
 
 export async function createGiftCode(
   authToken: string,
-  tokens: number
+  planId: PlanId,
+  durationMonths: number
 ): Promise<{ code: string }> {
   return request('/v1/gift-codes', {
     method: 'POST',
     headers: { Authorization: `Bearer ${authToken}` },
-    body: JSON.stringify({ tokens }),
+    body: JSON.stringify({ planId, durationMonths }),
   });
 }
 

@@ -1,108 +1,285 @@
 import type { TranslationShape } from './en';
 
 const hi: TranslationShape = {
-  common: {
-    continue: 'जारी रखें',
-    back: 'वापस',
-    accept: 'मैं सहमत हूं',
-    decline: 'अस्वीकार करें',
-    cancel: 'रद्द करें',
-    save: 'सहेजें',
-    retry: 'पुनः प्रयास करें',
-    loading: 'लोड हो रहा है…',
-    send: 'भेजें',
-    close: 'बंद करें',
+  "common": {
+    "continue": "जारी रखें",
+    "back": "वापस",
+    "accept": "मैं सहमत हूं",
+    "decline": "अस्वीकार करें",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "retry": "पुनः प्रयास करें",
+    "loading": "लोड हो रहा है…",
+    "send": "भेजें",
+    "close": "बंद करें"
   },
-  language: {
-    title: 'अपनी भाषा चुनें',
-    subtitle: 'आप इसे कभी भी सेटिंग्स में बदल सकते हैं।',
+  "language": {
+    "title": "अपनी भाषा चुनें",
+    "subtitle": "आप इसे कभी भी सेटिंग्स में बदल सकते हैं।"
   },
-  disclaimer: {
-    title: 'शुरू करने से पहले',
-    body:
-      'Jesus Interactive पवित्रशास्त्र पर आधारित येशु मसीह की आवाज़ में एक बातचीत ' +
-      'का अनुकरण करने के लिए कृत्रिम बुद्धिमत्ता का उपयोग करता है। यह व्यक्तिगत ' +
-      'चिंतन और आध्यात्मिक प्रोत्साहन के लिए एक उपकरण है -- यह स्वयं येशु नहीं है, ' +
-      'न ही कोई लाइसेंस प्राप्त परामर्शदाता, न ही कोई चिकित्सा या कानूनी ' +
-      'पेशेवर है, और न ही यह प्रार्थना, पवित्रशास्त्र, चर्च समुदाय, पास्टरल ' +
-      'देखभाल, या पेशेवर मानसिक स्वास्थ्य सहायता का विकल्प है। संकट की स्थिति ' +
-      'में, कृपया तुरंत अपने स्थानीय आपातकालीन नंबर या क्राइसिस लाइन से संपर्क करें।',
-    checkbox: 'मैं समझता/समझती हूं कि यह एक AI अनुकरण है, स्वयं येशु नहीं।',
+  "disclaimer": {
+    "title": "शुरू करने से पहले",
+    "body": "Jesus Interactive पवित्रशास्त्र पर आधारित येशु मसीह की आवाज़ में एक बातचीत का अनुकरण करने के लिए कृत्रिम बुद्धिमत्ता का उपयोग करता है। यह व्यक्तिगत चिंतन और आध्यात्मिक प्रोत्साहन के लिए एक उपकरण है -- यह स्वयं येशु नहीं है, न ही कोई लाइसेंस प्राप्त परामर्शदाता, न ही कोई चिकित्सा या कानूनी पेशेवर है, और न ही यह प्रार्थना, पवित्रशास्त्र, चर्च समुदाय, पास्टरल देखभाल, या पेशेवर मानसिक स्वास्थ्य सहायता का विकल्प है। संकट की स्थिति में, कृपया तुरंत अपने स्थानीय आपातकालीन नंबर या क्राइसिस लाइन से संपर्क करें।",
+    "checkbox": "मैं समझता/समझती हूं कि यह एक AI अनुकरण है, स्वयं येशु नहीं।"
   },
-  agreement: {
-    title: 'उपयोगकर्ता समझौता और क्षतिपूर्ति',
-    checkbox: 'मैंने उपयोगकर्ता समझौता, गोपनीयता नीति, और क्षतिपूर्ति शर्तें पढ़ ली हैं और सहमत हूं।',
+  "agreement": {
+    "title": "उपयोगकर्ता समझौता और क्षतिपूर्ति",
+    "checkbox": "मैंने उपयोगकर्ता समझौता, गोपनीयता नीति, और क्षतिपूर्ति शर्तें पढ़ ली हैं और सहमत हूं।"
   },
-  entrance: {
-    verseReference: 'मत्ती 7:7',
-    verseText: 'मांगो, तो तुम्हें दिया जाएगा; ढूंढ़ो, तो तुम पाओगे; खटखटाओ, तो तुम्हारे लिए खोला जाएगा।',
-    cta: 'प्रवेश करें',
+  "entrance": {
+    "verseReference": "मत्ती 7:7",
+    "verseText": "मांगो, तो तुम्हें दिया जाएगा; ढूंढ़ो, तो तुम पाओगे; खटखटाओ, तो तुम्हारे लिए खोला जाएगा।",
+    "cta": "प्रवेश करें"
   },
-  pricing: {
-    title: 'अपनी योजना चुनें',
-    subtitle: 'आप कभी भी बदल या रद्द कर सकते हैं।',
-    tokenTitle: 'या पहुंच उपहार में दें',
-    tokenSubtitle: 'अपने लिए टोकन खरीदें या किसी ऐसे व्यक्ति को उपहार में दें जो योजना का खर्च नहीं उठा सकता।',
+  "pricing": {
+    "title": "अपनी योजना चुनें",
+    "subtitle": "आप कभी भी बदल या रद्द कर सकते हैं।",
+    "tokenTitle": "या एक योजना उपहार में दें",
+    "tokenSubtitle": "किसी ऐसे व्यक्ति के लिए गिफ्ट सर्टिफिकेट खरीदें जो योजना का खर्च नहीं उठा सकता -- सेटिंग्स में \"खरीदें और उपहार दें\" देखें।"
   },
-  home: {
-    title: 'स्वागत है',
-    subtitle: 'आप कहाँ जाना चाहेंगे?',
+  "home": {
+    "title": "स्वागत है",
+    "subtitle": "आप कहाँ जाना चाहेंगे?"
   },
-  tabs: {
-    home: 'होम',
-    chat: 'यीशु से पूछें',
-    prayerWall: 'प्रार्थना दीवार',
-    bible: 'पवित्रशास्त्र',
-    journal: 'डायरी',
-    about: 'परिचय',
-    settings: 'सेटिंग्स',
-    studyTools: 'अध्ययन उपकरण',
-    profile: 'प्रोफ़ाइल',
-    devotions: 'दैनिक भक्ति',
+  "tabs": {
+    "home": "होम",
+    "chat": "यीशु से पूछें",
+    "prayerWall": "प्रार्थना दीवार",
+    "bible": "पवित्रशास्त्र",
+    "journal": "डायरी",
+    "about": "परिचय",
+    "settings": "सेटिंग्स",
+    "studyTools": "अध्ययन उपकरण",
+    "profile": "प्रोफ़ाइल",
+    "devotions": "दैनिक भक्ति"
   },
-  chat: {
-    inputPlaceholder: 'एक प्रश्न या प्रार्थना पूछें',
-    limitReached: 'आपने आज की प्रश्न सीमा पूरी कर ली है। कल वापस आएं, या अपनी योजना अपग्रेड करें।',
-    whatDoYouThink: 'तुम क्या सोचते हो?',
+  "chat": {
+    "inputPlaceholder": "एक प्रश्न या प्रार्थना पूछें",
+    "limitReached": "आपने अपने 5 मुफ़्त प्रश्न इस्तेमाल कर लिए हैं। यीशु से बात जारी रखने के लिए एक योजना चुनें।",
+    "dailyLimitReached": "आपने आज की प्रश्न सीमा पूरी कर ली है। कल वापस आएं, या अपनी योजना अपग्रेड करें।",
+    "whatDoYouThink": "तुम क्या सोचते हो?"
   },
-  prayerWall: {
-    title: 'दीवार',
-    subtitle: 'पत्थरों के बीच एक प्रार्थना रखें।',
-    inputPlaceholder: 'अपनी प्रार्थना लिखें…',
-    anonymous: 'गुमनाम रूप से पोस्ट करें',
-    shared: 'सार्वजनिक दीवार पर साझा करें',
-    placed: 'आपकी प्रार्थना रख दी गई है।',
+  "prayerWall": {
+    "title": "दीवार",
+    "subtitle": "पत्थरों के बीच एक प्रार्थना रखें।",
+    "inputPlaceholder": "अपनी प्रार्थना लिखें…",
+    "anonymous": "गुमनाम रूप से पोस्ट करें",
+    "shared": "सार्वजनिक दीवार पर साझा करें",
+    "placed": "आपकी प्रार्थना रख दी गई है।"
   },
-  about: {
-    title: 'येशु के बारे में',
-    biography: 'जीवनी',
-    lineage: 'वंशावली (मत्ती की पुस्तक)',
-    prophecies: 'पूरी हुई भविष्यवाणियां',
+  "about": {
+    "title": "येशु के बारे में",
+    "biography": "जीवनी",
+    "lineage": "वंशावली (मत्ती की पुस्तक)",
+    "prophecies": "पूरी हुई भविष्यवाणियां"
   },
-  settings: {
-    account: 'खाता',
-    plan: 'वर्तमान योजना',
-    tokens: 'टोकन शेष',
-    giftTokens: 'किसी को टोकन उपहार में दें',
-    preferences: 'प्राथमिकताएं',
-    notifications: 'दैनिक वचन के लिए पुश सूचनाएं',
-    dailyVerse: 'दैनिक वचन अनुस्मारक',
-    ageAppropriate: 'आयु-उपयुक्त सामग्री मोड',
-    offlineMode: 'ऑफ़लाइन मोड (केवल कैश्ड सामग्री)',
-    language: 'भाषा',
-    privacyData: 'गोपनीयता और डेटा',
-    downloadData: 'मेरा डेटा डाउनलोड करें',
-    deleteAccount: 'मेरा खाता और सभी डेटा हटाएं',
-    support: 'समुदाय और सहायता',
-    reportContent: 'अनुचित सामग्री की रिपोर्ट करें',
-    contactSupport: 'सहायता से संपर्क करें',
-    about: 'परिचय',
-    version: 'ऐप संस्करण',
-    privacyPolicy: 'गोपनीयता नीति',
-    terms: 'सेवा की शर्तें',
-    disclosureLink: 'AI प्रकटीकरण',
-    aboutApp: 'इस ऐप के बारे में',
+  "settings": {
+    "account": "खाता",
+    "plan": "वर्तमान योजना",
+    "giftPlan": "किसी को योजना उपहार में दें",
+    "preferences": "प्राथमिकताएं",
+    "notifications": "दैनिक वचन के लिए पुश सूचनाएं",
+    "dailyVerse": "दैनिक वचन अनुस्मारक",
+    "ageAppropriate": "आयु-उपयुक्त सामग्री मोड",
+    "offlineMode": "ऑफ़लाइन मोड (केवल कैश्ड सामग्री)",
+    "language": "भाषा",
+    "privacyData": "गोपनीयता और डेटा",
+    "downloadData": "मेरा डेटा डाउनलोड करें",
+    "deleteAccount": "मेरा खाता और सभी डेटा हटाएं",
+    "support": "समुदाय और सहायता",
+    "reportContent": "अनुचित सामग्री की रिपोर्ट करें",
+    "contactSupport": "सहायता से संपर्क करें",
+    "about": "परिचय",
+    "version": "ऐप संस्करण",
+    "privacyPolicy": "गोपनीयता नीति",
+    "terms": "सेवा की शर्तें",
+    "disclosureLink": "AI प्रकटीकरण",
+    "aboutApp": "इस ऐप के बारे में"
   },
+  "favorites": {
+    "title": "पसंदीदा",
+    "emptyState": "अभी तक कुछ भी सहेजा नहीं गया है। शास्त्र में किसी पद को देर तक दबाएँ, या चैट उत्तर पर बुकमार्क पर टैप करें।",
+    "shareSuffix": "Jesus Interactive से साझा किया गया"
+  },
+  "guidedPrayer": {
+    "title": "मार्गदर्शित प्रार्थना",
+    "stepLabel": "चरण {current} / {total}",
+    "nextButton": "अगला",
+    "amenButton": "आमीन",
+    "adorationTitle": "आराधना",
+    "adorationPrompt": "सरलता से परमेश्वर से कहें कि वे आपके लिए कौन हैं — उनकी भलाई, उनकी सामर्थ्य, उनका प्रेम।",
+    "confessionTitle": "पाप स्वीकार",
+    "confessionPrompt": "जहाँ आप चूक गए हैं, उसके बारे में ईमानदारी से बताएँ। वे पहले से जानते हैं; वे चाहते हैं कि आप इसे उनके सामने लाएँ।",
+    "thanksgivingTitle": "धन्यवाद",
+    "thanksgivingPrompt": "अभी आपके जीवन में तीन बातें — बड़ी या छोटी — जिनके लिए आप आभारी हैं, उनका नाम लें।",
+    "supplicationTitle": "प्रार्थना निवेदन",
+    "supplicationPrompt": "माँगें। अपने और दूसरों के लिए अपनी सच्ची प्रार्थनाएँ बिना रोक-टोक के उनके सामने रखें।",
+    "listenTitle": "सुनें",
+    "listenPrompt": "एक क्षण के लिए शांत बैठें। प्रार्थना केवल बोलना नहीं है।"
+  },
+  "journal": {
+    "title": "जर्नल",
+    "myEntriesTab": "मेरी प्रविष्टियाँ",
+    "fromJesusTab": "यीशु की ओर से",
+    "entriesEmptyState": "अभी तक कोई जर्नल प्रविष्टि नहीं है। लिखने के लिए + पर टैप करें।",
+    "jesusEmptyState": "अभी तक कुछ भी सहेजा नहीं गया है। शास्त्र में किसी पद को देर तक दबाएँ, या चैट उत्तर पर बुकमार्क पर टैप करें।",
+    "untitledEntry": "शीर्षकहीन प्रविष्टि",
+    "deleteEntryTitle": "प्रविष्टि हटाएँ",
+    "deleteEntryMessage": "यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "alertCancel": "रद्द करें",
+    "alertDelete": "हटाएँ",
+    "titlePlaceholder": "शीर्षक",
+    "bodyPlaceholder": "स्वतंत्र रूप से लिखें...",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "shareSuffix": "Jesus Interactive से साझा किया गया"
+  },
+  "reportIssue": {
+    "title": "तकनीकी समस्या की रिपोर्ट करें",
+    "helpText": "कुछ ठीक से काम नहीं कर रहा? बताएँ कि क्या हुआ और हम इसकी जाँच करेंगे। आपका डिवाइस और ऐप संस्करण स्वचालित रूप से शामिल हो जाएगा ताकि हम समस्या का पता लगा सकें।",
+    "inputPlaceholder": "क्या गड़बड़ हुई?",
+    "submitButton": "रिपोर्ट भेजें",
+    "deviceInfoLabel": "स्वचालित रूप से शामिल",
+    "successAlertTitle": "हमें बताने के लिए धन्यवाद",
+    "successAlertMessage": "हमें आपकी रिपोर्ट मिल गई है और हम इसकी जाँच करेंगे।",
+    "errorAlertTitle": "आपकी रिपोर्ट नहीं भेजी जा सकी",
+    "errorAlertFallback": "कृपया अपना कनेक्शन जाँचें और पुनः प्रयास करें।"
+  },
+  "tokenGift": {
+    "title": "खरीदें और उपहार दें",
+    "currentPlan": "वर्तमान योजना: {planName}",
+    "sectionBuyForSelf": "अपने लिए खरीदें",
+    "rowSubNoAutoRenewal": "कोई स्वतः नवीनीकरण नहीं",
+    "purchasing": "खरीद रहा है...",
+    "sectionGiftToSomeoneElse": "किसी और को उपहार दें",
+    "giftHelpText": "ऐसे व्यक्ति के लिए प्रमाणपत्र खरीदें और एक रिडीम करने योग्य कोड बनाएँ जो योजना नहीं खरीद सकता।",
+    "giftRowTitlePrefix": "उपहार {description}",
+    "giftButtonLabel": "उपहार दें",
+    "lastGiftCodeLabel": "अंतिम बनाया गया उपहार कोड",
+    "sectionRedeemCode": "कोड रिडीम करें",
+    "redeemPlaceholder": "XXXX-XXXX-XXXX",
+    "redeemButton": "रिडीम करें",
+    "downgradeWarningTitle": "यह आपकी योजना को कम कर देगा",
+    "downgradeWarningMessageCertificate": "आपके पास वर्तमान में {planName} है। यह प्रमाणपत्र लगाने से आपका खाता {months} के लिए {newPlanName} पर स्विच हो जाएगा — जब तक आप दोबारा अपग्रेड नहीं करते, आपको {planName} की सुविधाएँ नहीं मिलेंगी। जारी रखें?",
+    "downgradeWarningMessageRedeem": "आपके पास वर्तमान में {planName} है। यह कोड रिडीम करने से आपका खाता {months} के लिए {newPlanName} पर स्विच हो जाएगा — जब तक आप दोबारा अपग्रेड नहीं करते, आपको {planName} की सुविधाएँ नहीं मिलेंगी। जारी रखें?",
+    "cancelButton": "रद्द करें",
+    "continueAnywayButton": "फिर भी जारी रखें",
+    "purchaseFailedTitle": "खरीद पूरी नहीं हो सकी",
+    "purchaseFailedFallback": "कृपया पुनः प्रयास करें।",
+    "purchaseCompleteTitle": "खरीद पूरी हुई",
+    "planActiveMessage": "{planName} अब आपके खाते पर सक्रिय है।",
+    "giftCodeCreatedTitle": "उपहार कोड बनाया गया",
+    "giftCodeCreatedMessage": "इस कोड को किसी ऐसे व्यक्ति के साथ साझा करें जिसे इसकी आवश्यकता है:\n\n{code}\n\n{months} का {planName}।",
+    "founderWelcomeTitle": "स्वागत है, संस्थापक",
+    "familyWelcomeTitle": "परिवार में स्वागत है",
+    "platinumUnlockedMessage": "प्लैटिनम एक्सेस अनलॉक — कोई शुल्क नहीं, कोई समाप्ति नहीं।",
+    "redeemedTitle": "रिडीम हो गया!",
+    "redeemFailedTitle": "रिडीम नहीं हो सका",
+    "redeemFailedFallback": "कृपया कोड जाँचें और पुनः प्रयास करें।"
+  },
+  "legalDoc": {
+    "lastUpdatedLabel": "अंतिम अद्यतन: "
+  },
+  "wordSearch": {
+    "progressLabel": "{count} में से {total} मिले",
+    "completedBadge": "पहले पूरा किया",
+    "completionTitle": "सभी {total} शब्द मिल गए",
+    "completionSubtitle": "बहुत अच्छा — एक शांत क्षण अच्छे से बिताया।",
+    "nextPuzzleButton": "अगला पहेली",
+    "refreshButton": "ताज़ा करें"
+  },
+  "profile": {
+    "photoAccessNeededTitle": "फ़ोटो एक्सेस की आवश्यकता",
+    "photoAccessNeededMessage": "प्रोफ़ाइल फ़ोटो अपलोड करने के लिए सेटिंग्स में फ़ोटो लाइब्रेरी एक्सेस सक्षम करें।",
+    "photoPickerErrorTitle": "फ़ोटो पिकर नहीं खोला जा सका",
+    "photoPickerErrorFallback": "कृपया पुनः प्रयास करें।",
+    "removePhotoAlertTitle": "फ़ोटो हटाएँ",
+    "removePhotoAlertMessage": "अपनी प्रोफ़ाइल फ़ोटो हटाएँ?",
+    "cancelButton": "रद्द करें",
+    "removeButton": "हटाएँ",
+    "uploadPhotoA11yLabel": "प्रोफ़ाइल फ़ोटो अपलोड करें",
+    "removePhotoA11yLabel": "प्रोफ़ाइल फ़ोटो हटाएँ",
+    "removePhotoText": "फ़ोटो हटाएँ",
+    "nameLabel": "नाम",
+    "namePlaceholder": "अपना नाम जोड़ें",
+    "accountSectionTitle": "खाता",
+    "planLabel": "योजना",
+    "planValue": "{name} · {price}",
+    "freeQuestionsLeftLabel": "शेष निःशुल्क प्रश्न",
+    "questionsLeftTodayLabel": "आज शेष प्रश्न",
+    "unlimitedValue": "असीमित",
+    "devOnlySectionTitle": "केवल डेवलपर",
+    "unlockUnlimitedA11yLabel": "असीमित प्रश्न अनलॉक करें (केवल डेवलपर)",
+    "unlockUnlimitedButton": "असीमित प्रश्न अनलॉक करें",
+    "devNote": "केवल डेवलपर बिल्ड में दिखता है — आपके प्लान को स्थानीय रूप से प्लैटिनम पर सेट करता है, ठीक वैसे ही जैसे संस्थापक कोड रिडीम करने पर। वास्तविक रिलीज़ बिल्ड में नहीं दिखेगा।",
+    "savedSectionTitle": "इस डिवाइस पर सहेजा गया",
+    "favoritesLabel": "पसंदीदा",
+    "journalEntriesLabel": "जर्नल प्रविष्टियाँ",
+    "prayerNotesLabel": "प्रार्थना नोट्स",
+    "footerNote": "आपका नाम और फ़ोटो केवल इस डिवाइस पर संग्रहीत हैं — अभी तक उनके पीछे कोई खाता सर्वर नहीं है।"
+  },
+  "scriptureSearch": {
+    "loadBooksError": "शास्त्र लोड नहीं हो सका। अपना कनेक्शन जाँचें और पुनः प्रयास करें।",
+    "loadChapterError": "यह अध्याय लोड नहीं हो सका।",
+    "translationModalTitle": "अनुवाद",
+    "backToBooks": "पुस्तकों पर वापस जाएँ",
+    "chapterLabel": "अध्याय {number}",
+    "scrollToBottomChapterA11yLabel": "अध्याय के अंत तक स्क्रॉल करें",
+    "searchBooksPlaceholder": "पुस्तकें खोजें...",
+    "filterAll": "सभी",
+    "filterTorah": "तोराह",
+    "retryButton": "पुनः प्रयास करें",
+    "bookMeta": "{testament} · {chapters} अध्याय",
+    "scrollToBottomBookListA11yLabel": "पुस्तक सूची के अंत तक स्क्रॉल करें"
+  },
+  "sermonWriter": {
+    "upsellTitle": "उपदेश और बाइबल अध्ययन लेखक",
+    "upsellBody": "किसी भी विषय या अंश पर पूर्ण उपदेश पांडुलिपि या छोटे समूह का बाइबल अध्ययन तैयार करें, जो स्वस्थ व्याख्या पर आधारित हो। प्रो और प्लैटिनम योजनाओं पर उपलब्ध।",
+    "upgradeButton": "अपग्रेड करें",
+    "upgradeErrorTitle": "कुछ गड़बड़ हुई",
+    "upgradeErrorMessage": "अपग्रेड स्क्रीन नहीं खोली जा सकी। कृपया पुनः प्रयास करें।",
+    "helpText": "कोई विषय या अंश दें और यह एक पूरा उपदेश या बाइबल अध्ययन लिखेगा जिसे आप वास्तव में पढ़ा सकें — केवल रूपरेखा नहीं।",
+    "topicLabel": "विषय या विषयवस्तु",
+    "topicPlaceholder": "उदा. संदेह के बीच विश्वास",
+    "passageLabel": "मुख्य अंश (वैकल्पिक)",
+    "passagePlaceholder": "उदा. मरकुस 9:14-29",
+    "occasionLabel": "अवसर या श्रोता (वैकल्पिक)",
+    "occasionPlaceholder": "उदा. युवा समूह, रविवार सुबह, छोटा समूह अध्ययन",
+    "lengthLabel": "लंबाई",
+    "lengthStandard": "मानक (15-20 मिनट)",
+    "lengthExtended": "विस्तृत (30-40 मिनट)",
+    "generateButton": "उत्पन्न करें",
+    "regenerateButton": "पुनः उत्पन्न करें",
+    "generateErrorTitle": "उत्पन्न नहीं किया जा सका",
+    "generateErrorFallback": "कृपया अपना कनेक्शन जाँचें और पुनः प्रयास करें।"
+  },
+  "studyTools": {
+    "linkErrorTitle": "वह लिंक नहीं खोला जा सका",
+    "linkErrorMessage": "कृपया अपना कनेक्शन जाँचें और पुनः प्रयास करें।",
+    "intro": "निःशुल्क टीकाएँ, उपदेश और अध्ययन उपकरण — नीचे दी गई हर प्रविष्टि या तो सार्वजनिक डोमेन में है या एक निःशुल्क उपकरण जिससे हम लिंक करते हैं, इसलिए लाइसेंसिंग की कोई समस्या नहीं होगी।",
+    "sermonWriterCardTitle": "उपदेश और बाइबल अध्ययन लेखक",
+    "sermonWriterCardSubtitle": "किसी भी विषय या अंश पर पूरा उपदेश या अध्ययन तैयार करें",
+    "resourceAccessibilityLabel": "{author} द्वारा {title}",
+    "scrollToBottomLabel": "नीचे तक स्क्रॉल करें"
+  },
+  "globalLibrary": {
+    "title": "बहुभाषी बाइबिल उपकरण",
+    "intro": "दुनिया के हर कोने की भाषाओं में पवित्रशास्त्र और ईसाई संसाधन -- निःशुल्क, सार्वजनिक डोमेन अनुवाद और पाठ।",
+    "bibleSectionTitle": "भाषा के अनुसार बाइबिल",
+    "yourLanguageBibles": "{language} में बाइबिल",
+    "allLanguages": "सभी भाषाएँ",
+    "translationCount": "{count} अनुवाद{plural}",
+    "noMatchForYourLanguage": "इस कैटलॉग में अभी {language} में कोई बाइबिल नहीं है -- नीचे सभी भाषाएँ ब्राउज़ करें।",
+    "booksSectionTitle": "ईसाई पुस्तकें और गवाहियाँ",
+    "booksIntro": "इंटरनेट आर्काइव से सार्वजनिक डोमेन और निःशुल्क पुस्तकें, टीकाएँ और गवाहियाँ, आपकी भाषा में फ़िल्टर की गईं।",
+    "booksLoading": "पुस्तकालय खोजा जा रहा है...",
+    "booksEmpty": "अभी {language} में कोई परिणाम नहीं मिला। नीचे कोई अन्य भाषा आज़माएँ।",
+    "openBook": "खोलें",
+    "languageSectionHeader": "भाषा के अनुसार ब्राउज़ करें",
+    "loadingLanguages": "उपलब्ध भाषाएँ लोड हो रही हैं...",
+    "loadError": "पुस्तकालय लोड नहीं हो सका। अपना कनेक्शन जाँचें और पुनः प्रयास करें।",
+    "retryButton": "पुनः प्रयास करें"
+  }
 };
 
 export default hi;

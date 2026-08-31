@@ -7,6 +7,7 @@ import { useApp } from '../context/AppContext';
 import MagnifyButton from '../components/MagnifyButton';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import type { StudyToolsStackParamList } from '../navigation/StudyToolsStack';
+import { useI18n, interpolate } from '../i18n';
 
 type Props = NativeStackScreenProps<StudyToolsStackParamList, 'StudyToolsHome'>;
 
@@ -1952,6 +1953,7 @@ const CATEGORIES: StudyCategory[] = [
 
 export default function StudyToolsScreen({ navigation }: Props) {
   const { textZoom } = useApp();
+  const { t } = useI18n();
   const scrollRef = useRef<ScrollView>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   // Content/viewport heights + scroll offset as state, not refs -- needed
@@ -1973,7 +1975,7 @@ export default function StudyToolsScreen({ navigation }: Props) {
     // URLs or a source that's temporarily down, a failure is a real
     // possibility, not just theoretical.
     Linking.openURL(url).catch(() => {
-      Alert.alert("Couldn't open that link", 'Please check your connection and try again.');
+      Alert.alert(t.studyTools.linkErrorTitle, t.studyTools.linkErrorMessage);
     });
   };
 
@@ -1999,9 +2001,19 @@ export default function StudyToolsScreen({ navigation }: Props) {
         }}
         scrollEventThrottle={16}
       >
+        <TouchableOpacity style={styles.globalLibraryCard} onPress={() => navigation.navigate('GlobalLibrary')}>
+          <View style={styles.globalLibraryIcon}>
+            <Ionicons name="earth-outline" size={24} color={Colors.white} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.globalLibraryTitle}>{t.globalLibrary.title}</Text>
+            <Text style={styles.globalLibrarySubtitle}>{t.globalLibrary.bibleSectionTitle} · {t.globalLibrary.booksSectionTitle}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Colors.white} />
+        </TouchableOpacity>
+
         <Text style={styles.intro}>
-          Free commentaries, sermons, and study tools -- every entry below is either public domain or a free tool
-          we link out to, so nothing here runs into licensing trouble.
+          {t.studyTools.intro}
         </Text>
 
         <TouchableOpacity style={styles.sermonWriterCard} onPress={() => navigation.navigate('SermonWriter')}>
@@ -2009,8 +2021,8 @@ export default function StudyToolsScreen({ navigation }: Props) {
             <Ionicons name="create-outline" size={22} color={Colors.gold} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.sermonWriterTitle}>Sermon & Bible Study Writer</Text>
-            <Text style={styles.sermonWriterSubtitle}>Generate a full sermon or study on any topic or passage</Text>
+            <Text style={styles.sermonWriterTitle}>{t.studyTools.sermonWriterCardTitle}</Text>
+            <Text style={styles.sermonWriterSubtitle}>{t.studyTools.sermonWriterCardSubtitle}</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#A0AEC0" />
         </TouchableOpacity>
@@ -2026,7 +2038,7 @@ export default function StudyToolsScreen({ navigation }: Props) {
                 style={styles.card}
                 onPress={() => openLink(resource.url)}
                 accessibilityRole="link"
-                accessibilityLabel={`${resource.title} by ${resource.author}`}
+                accessibilityLabel={interpolate(t.studyTools.resourceAccessibilityLabel, { title: resource.title, author: resource.author })}
               >
                 <View style={styles.cardIcon}>
                   <Ionicons name="book-outline" size={20} color={Colors.gold} />
@@ -2055,7 +2067,7 @@ export default function StudyToolsScreen({ navigation }: Props) {
         <TouchableOpacity
           style={styles.scrollToBottomBtn}
           onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
-          accessibilityLabel="Scroll to bottom"
+          accessibilityLabel={t.studyTools.scrollToBottomLabel}
         >
           <Ionicons name="arrow-down" size={20} color={Colors.ivory} />
         </TouchableOpacity>
@@ -2066,10 +2078,29 @@ export default function StudyToolsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4F6FA' },
+  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
   content: { padding: 16, paddingBottom: 32 },
   intro: { fontSize: 13.5, lineHeight: 20, color: '#718096', marginBottom: 20 },
   category: { marginBottom: 24 },
+  globalLibraryCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.goldDark,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 14,
+    gap: 12,
+  },
+  globalLibraryIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  globalLibraryTitle: { fontSize: 15.5, fontWeight: '800', color: Colors.white },
+  globalLibrarySubtitle: { fontSize: 11.5, color: 'rgba(255,255,255,0.85)', marginTop: 2 },
   sermonWriterCard: {
     flexDirection: 'row',
     alignItems: 'center',

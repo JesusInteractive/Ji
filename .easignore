@@ -1,0 +1,21 @@
+# EAS Build regenerates these on its own servers (pod install / npm
+# install) -- uploading them just inflates the build archive and risks
+# the upload itself timing out/dropping on a large connection, which is
+# what actually failed the first production build attempt (871MB
+# archive, ios/Pods alone was 1.2GB of that).
+ios/Pods/
+ios/build/
+node_modules/
+backend/node_modules/
+.localnode/
+.git/
+
+# Stray marketing/store assets sitting loose in the PROJECT ROOT (app
+# store screenshots, demo videos, logo drafts) -- not part of the app
+# source, no reason for the build server to receive them. Leading "/"
+# anchors these to the root only -- assets/video/*.mp4 (actually used
+# by the app, e.g. LogoIntroScreen) must NOT match this.
+/*.mp4
+/*.mov
+/*.docx
+/jesus-interactive-production.aab

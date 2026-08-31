@@ -22,14 +22,15 @@ export const TEXT_ZOOM_LEVELS = [1, 1.2, 1.4, 1.6];
 export const STORAGE_KEYS = {
   onboarding: 'ji_onboarding_v2',
   plan: 'ji_plan_v2',
-  tokens: 'ji_tokens_v2',
   messages: 'ji_messages_v2',
   journal: 'ji_journal_v2',
   favorites: 'ji_favorites_v2',
   prayers: 'ji_prayers_v2',
   testimonies: 'ji_testimonies_v1',
+  wordSearchCompleted: 'ji_word_search_completed_v1',
   profile: 'ji_profile_v1',
   dailyQuota: 'ji_daily_quota_v1',
+  planExpiresAt: 'ji_plan_expires_at_v1',
 };
 
 // Local calendar date (not UTC) as YYYY-MM-DD -- keys the persisted daily
@@ -84,15 +85,23 @@ interface AppContextValue {
   markEntranceSeen: () => void;
   hasSelectedPlan: boolean;
   plan: PlanId;
-  selectPlan: (planId: PlanId) => void;
+  // expiresAt (ISO string) marks a time-limited grant -- used by gift
+  // certificates, which activate a plan for a fixed number of months
+  // with no auto-renewal (see TokenGiftScreen.tsx). Omit/pass null for
+  // an ongoing RevenueCat subscription, which has no local expiration --
+  // its lifecycle is managed by the store, not by this date.
+  selectPlan: (planId: PlanId, expiresAt?: string | null) => void;
+  // Null for the free tier and for real subscriptions. Set only while a
+  // gift-certificate-granted plan is active; checked once on launch (see
+  // the restore effect below) and reverted to Free if it's passed.
+  planExpiresAt: string | null;
   onboardingComplete: boolean;
 
-  // Usage / tokens
-  remainingQuestionsToday: number;
-  setRemainingQuestionsToday: (n: number | ((prev: number) => number)) => void;
-  tokenBalance: number;
-  addTokens: (n: number) => void;
-  spendToken: () => boolean;
+  // Usage -- a one-time lifetime allowance for the free introductory
+  // offer (never refills), or a genuinely-daily allowance for paid plans
+  // (refills every calendar day). See PLANS[].resetsDaily.
+  remainingQuestions: number;
+  setRemainingQuestions: (n: number | ((prev: number) => number)) => void;
 
   // Chat
   messages: ChatMessage[];
@@ -114,6 +123,12 @@ interface AppContextValue {
   addPrayerNote: (n: PrayerNote) => void;
   testimonyNotes: TestimonyNote[];
   addTestimonyNote: (n: TestimonyNote) => void;
+
+  // Bible Word Search -- puzzle seeds (see services/wordSearchPuzzle.ts)
+  // the user has fully completed, purely for the subtle "completed"
+  // indicator on BibleWordSearchScreen; no scores or streaks (per spec).
+  completedWordSearchPuzzles: number[];
+  addCompletedWordSearchPuzzle: (seed: number) => void;
 
   // Full local wipe: messages, journal, favorites, prayers, tokens, plan,
   // and onboarding state, resetting the app to first-launch. Used by
@@ -165,13 +180,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false);
   const [hasSeenEntrance, setHasSeenEntrance] = useState(false);
   const [plan, setPlan] = useState<PlanId | null>(null);
-  const [tokenBalance, setTokenBalance] = useState(0);
-  const [remainingQuestionsToday, setRemainingQuestionsToday] = useState(5);
+  const [planExpiresAt, setPlanExpiresAtState] = useState<string | null>(null);
+  const [remainingQuestions, setRemainingQuestions] = useState(5);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [prayerNotes, setPrayerNotes] = useState<PrayerNote[]>([]);
   const [testimonyNotes, setTestimonyNotes] = useState<TestimonyNote[]>([]);
+  const [completedWordSearchPuzzles, setCompletedWordSearchPuzzles] = useState<number[]>([]);
   const [ageAppropriateMode, setAgeAppropriateMode] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   const [voiceRepliesEnabled, setVoiceRepliesEnabled] = useState(true);
@@ -183,11 +199,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [onboardingRaw, planRaw, tokensRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, dailyQuotaRaw] =
+        const [onboardingRaw, planRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, dailyQuotaRaw, wordSearchCompletedRaw, planExpiresAtRaw] =
           await Promise.all([
             AsyncStorage.getItem(STORAGE_KEYS.onboarding),
             AsyncStorage.getItem(STORAGE_KEYS.plan),
-            AsyncStorage.getItem(STORAGE_KEYS.tokens),
             AsyncStorage.getItem(STORAGE_KEYS.messages),
             AsyncStorage.getItem(STORAGE_KEYS.journal),
             AsyncStorage.getItem(STORAGE_KEYS.favorites),
@@ -195,6 +210,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             AsyncStorage.getItem(STORAGE_KEYS.testimonies),
             AsyncStorage.getItem(STORAGE_KEYS.profile),
             AsyncStorage.getItem(STORAGE_KEYS.dailyQuota),
+            AsyncStorage.getItem(STORAGE_KEYS.wordSearchCompleted),
+            AsyncStorage.getItem(STORAGE_KEYS.planExpiresAt),
           ]);
 
         if (onboardingRaw) {
@@ -205,42 +222,65 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setHasSeenEntrance(!!parsed.hasSeenEntrance);
         }
         if (planRaw) {
-          setPlan(planRaw as PlanId);
-          // Restoring `plan` alone left remainingQuestionsToday stuck at
-          // its hardcoded initial value (5, the free-tier default) on
-          // every app restart, regardless of which plan was actually
-          // restored -- e.g. Platinum's unlimited access silently
-          // reverted to "5 questions left" until selectPlan() was called
-          // again in that session. Recompute it from the restored plan
-          // the same way selectPlan() itself does.
-          const restoredPlan = PLANS.find((p) => p.id === planRaw);
+          // A gift-certificate-granted plan (see selectPlan's expiresAt
+          // param) carries an expiration -- a real subscription doesn't.
+          // Check it once here, on launch, same spirit as the daily-quota
+          // date check just below: if the grant ran out while the app was
+          // closed, revert to Free now rather than leaving the expired
+          // paid plan silently active until someone notices.
+          let restoredPlanId = planRaw as PlanId;
+          let restoredExpiresAt = planExpiresAtRaw;
+          if (restoredExpiresAt && new Date(restoredExpiresAt).getTime() <= Date.now()) {
+            restoredPlanId = 'free';
+            restoredExpiresAt = null;
+            AsyncStorage.setItem(STORAGE_KEYS.plan, 'free').catch(() => {});
+            AsyncStorage.removeItem(STORAGE_KEYS.planExpiresAt).catch(() => {});
+          }
+          setPlan(restoredPlanId);
+          setPlanExpiresAtState(restoredExpiresAt);
+          // Restoring `plan` alone left remainingQuestions stuck at its
+          // hardcoded initial value (5, the free-tier default) on every
+          // app restart, regardless of which plan was actually restored
+          // -- e.g. Platinum's unlimited access silently reverted to "5
+          // questions left" until selectPlan() was called again in that
+          // session. Recompute it from the restored plan the same way
+          // selectPlan() itself does.
+          const restoredPlan = PLANS.find((p) => p.id === restoredPlanId);
           const fullLimit = restoredPlan?.dailyQuestionLimit ?? Infinity;
+          const resetsDaily = restoredPlan?.resetsDaily ?? true;
           // That full-limit recompute alone reintroduced a different bug:
           // a free-tier user who used up today's questions could force-
           // quit and relaunch to get a fresh 5, unlimited times a day,
           // since nothing about *usage* was ever persisted, only the
           // plan's limit. ji_daily_quota_v1 persists {date, remaining} so
-          // a same-day relaunch restores what was actually left, while a
-          // new calendar day (date mismatch) still resets to the full
-          // limit, same as before.
+          // a same-day relaunch restores what was actually left.
+          //
+          // For a plan that resetsDaily (Basic/Pro/Platinum), a new
+          // calendar day (date mismatch) still resets to the full limit,
+          // same as before. For the free introductory offer
+          // (resetsDaily: false), the date is never checked at all -- its
+          // 5 questions are a one-time lifetime allowance, so whatever
+          // was left last session is still what's left now, even on a
+          // new day. It only refills via selectPlan() itself (choosing
+          // Free during onboarding, or a redeemed gift certificate/
+          // subscription later granting a different plan).
           let restoredRemaining = fullLimit;
           if (dailyQuotaRaw) {
             try {
               const parsedQuota = JSON.parse(dailyQuotaRaw) as { date: string; remaining: number };
-              if (parsedQuota.date === todayKey()) {
+              if (!resetsDaily || parsedQuota.date === todayKey()) {
                 restoredRemaining = parsedQuota.remaining;
               }
             } catch {
               // Fall through to fullLimit if the cached quota is corrupt.
             }
           }
-          setRemainingQuestionsToday(restoredRemaining);
+          setRemainingQuestions(restoredRemaining);
           AsyncStorage.setItem(
             STORAGE_KEYS.dailyQuota,
             JSON.stringify({ date: todayKey(), remaining: restoredRemaining })
           ).catch(() => {});
         }
-        if (tokensRaw) setTokenBalance(Number(tokensRaw) || 0);
         if (messagesRaw) setMessages(JSON.parse(messagesRaw));
         const journal = await readEncryptedJson<JournalEntry[]>(journalRaw);
         if (journal) setJournalEntries(journal);
@@ -254,6 +294,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (prayers) setPrayerNotes(prayers);
         const testimonies = await readEncryptedJson<TestimonyNote[]>(testimoniesRaw);
         if (testimonies) setTestimonyNotes(testimonies);
+        if (wordSearchCompletedRaw) setCompletedWordSearchPuzzles(JSON.parse(wordSearchCompletedRaw));
       } finally {
         setReady(true);
       }
@@ -290,12 +331,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     persistOnboarding({ hasSeenEntrance: true });
   }, [persistOnboarding]);
 
-  const selectPlan = useCallback((planId: PlanId) => {
+  const selectPlan = useCallback((planId: PlanId, expiresAt: string | null = null) => {
     setPlan(planId);
+    setPlanExpiresAtState(expiresAt);
     AsyncStorage.setItem(STORAGE_KEYS.plan, planId).catch(() => {});
+    if (expiresAt) {
+      AsyncStorage.setItem(STORAGE_KEYS.planExpiresAt, expiresAt).catch(() => {});
+    } else {
+      AsyncStorage.removeItem(STORAGE_KEYS.planExpiresAt).catch(() => {});
+    }
     const found = PLANS.find((p) => p.id === planId);
     const fullLimit = found?.dailyQuestionLimit ?? Infinity;
-    setRemainingQuestionsToday(fullLimit);
+    setRemainingQuestions(fullLimit);
     AsyncStorage.setItem(
       STORAGE_KEYS.dailyQuota,
       JSON.stringify({ date: todayKey(), remaining: fullLimit })
@@ -303,12 +350,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // The raw useState setter above isn't itself persisted -- ChatScreen
-  // decrementing remainingQuestionsToday through it (each question asked)
+  // decrementing remainingQuestions through it (each question asked)
   // would otherwise hit the exact same "resets on relaunch" bug this
   // whole ji_daily_quota_v1 mechanism exists to close. This is the one
   // actually exposed to consumers below.
-  const updateRemainingQuestionsToday = useCallback((n: number | ((prev: number) => number)) => {
-    setRemainingQuestionsToday((prev) => {
+  const updateRemainingQuestions = useCallback((n: number | ((prev: number) => number)) => {
+    setRemainingQuestions((prev) => {
       const next = typeof n === 'function' ? n(prev) : n;
       AsyncStorage.setItem(
         STORAGE_KEYS.dailyQuota,
@@ -316,26 +363,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       ).catch(() => {});
       return next;
     });
-  }, []);
-
-  const addTokens = useCallback((n: number) => {
-    setTokenBalance((prev) => {
-      const next = prev + n;
-      AsyncStorage.setItem(STORAGE_KEYS.tokens, String(next)).catch(() => {});
-      return next;
-    });
-  }, []);
-
-  const spendToken = useCallback((): boolean => {
-    let didSpend = false;
-    setTokenBalance((prev) => {
-      if (prev <= 0) return prev;
-      didSpend = true;
-      const next = prev - 1;
-      AsyncStorage.setItem(STORAGE_KEYS.tokens, String(next)).catch(() => {});
-      return next;
-    });
-    return didSpend;
   }, []);
 
   const addMessage = useCallback((m: ChatMessage) => {
@@ -399,6 +426,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const addCompletedWordSearchPuzzle = useCallback((seed: number) => {
+    setCompletedWordSearchPuzzles((prev) => {
+      if (prev.includes(seed)) return prev;
+      const next = [...prev, seed];
+      AsyncStorage.setItem(STORAGE_KEYS.wordSearchCompleted, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
   // Profile is purely local (see AppContextValue's own comment) -- both
   // fields persisted together under one key.
   const persistProfile = useCallback(
@@ -434,13 +470,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setHasAcceptedAgreement(false);
     setHasSeenEntrance(false);
     setPlan(null);
-    setTokenBalance(0);
-    setRemainingQuestionsToday(5);
+    setPlanExpiresAtState(null);
+    setRemainingQuestions(5);
     setMessages([]);
     setJournalEntries([]);
     setFavorites([]);
     setPrayerNotes([]);
     setTestimonyNotes([]);
+    setCompletedWordSearchPuzzles([]);
     setDisplayNameState('');
     setProfilePhotoUriState(null);
   }, []);
@@ -458,13 +495,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hasSelectedPlan: plan !== null,
       plan: plan ?? 'free',
       selectPlan,
+      planExpiresAt,
       onboardingComplete:
         hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasSeenEntrance && plan !== null,
-      remainingQuestionsToday,
-      setRemainingQuestionsToday: updateRemainingQuestionsToday,
-      tokenBalance,
-      addTokens,
-      spendToken,
+      remainingQuestions,
+      setRemainingQuestions: updateRemainingQuestions,
       messages,
       addMessage,
       clearMessages,
@@ -478,6 +513,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       addPrayerNote,
       testimonyNotes,
       addTestimonyNote,
+      completedWordSearchPuzzles,
+      addCompletedWordSearchPuzzle,
       wipeAllLocalData,
       ageAppropriateMode,
       setAgeAppropriateMode,
@@ -496,9 +533,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [
       hasSelectedLanguage, markLanguageSelected, hasAcceptedDisclosure, acceptDisclosure,
       hasAcceptedAgreement, acceptAgreement, hasSeenEntrance, markEntranceSeen, plan, selectPlan,
-      remainingQuestionsToday, tokenBalance, addTokens, spendToken, messages, addMessage, clearMessages,
+      planExpiresAt,
+      remainingQuestions, updateRemainingQuestions, messages, addMessage, clearMessages,
       journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
-      prayerNotes, addPrayerNote, testimonyNotes, addTestimonyNote, wipeAllLocalData, ageAppropriateMode, offlineMode,
+      prayerNotes, addPrayerNote, testimonyNotes, addTestimonyNote,
+      completedWordSearchPuzzles, addCompletedWordSearchPuzzle,
+      wipeAllLocalData, ageAppropriateMode, offlineMode,
       voiceRepliesEnabled,
       textZoom, setTextZoom,
       displayName, setDisplayName, profilePhotoUri, setProfilePhotoUri, ready,

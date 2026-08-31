@@ -1,31 +1,39 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import { useI18n, interpolate } from '../i18n';
 
 interface Step {
   title: string;
   prompt: string;
 }
 
-const STEPS: Step[] = [
-  { title: 'Adoration', prompt: 'Start by simply telling God who He is to you -- His goodness, His power, His love.' },
-  { title: 'Confession', prompt: 'Be honest about where you\'ve fallen short. He already knows; He just wants you to bring it to Him.' },
-  { title: 'Thanksgiving', prompt: 'Name three things, big or small, that you\'re grateful for right now.' },
-  { title: 'Supplication', prompt: 'Ask. Bring your real requests -- for yourself and for others -- without holding back.' },
-  { title: 'Listen', prompt: 'Sit quietly for a moment. Prayer isn\'t only talking.' },
-];
-
 // Guided prayer mode (spec section 7) -- a simple ACTS-style walkthrough.
 export default function GuidedPrayerScreen() {
+  const { t } = useI18n();
   const [stepIndex, setStepIndex] = useState(0);
+
+  const STEPS: Step[] = useMemo(
+    () => [
+      { title: t.guidedPrayer.adorationTitle, prompt: t.guidedPrayer.adorationPrompt },
+      { title: t.guidedPrayer.confessionTitle, prompt: t.guidedPrayer.confessionPrompt },
+      { title: t.guidedPrayer.thanksgivingTitle, prompt: t.guidedPrayer.thanksgivingPrompt },
+      { title: t.guidedPrayer.supplicationTitle, prompt: t.guidedPrayer.supplicationPrompt },
+      { title: t.guidedPrayer.listenTitle, prompt: t.guidedPrayer.listenPrompt },
+    ],
+    [t]
+  );
+
   const step = STEPS[stepIndex];
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Guided Prayer</Text>
+      <Text style={styles.title}>{t.guidedPrayer.title}</Text>
       <View style={styles.card}>
-        <Text style={styles.stepLabel}>Step {stepIndex + 1} of {STEPS.length}</Text>
+        <Text style={styles.stepLabel}>
+          {interpolate(t.guidedPrayer.stepLabel, { current: stepIndex + 1, total: STEPS.length })}
+        </Text>
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepPrompt}>{step.prompt}</Text>
       </View>
@@ -43,7 +51,7 @@ export default function GuidedPrayerScreen() {
           disabled={stepIndex === STEPS.length - 1}
         >
           <Text style={styles.navBtnPrimaryText}>
-            {stepIndex === STEPS.length - 1 ? 'Amen' : 'Next'}
+            {stepIndex === STEPS.length - 1 ? t.guidedPrayer.amenButton : t.guidedPrayer.nextButton}
           </Text>
         </TouchableOpacity>
       </View>

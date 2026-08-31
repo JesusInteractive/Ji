@@ -6,6 +6,7 @@ import { useApp } from '../context/AppContext';
 import { generateSermon, type SermonLength } from '../services/sermonWriter';
 import { presentProPaywall } from '../services/purchases';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import { useI18n } from '../i18n';
 
 // Study Tools > Sermon Writer -- a real, on-demand sermon/Bible-study
 // generator, not just the "sermon writer for pastors" line in
@@ -16,6 +17,7 @@ import DraggableScrollbar from '../components/DraggableScrollbar';
 // pricing.ts) -- Pro gets the standard-length option only.
 export default function SermonWriterScreen() {
   const { plan } = useApp();
+  const { language, t } = useI18n();
   const hasAccess = plan === 'pro' || plan === 'platinum';
   const canUseExtended = plan === 'platinum';
 
@@ -42,7 +44,7 @@ export default function SermonWriterScreen() {
     const outcome = await presentProPaywall();
     setUpgrading(false);
     if (outcome === 'error') {
-      Alert.alert('Something went wrong', 'Could not open the upgrade screen. Please try again.');
+      Alert.alert(t.sermonWriter.upgradeErrorTitle, t.sermonWriter.upgradeErrorMessage);
     }
   };
 
@@ -57,12 +59,13 @@ export default function SermonWriterScreen() {
         passageReference: passageReference.trim() || undefined,
         occasion: occasion.trim() || undefined,
         length,
+        languageCode: language,
       });
       setResult(content);
     } catch (e) {
       Alert.alert(
-        "Couldn't generate that",
-        e instanceof Error ? e.message : 'Please check your connection and try again.'
+        t.sermonWriter.generateErrorTitle,
+        e instanceof Error ? e.message : t.sermonWriter.generateErrorFallback
       );
     } finally {
       setGenerating(false);
@@ -73,13 +76,12 @@ export default function SermonWriterScreen() {
     return (
       <View style={styles.upsellContainer}>
         <Ionicons name="create-outline" size={40} color={Colors.gold} />
-        <Text style={styles.upsellTitle}>Sermon & Bible Study Writer</Text>
+        <Text style={styles.upsellTitle}>{t.sermonWriter.upsellTitle}</Text>
         <Text style={styles.upsellBody}>
-          Generate a full sermon manuscript or small-group Bible study on any topic or passage, grounded in
-          sound exegesis. Available on the Pro and Platinum plans.
+          {t.sermonWriter.upsellBody}
         </Text>
         <TouchableOpacity style={styles.upsellBtn} onPress={handleUpgrade} disabled={upgrading}>
-          {upgrading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.upsellBtnText}>Upgrade</Text>}
+          {upgrading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.upsellBtnText}>{t.sermonWriter.upgradeButton}</Text>}
         </TouchableOpacity>
       </View>
     );
@@ -97,34 +99,33 @@ export default function SermonWriterScreen() {
         scrollEventThrottle={16}
       >
         <Text style={styles.helpText}>
-          Give it a topic or passage and it'll write a full sermon or Bible study you can actually teach
-          from -- not just an outline.
+          {t.sermonWriter.helpText}
         </Text>
 
-        <Text style={styles.label}>Topic or theme</Text>
+        <Text style={styles.label}>{t.sermonWriter.topicLabel}</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g. Faith in the midst of doubt"
+          placeholder={t.sermonWriter.topicPlaceholder}
           placeholderTextColor="#A0AEC0"
           value={topic}
           onChangeText={setTopic}
           editable={!generating}
         />
 
-        <Text style={styles.label}>Focus passage (optional)</Text>
+        <Text style={styles.label}>{t.sermonWriter.passageLabel}</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g. Mark 9:14-29"
+          placeholder={t.sermonWriter.passagePlaceholder}
           placeholderTextColor="#A0AEC0"
           value={passageReference}
           onChangeText={setPassageReference}
           editable={!generating}
         />
 
-        <Text style={styles.label}>Occasion or audience (optional)</Text>
+        <Text style={styles.label}>{t.sermonWriter.occasionLabel}</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g. Youth group, Sunday morning, small group study"
+          placeholder={t.sermonWriter.occasionPlaceholder}
           placeholderTextColor="#A0AEC0"
           value={occasion}
           onChangeText={setOccasion}
@@ -133,7 +134,7 @@ export default function SermonWriterScreen() {
 
         {canUseExtended && (
           <>
-            <Text style={styles.label}>Length</Text>
+            <Text style={styles.label}>{t.sermonWriter.lengthLabel}</Text>
             <View style={styles.lengthRow}>
               <TouchableOpacity
                 style={[styles.lengthOption, length === 'standard' && styles.lengthOptionActive]}
@@ -141,7 +142,7 @@ export default function SermonWriterScreen() {
                 disabled={generating}
               >
                 <Text style={[styles.lengthOptionText, length === 'standard' && styles.lengthOptionTextActive]}>
-                  Standard (15-20 min)
+                  {t.sermonWriter.lengthStandard}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -150,7 +151,7 @@ export default function SermonWriterScreen() {
                 disabled={generating}
               >
                 <Text style={[styles.lengthOptionText, length === 'extended' && styles.lengthOptionTextActive]}>
-                  Extended (30-40 min)
+                  {t.sermonWriter.lengthExtended}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -165,7 +166,7 @@ export default function SermonWriterScreen() {
           {generating ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
-            <Text style={styles.generateBtnText}>{result ? 'Regenerate' : 'Generate'}</Text>
+            <Text style={styles.generateBtnText}>{result ? t.sermonWriter.regenerateButton : t.sermonWriter.generateButton}</Text>
           )}
         </TouchableOpacity>
 

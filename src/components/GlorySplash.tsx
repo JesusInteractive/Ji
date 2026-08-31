@@ -144,7 +144,7 @@ const GlorySplash = forwardRef<GlorySplashHandle, Props>(function GlorySplash(
       const wind = createAudioPlayer(require('../../assets/sounds/entrance-wind.mp3'));
       // Fades in AND out, then stops -- see ChatScreen.tsx's
       // playWindSound / audioFade.ts's own comments for why.
-      playFadedWindCue(wind, 0.14);
+      playFadedWindCue(wind, 0.08);
     } catch (e) {
       // Missing/failed audio should never block the visual entrance.
       console.error('Entrance sound error:', e);

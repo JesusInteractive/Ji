@@ -1,22 +1,20 @@
-// RevenueCat integration -- wires PLANS/TOKEN_PACKS (constants/pricing.ts)
-// to real Apple/Google subscription & IAP billing via RevenueCat, which
-// sits in front of StoreKit and Play Billing so this file doesn't need
-// two separate native integrations.
+// RevenueCat integration -- wires PLANS/GIFT_CERTIFICATES
+// (constants/pricing.ts) to real Apple/Google subscription & IAP billing
+// via RevenueCat, which sits in front of StoreKit and Play Billing so
+// this file doesn't need two separate native integrations.
 //
 // STATUS: PricingScreen.tsx and TokenGiftScreen.tsx already call into
-// this file (purchasePlan/purchaseTokenPack/presentProPaywall). The iOS
-// side of setup is done: App Store Connect has real Basic/Pro/Platinum
-// (monthly/yearly/lifetime) subscription+IAP products and 3 token-pack
-// consumables; RevenueCat has matching Products, one "Jesus Interactive
-// Pro" entitlement covering all three Platinum durations, and a default
-// Offering with each duration's package pointed at its real product.
-// The IDs below are the real ones, not placeholders.
+// this file (purchasePlan/purchaseGiftCertificate/presentProPaywall).
+// Pricing was restructured to three monthly-only tiers (Basic/Pro/
+// Platinum -- Platinum's old yearly/lifetime durations are gone) plus
+// gift certificates (1/3/12-month Basic codes) replacing the old
+// per-question token packs. App Store Connect, Play Console, and
+// RevenueCat (Products + the "default" Offering's packages, one per
+// plan/cert, each holding both platforms' products) are all set up to
+// match the ids below, and both EXPO_PUBLIC_REVENUECAT_IOS_KEY/
+// _ANDROID_KEY in .env are real production public SDK keys.
 //
 // STILL NEEDED:
-//   - Android/Play Console: same products, mirrored, not done yet.
-//   - Swap EXPO_PUBLIC_REVENUECAT_IOS_KEY / _ANDROID_KEY in .env from
-//     RevenueCat's test_ keys to its production public SDK keys (Apps
-//     page in the RevenueCat dashboard).
 //   - `eas build` a real dev client (not `expo start`/Expo Go, and not
 //     the iOS Simulator -- see isExpoGo below, and StoreKit purchases
 //     don't work in Simulator either) to actually test a purchase, using
@@ -43,25 +41,15 @@ import type { PlanId } from '../types';
 const REVENUECAT_IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
 const REVENUECAT_ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? '';
 
-// One entitlement gating the Platinum tier's three purchase durations
-// (monthly/yearly/lifetime all grant this same entitlement in
-// RevenueCat's dashboard config) -- kept as a single named export so
+// Gates the Platinum tier's single monthly product in RevenueCat's
+// dashboard config -- kept as a single named export so
 // checkProEntitlement()/presentProPaywall() and the RevenueCat dashboard
-// config always agree on the exact string.
+// config always agree on the exact string. Used by SermonWriterScreen.tsx
+// to gate the sermon writer feature; ChatScreen's daily-quota paywall
+// routes to the in-app Pricing screen instead (see RootNavigator.tsx),
+// since that can correctly purchase whichever tier the user actually
+// picks rather than guessing from a single entitlement.
 export const PRO_ENTITLEMENT_ID = 'Jesus Interactive Pro';
-
-// Platinum's three purchase-duration options (per-app decision: add
-// these alongside the existing Free/Basic/Pro/Platinum tiers, rather
-// than replacing them -- Basic/Pro above still map to their own single
-// monthly product). Placeholders -- replace with your real RevenueCat
-// product identifiers.
-export const PRO_PRODUCT_IDS = {
-  monthly: 'com.jesusinteractive.app.platinum.monthly',
-  yearly: 'com.jesusinteractive.app.platinum.yearly',
-  lifetime: 'com.jesusinteractive.app.platinum.lifetime',
-} as const;
-
-export type ProDuration = keyof typeof PRO_PRODUCT_IDS;
 
 // Expo Go can't load native modules at all -- see this file's top
 // comment. `executionEnvironment === 'storeClient'` is the modern
@@ -70,22 +58,44 @@ export type ProDuration = keyof typeof PRO_PRODUCT_IDS;
 // short-circuits.
 const isExpoGo = Constants.executionEnvironment === 'storeClient';
 
-// Maps this app's plan/pack ids to the product identifiers you'll
-// create in App Store Connect / Play Console / RevenueCat. These are
-// placeholders -- replace with your real product ids before this can
-// charge anyone anything.
-export const REVENUECAT_PRODUCT_IDS: Record<PlanId, string | null> = {
+// Maps this app's plan/pack ids to the real product identifiers created
+// in App Store Connect / Play Console / RevenueCat. iOS and Android use
+// completely different naming schemes for the same plan (App Store
+// Connect enforces a reverse-DNS style; Play Console products created
+// here ended up short snake_case, sometimes as "product:basePlan" pairs),
+// so this has to be platform-aware -- a single shared id list (the old
+// version of this file) can only ever match one platform's store.
+const REVENUECAT_PRODUCT_IDS_IOS: Record<PlanId, string | null> = {
   free: null, // no product -- free tier has nothing to purchase
   basic: 'com.jesusinteractive.app.basic.monthly',
   pro: 'com.jesusinteractive.app.pro.monthly',
   platinum: 'com.jesusinteractive.app.platinum.monthly',
 };
 
-export const REVENUECAT_TOKEN_PACK_IDS: Record<string, string> = {
-  pack_20: 'com.jesusinteractive.app.tokens.20',
-  pack_60: 'com.jesusinteractive.app.tokens.60',
-  pack_150: 'com.jesusinteractive.app.tokens.150',
+const REVENUECAT_PRODUCT_IDS_ANDROID: Record<PlanId, string | null> = {
+  free: null,
+  basic: 'basic_monthly:monthly',
+  pro: 'monthly:pro-monthly', // confirmed live in Play Console -- "monthly:pro" is a stale/unused base plan
+  platinum: 'platinum_monthly:platinum',
 };
+
+export const REVENUECAT_PRODUCT_IDS: Record<PlanId, string | null> =
+  Platform.OS === 'ios' ? REVENUECAT_PRODUCT_IDS_IOS : REVENUECAT_PRODUCT_IDS_ANDROID;
+
+const REVENUECAT_GIFT_CERTIFICATE_IDS_IOS: Record<string, string> = {
+  gift_basic_1mo: 'com.jesusinteractive.app.gift.basic.1month',
+  gift_basic_3mo: 'com.jesusinteractive.app.gift.basic.3month',
+  gift_basic_12mo: 'com.jesusinteractive.app.gift.basic.12month',
+};
+
+const REVENUECAT_GIFT_CERTIFICATE_IDS_ANDROID: Record<string, string> = {
+  gift_basic_1mo: 'gift_basic_1mo',
+  gift_basic_3mo: 'gift_basic_3mo',
+  gift_basic_12mo: 'gift_basic_12mo',
+};
+
+export const REVENUECAT_GIFT_CERTIFICATE_IDS: Record<string, string> =
+  Platform.OS === 'ios' ? REVENUECAT_GIFT_CERTIFICATE_IDS_IOS : REVENUECAT_GIFT_CERTIFICATE_IDS_ANDROID;
 
 let initialized = false;
 
@@ -147,20 +157,20 @@ export async function purchasePlan(planId: PlanId): Promise<PurchaseResult> {
   }
 }
 
-export async function purchaseTokenPack(packId: string): Promise<PurchaseResult> {
+export async function purchaseGiftCertificate(certId: string): Promise<PurchaseResult> {
   if (isExpoGo) {
     return { success: false, error: 'Purchases require a real build (EAS dev client), not Expo Go.' };
   }
-  const productId = REVENUECAT_TOKEN_PACK_IDS[packId];
+  const productId = REVENUECAT_GIFT_CERTIFICATE_IDS[certId];
   if (!productId) {
-    return { success: false, error: `No product configured for token pack "${packId}".` };
+    return { success: false, error: `No product configured for gift certificate "${certId}".` };
   }
   try {
     const Purchases = (await import('react-native-purchases')).default;
     const offerings = await Purchases.getOfferings();
     const pkg = offerings.current?.availablePackages.find((p) => p.product.identifier === productId);
     if (!pkg) {
-      return { success: false, error: 'That token pack isn\'t available for purchase right now.' };
+      return { success: false, error: 'That gift certificate isn\'t available for purchase right now.' };
     }
     await Purchases.purchasePackage(pkg);
     return { success: true };
@@ -214,32 +224,6 @@ export async function checkProEntitlement(): Promise<boolean> {
   const info = await getCustomerInfo();
   if (!info) return false;
   return info.entitlements.active[PRO_ENTITLEMENT_ID] != null;
-}
-
-// Buys one specific Platinum duration directly (skip the prebuilt
-// paywall UI, e.g. for a custom "choose monthly/yearly/lifetime" screen
-// of your own). Most integrations should prefer presentProPaywall()
-// below instead -- it's RevenueCat's supported, dashboard-configurable
-// UI and handles all three options at once.
-export async function purchaseProDuration(duration: ProDuration): Promise<PurchaseResult> {
-  if (isExpoGo) {
-    return { success: false, error: 'Purchases require a real build (EAS dev client), not Expo Go.' };
-  }
-  const productId = PRO_PRODUCT_IDS[duration];
-  try {
-    const Purchases = (await import('react-native-purchases')).default;
-    const offerings = await Purchases.getOfferings();
-    const pkg = offerings.current?.availablePackages.find((p) => p.product.identifier === productId);
-    if (!pkg) {
-      return { success: false, error: `The ${duration} Platinum option isn't available for purchase right now.` };
-    }
-    await Purchases.purchasePackage(pkg);
-    return { success: true };
-  } catch (e: any) {
-    if (e?.userCancelled) return { success: false, userCancelled: true };
-    console.error('Purchase failed:', e);
-    return { success: false, error: e?.message ?? 'Purchase failed. Please try again.' };
-  }
 }
 
 export type PaywallOutcome = 'purchased' | 'restored' | 'cancelled' | 'error' | 'not_presented';

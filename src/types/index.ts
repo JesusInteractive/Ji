@@ -1,6 +1,14 @@
 // Shared type definitions for the Jesus Interactive app.
 
-export type LanguageCode = 'en' | 'el' | 'he' | 'es' | 'fr' | 'pt' | 'ar' | 'hi';
+// A plain ISO 639-1 code, not a narrow union -- the language PICKER
+// (src/i18n/languages.ts's LANGUAGES) covers 100+ languages so Jesus's
+// actual chat replies (not gated by translation work at all -- see
+// backend/server.js) can come back in any of them, but only a handful
+// have full UI translation files (src/i18n/locales/*.ts, keyed in
+// CATALOG). A literal string union of 100+ codes would buy nothing here
+// since CATALOG lookups already need a runtime fallback to English for
+// codes it doesn't have a file for.
+export type LanguageCode = string;
 
 export interface LanguageOption {
   code: LanguageCode;
@@ -16,20 +24,31 @@ export interface Plan {
   name: string;
   priceLabel: string;
   dailyQuestionLimit: number | null; // null = unlimited
+  // false for the free introductory offer: dailyQuestionLimit is a
+  // one-time lifetime allowance that never refills on a new calendar
+  // day, unlike the paid tiers' genuinely-daily limit. See
+  // AppContext.tsx's quota restore effect.
+  resetsDaily: boolean;
   features: string[];
   badge?: string;
 }
 
-export interface TokenPack {
+// Gift certificates replace the old per-question token packs: a giver
+// buys a code that activates a real plan (see GIFT_CERTIFICATES in
+// constants/pricing.ts) on the recipient's account for a fixed duration,
+// instead of just adding N extra questions.
+export interface GiftCertificate {
   id: string;
-  tokens: number;
+  planId: Exclude<PlanId, 'free'>;
+  durationMonths: 1 | 3 | 12;
   priceLabel: string;
   description: string;
 }
 
 export interface GiftCode {
   code: string;
-  tokens: number;
+  planId: Exclude<PlanId, 'free'>;
+  durationMonths: number;
   createdByUserId: string;
   redeemedByUserId: string | null;
   createdAt: string;

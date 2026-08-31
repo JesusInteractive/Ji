@@ -38,7 +38,11 @@ export type MainTabParamList = {
   // tab, same pattern as SettingsTab below.
   ChatTab: NavigatorScreenParams<ChatStackParamList> | undefined;
   PrayerWall: undefined;
-  Bible: undefined;
+  // GlobalLibraryScreen (Study Tools > Bible Library) deep-links here
+  // with a specific translation id when the user taps a Bible in their
+  // language -- undefined for the normal tab-bar tap, which keeps
+  // whatever translation was last selected (see ScriptureSearchScreen).
+  Bible: { translationId?: string } | undefined;
   Journal: undefined;
   StudyTools: undefined;
   Profile: undefined;

@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 import Colors from '../theme/colors';
 import { reportTechIssue } from '../services/api';
 import { withAuthRetry } from '../services/backendAuth';
+import { useI18n } from '../i18n';
 
 // Settings > "Report a technical issue" -- see backend/server.js's
 // POST /v1/support/report for where these actually go today (Vercel's
@@ -19,6 +20,7 @@ function buildDeviceInfo(): string {
 }
 
 export default function ReportIssueScreen() {
+  const { t } = useI18n();
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -29,11 +31,11 @@ export default function ReportIssueScreen() {
     try {
       await withAuthRetry((token) => reportTechIssue(token, trimmed, buildDeviceInfo()));
       setMessage('');
-      Alert.alert('Thanks for letting us know', "We've received your report and will look into it.");
+      Alert.alert(t.reportIssue.successAlertTitle, t.reportIssue.successAlertMessage);
     } catch (e) {
       Alert.alert(
-        "Couldn't send your report",
-        e instanceof Error ? e.message : 'Please check your connection and try again.'
+        t.reportIssue.errorAlertTitle,
+        e instanceof Error ? e.message : t.reportIssue.errorAlertFallback
       );
     } finally {
       setSubmitting(false);
@@ -42,15 +44,12 @@ export default function ReportIssueScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Report a technical issue</Text>
-      <Text style={styles.helpText}>
-        Something not working right? Describe what happened and we'll look into it. Your device and app
-        version are included automatically so we can help track it down.
-      </Text>
+      <Text style={styles.title}>{t.reportIssue.title}</Text>
+      <Text style={styles.helpText}>{t.reportIssue.helpText}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="What went wrong?"
+        placeholder={t.reportIssue.inputPlaceholder}
         placeholderTextColor="#A0AEC0"
         value={message}
         onChangeText={setMessage}
@@ -64,11 +63,11 @@ export default function ReportIssueScreen() {
         onPress={handleSubmit}
         disabled={!message.trim() || submitting}
       >
-        {submitting ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.submitBtnText}>Send report</Text>}
+        {submitting ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.submitBtnText}>{t.reportIssue.submitButton}</Text>}
       </TouchableOpacity>
 
       <View style={styles.deviceInfoBox}>
-        <Text style={styles.deviceInfoLabel}>Included automatically</Text>
+        <Text style={styles.deviceInfoLabel}>{t.reportIssue.deviceInfoLabel}</Text>
         <Text style={styles.deviceInfoText}>{buildDeviceInfo()}</Text>
       </View>
     </ScrollView>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -36,7 +36,7 @@ import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import { getSafetyReply, buildJesusMessage, maybeBridgeReminder, PEACEFUL_FAREWELL_TEXT } from '../services/demoReplyEngine';
-import { sendMessage } from '../services/api';
+import { sendMessageStreaming, type RecentMessage } from '../services/api';
 import { canSendNow } from '../services/cache';
 import { track } from '../services/analytics';
 import { synthesizeSpeech, playSpeech } from '../services/tts';
@@ -45,6 +45,7 @@ import { withAuthRetry } from '../services/backendAuth';
 import { playFadedWindCue } from '../services/audioFade';
 import type { ChatMessage, JesusMood } from '../types';
 import type { ChatStackParamList } from '../navigation/ChatStack';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 
 export default function ChatScreen() {
@@ -54,15 +55,14 @@ export default function ChatScreen() {
     plan,
     messages,
     addMessage,
-    remainingQuestionsToday,
-    setRemainingQuestionsToday,
-    tokenBalance,
-    spendToken,
+    remainingQuestions,
+    setRemainingQuestions,
     addFavorite,
     ageAppropriateMode,
     clearMessages,
     textZoom,
     voiceRepliesEnabled,
+    setVoiceRepliesEnabled,
     displayName,
   } = useApp();
   const [input, setInput] = useState('');
@@ -84,6 +84,13 @@ export default function ChatScreen() {
   const audioRecorder = useAudioRecorder({ ...RecordingPresets.HIGH_QUALITY, isMeteringEnabled: true });
   const recorderState = useAudioRecorderState(audioRecorder, 200);
   const listRef = useRef<FlatList>(null);
+  // A live, not-yet-persisted "in progress" reply bubble -- rendered as
+  // an extra item appended after `messages` (see displayMessages below)
+  // while text is still streaming in, then replaced by a real addMessage()
+  // call once the stream finishes. Kept entirely separate from `messages`
+  // itself so a dropped/failed stream never leaves a half-written message
+  // permanently saved.
+  const [streamingReply, setStreamingReply] = useState<{ text: string; mood: JesusMood } | null>(null);
   // Shows a "scroll to bottom" button once the user has scrolled up away
   // from the newest messages -- without this there was no way back down
   // except manually dragging, easy to miss once the history gets long.
@@ -123,7 +130,27 @@ export default function ChatScreen() {
   const MAX_EMPTY_AUTO_RELISTENS = 2;
   const conversationIdRef = useRef(`conv-${Date.now()}`);
 
-  const limitReached = remainingQuestionsToday <= 0 && tokenBalance <= 0;
+  const limitReached = remainingQuestions <= 0;
+  // Chat is nested ChatStack -> MainTabs -> RootStack, so reaching the
+  // Pricing modal registered on RootStack (see RootNavigator.tsx) needs
+  // two getParent() hops, not one. Routes to the real in-app Pricing
+  // screen (which correctly purchases whichever tier the user picks)
+  // rather than RevenueCat's generic prebuilt paywall, which can't tell
+  // this screen which specific plan ends up purchased.
+  const openPaywall = () => {
+    navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing');
+  };
+  // The FlatList's actual data source -- persisted `messages` plus, while
+  // a reply is actively streaming in, one extra not-yet-persisted bubble
+  // appended after them (see streamingReply's own comment). A fixed id
+  // is fine since only one can ever exist at a time.
+  const displayMessages = useMemo(
+    () =>
+      streamingReply
+        ? [...messages, { id: 'streaming-reply', author: 'jesus' as const, text: streamingReply.text, mood: streamingReply.mood, createdAt: new Date().toISOString() }]
+        : messages,
+    [messages, streamingReply]
+  );
   const lastJesusMessage = [...messages].reverse().find((m) => m.author === 'jesus');
   // Defaults to 'warm' rather than 'neutral' so the very first thing the
   // user sees (before any reply exists) is the smiling portrait, per "he
@@ -149,6 +176,24 @@ export default function ChatScreen() {
   // identical to the first play, not a jump from wherever the values
   // happened to settle. No separate door/window shape -- he appears
   // directly in the glory cloud, per request.
+  // Quick, in-the-moment kill switch (Settings' "Voice replies" toggle
+  // does the same underlying thing, but living there is too slow for
+  // "someone just walked into the room, silence him right now"). Turning
+  // it off both stops whatever's playing THIS instant and stops future
+  // replies from speaking at all, until toggled back on -- at which
+  // point voice just resumes normally for the next reply, same as if it
+  // had never been touched.
+  const handleToggleVoice = () => {
+    const next = !voiceRepliesEnabled;
+    setVoiceRepliesEnabled(next);
+    if (!next) {
+      currentStopRef.current?.();
+      currentStopRef.current = null;
+      avatarRef.current?.stopSpeaking();
+      setJesusSpeaking(false);
+    }
+  };
+
   const playEntrance = () => {
     cloudOpacity.setValue(0);
     cloudScale.setValue(0.7);
@@ -198,7 +243,7 @@ export default function ChatScreen() {
       // abrupt quiet clip is easy to miss), and the source file itself
       // is a long ~12s clip that shouldn't just run on in the
       // background at full length.
-      playFadedWindCue(wind, 0.14);
+      playFadedWindCue(wind, 0.08);
     } catch (e) {
       // Missing/failed audio should never block the visual entrance/exit.
       console.error('Wind sound error:', e);
@@ -273,6 +318,18 @@ export default function ChatScreen() {
   // returns null) does this go to the real backend/model. The catch
   // block covers both "the model failed to respond" and "the network
   // connection dropped" identically, same as before.
+  // Last few turns (see backend/server.js's MAX_RECENT_MESSAGES) so the
+  // model has short-term memory of the conversation so far -- mapping
+  // this app's 'jesus' author to the Responses API's 'assistant' role,
+  // since that's the only difference between this app's ChatMessage
+  // shape and what the backend expects.
+  function buildRecentMessages(): RecentMessage[] {
+    return messages.slice(-8).map((m) => ({
+      role: m.author === 'jesus' ? 'assistant' : 'user',
+      content: m.text,
+    }));
+  }
+
   async function generateReply(text: string): Promise<{ text: string; mood: JesusMood }> {
     const deviceRegion = Localization.getLocales?.()[0]?.regionCode ?? null;
     const safetyReply = getSafetyReply(text, { ageAppropriate: ageAppropriateMode, regionCode: deviceRegion });
@@ -288,26 +345,31 @@ export default function ChatScreen() {
     const isFirstMessageToday =
       isFirstMessageEver || new Date(lastMessage.createdAt).toDateString() !== new Date().toDateString();
 
-    const jesusMessage = await withAuthRetry((token) =>
-      sendMessage(token, conversationIdRef.current, text, language, {
-        displayName: displayName || undefined,
-        isFirstMessageToday,
-        isFirstMessageEver,
-      })
+    // Shows an empty, then progressively-filling, reply bubble as text
+    // streams in (see displayMessages/streamingReply's own comments) --
+    // this is the actual "first words appear immediately" behavior, not
+    // just a faster total response time.
+    setStreamingReply({ text: '', mood: 'neutral' });
+    const result = await withAuthRetry((token) =>
+      sendMessageStreaming(
+        token,
+        text,
+        language,
+        { displayName: displayName || undefined, isFirstMessageToday, isFirstMessageEver },
+        buildRecentMessages(),
+        (textSoFar) => setStreamingReply({ text: textSoFar, mood: 'neutral' })
+      )
     );
-    return { text: jesusMessage.text, mood: jesusMessage.mood ?? 'neutral' };
+    return { text: result.text, mood: result.mood };
   }
 
   const sendText = async (text: string, { chargeQuota }: { chargeQuota: boolean }) => {
     if (chargeQuota) {
-      if (remainingQuestionsToday <= 0) {
-        if (!spendToken()) {
-          Alert.alert(t.chat.limitReached);
-          return;
-        }
-      } else {
-        setRemainingQuestionsToday((prev) => prev - 1);
+      if (remainingQuestions <= 0) {
+        openPaywall();
+        return;
       }
+      setRemainingQuestions((prev) => prev - 1);
       addMessage({
         id: `${Date.now()}-user`,
         author: 'user',
@@ -323,6 +385,11 @@ export default function ChatScreen() {
     try {
       const { text: replyText, mood } = await generateReply(text);
       setSending(false);
+      // The real, persisted message replaces the live streaming bubble
+      // now -- clear it in the same tick so the list never briefly shows
+      // both the finished streamed text AND the final addMessage() bubble
+      // stacked on top of each other.
+      setStreamingReply(null);
       addMessage(buildJesusMessage(replyText, mood));
       // Called immediately after addMessage() above, this scrolls to the
       // END OF THE PREVIOUS content -- the new bubble hasn't rendered or
@@ -350,8 +417,11 @@ export default function ChatScreen() {
         }, 1400);
       }
     } catch (e) {
-      // AI failed to respond, or the connection dropped mid-conversation.
+      // AI failed to respond, or the connection dropped mid-conversation
+      // -- never leave a half-streamed, never-persisted bubble stranded
+      // on screen.
       setSending(false);
+      setStreamingReply(null);
       setSendError({ text });
     }
   };
@@ -600,6 +670,17 @@ export default function ChatScreen() {
       <SafeAreaView edges={['top']} style={styles.topBar}>
         <Text style={styles.topBarTitle}>{t.tabs.chat}</Text>
         <View style={styles.headerIcons}>
+          <TouchableOpacity
+            onPress={handleToggleVoice}
+            accessibilityRole="button"
+            accessibilityLabel={voiceRepliesEnabled ? 'Mute voice' : 'Unmute voice'}
+          >
+            <Ionicons
+              name={voiceRepliesEnabled ? 'volume-high-outline' : 'volume-mute-outline'}
+              size={20}
+              color={Colors.ivory}
+            />
+          </TouchableOpacity>
           <TouchableOpacity onPress={playEntrance} accessibilityRole="button" accessibilityLabel="Replay Jesus's entrance">
             <Ionicons name="refresh-outline" size={20} color={Colors.ivory} />
           </TouchableOpacity>
@@ -675,7 +756,7 @@ export default function ChatScreen() {
       <View style={{ flex: 1 }}>
         <FlatList
           ref={listRef}
-          data={messages}
+          data={displayMessages}
           keyExtractor={(m) => m.id}
           renderItem={({ item }) => (
             <ChatBubble
@@ -723,14 +804,19 @@ export default function ChatScreen() {
       <MagnifyButton style={{ bottom: 100 }} />
 
       <Text style={styles.quotaText}>
-        {remainingQuestionsToday === Infinity
+        {remainingQuestions === Infinity
           ? 'Unlimited questions'
-          : `${Math.max(remainingQuestionsToday, 0)} questions left today · ${tokenBalance} tokens`}
+          : plan === 'free'
+          ? `${Math.max(remainingQuestions, 0)} free questions left`
+          : `${Math.max(remainingQuestions, 0)} questions left today`}
       </Text>
 
       {limitReached && (
         <View style={styles.limitBanner}>
-          <Text style={styles.limitText}>{t.chat.limitReached}</Text>
+          <Text style={styles.limitText}>{plan === 'free' ? t.chat.limitReached : t.chat.dailyLimitReached}</Text>
+          <TouchableOpacity onPress={openPaywall} accessibilityRole="button" accessibilityLabel="See plans">
+            <Text style={styles.limitLink}>{plan === 'free' ? 'Choose a plan' : 'Upgrade'}</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -908,8 +994,9 @@ const styles = StyleSheet.create({
   },
   historyList: { flex: 0.8 },
   list: { paddingVertical: 16, paddingHorizontal: 24, paddingBottom: 8 },
-  limitBanner: { backgroundColor: '#FEEBC8', padding: 10, marginHorizontal: 16, borderRadius: 8 },
+  limitBanner: { backgroundColor: '#FEEBC8', padding: 10, marginHorizontal: 16, borderRadius: 8, alignItems: 'center', gap: 4 },
   limitText: { color: '#7B341E', fontSize: 12.5, textAlign: 'center' },
+  limitLink: { color: '#7B341E', fontSize: 12.5, fontWeight: '700', textDecorationLine: 'underline' },
   errorBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEEBC8',
     padding: 10, marginHorizontal: 16, marginTop: 8, borderRadius: 8,
@@ -919,8 +1006,9 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    padding: 12,
-    gap: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    gap: 6,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
@@ -933,21 +1021,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 15,
     maxHeight: 110,
-    color: Colors.ink,
+    color: Colors.royal,
   },
   sendBtn: {
     backgroundColor: Colors.royal,
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
   },
   micBtn: {
     backgroundColor: '#F4F6FA',
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,

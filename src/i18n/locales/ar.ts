@@ -1,109 +1,285 @@
 import type { TranslationShape } from './en';
 
-// Arabic (Modern Standard). This locale is RTL -- see src/i18n/index.ts,
-// which flips I18nManager.forceRTL when 'ar' is active.
 const ar: TranslationShape = {
-  common: {
-    continue: 'متابعة',
-    back: 'رجوع',
-    accept: 'أوافق',
-    decline: 'رفض',
-    cancel: 'إلغاء',
-    save: 'حفظ',
-    retry: 'إعادة المحاولة',
-    loading: 'جارٍ التحميل…',
-    send: 'إرسال',
-    close: 'إغلاق',
+  "common": {
+    "continue": "متابعة",
+    "back": "رجوع",
+    "accept": "أوافق",
+    "decline": "رفض",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "retry": "إعادة المحاولة",
+    "loading": "جارٍ التحميل…",
+    "send": "إرسال",
+    "close": "إغلاق"
   },
-  language: {
-    title: 'اختر لغتك',
-    subtitle: 'يمكنك تغيير هذا في أي وقت من الإعدادات.',
+  "language": {
+    "title": "اختر لغتك",
+    "subtitle": "يمكنك تغيير هذا في أي وقت من الإعدادات."
   },
-  disclaimer: {
-    title: 'قبل أن تبدأ',
-    body:
-      'يستخدم تطبيق Jesus Interactive الذكاء الاصطناعي لمحاكاة محادثة بصوت ' +
-      'يسوع المسيح، مستندة إلى الكتاب المقدس. إنه أداة للتأمل الشخصي ' +
-      'والتشجيع الروحي -- وهو ليس يسوع نفسه، ولا مستشارًا مرخصًا، ولا ' +
-      'أخصائيًا طبيًا أو قانونيًا، وليس بديلاً عن الصلاة أو الكتاب المقدس أو ' +
-      'شركة الكنيسة أو الرعاية الرعوية أو الدعم المهني للصحة النفسية. في ' +
-      'حالات الأزمات، يرجى الاتصال فورًا برقم الطوارئ المحلي أو خط الأزمات.',
-    checkbox: 'أفهم أن هذه محاكاة بالذكاء الاصطناعي وليست يسوع نفسه.',
+  "disclaimer": {
+    "title": "قبل أن تبدأ",
+    "body": "يستخدم تطبيق Jesus Interactive الذكاء الاصطناعي لمحاكاة محادثة بصوت يسوع المسيح، مستندة إلى الكتاب المقدس. إنه أداة للتأمل الشخصي والتشجيع الروحي -- وهو ليس يسوع نفسه، ولا مستشارًا مرخصًا، ولا أخصائيًا طبيًا أو قانونيًا، وليس بديلاً عن الصلاة أو الكتاب المقدس أو شركة الكنيسة أو الرعاية الرعوية أو الدعم المهني للصحة النفسية. في حالات الأزمات، يرجى الاتصال فورًا برقم الطوارئ المحلي أو خط الأزمات.",
+    "checkbox": "أفهم أن هذه محاكاة بالذكاء الاصطناعي وليست يسوع نفسه."
   },
-  agreement: {
-    title: 'اتفاقية المستخدم والتعويض',
-    checkbox: 'لقد قرأت ووافقت على اتفاقية المستخدم وسياسة الخصوصية وشروط التعويض.',
+  "agreement": {
+    "title": "اتفاقية المستخدم والتعويض",
+    "checkbox": "لقد قرأت ووافقت على اتفاقية المستخدم وسياسة الخصوصية وشروط التعويض."
   },
-  entrance: {
-    verseReference: 'متى 7:7',
-    verseText: 'اسألوا تعطوا. اطلبوا تجدوا. اقرعوا يفتح لكم.',
-    cta: 'دخول',
+  "entrance": {
+    "verseReference": "متى 7:7",
+    "verseText": "اسألوا تعطوا. اطلبوا تجدوا. اقرعوا يفتح لكم.",
+    "cta": "دخول"
   },
-  pricing: {
-    title: 'اختر خطتك',
-    subtitle: 'يمكنك التغيير أو الإلغاء في أي وقت.',
-    tokenTitle: 'أو أهدِ الوصول',
-    tokenSubtitle: 'اشترِ رموزًا لنفسك أو أهدها لشخص لا يستطيع تحمل تكلفة خطة.',
+  "pricing": {
+    "title": "اختر خطتك",
+    "subtitle": "يمكنك التغيير أو الإلغاء في أي وقت.",
+    "tokenTitle": "أو أهدِ خطة",
+    "tokenSubtitle": "اشترِ قسيمة هدية لشخص لا يستطيع تحمل تكلفة خطة -- راجع \"الشراء والإهداء\" في الإعدادات."
   },
-  home: {
-    title: 'مرحباً',
-    subtitle: 'إلى أين تودّ الذهاب؟',
+  "home": {
+    "title": "مرحباً",
+    "subtitle": "إلى أين تودّ الذهاب؟"
   },
-  tabs: {
-    home: 'الرئيسية',
-    chat: 'اسأل يسوع',
-    prayerWall: 'حائط الصلاة',
-    bible: 'الكتاب المقدس',
-    journal: 'اليوميات',
-    about: 'حول',
-    settings: 'الإعدادات',
-    studyTools: 'أدوات الدراسة',
-    profile: 'الملف الشخصي',
-    devotions: 'التأملات اليومية',
+  "tabs": {
+    "home": "الرئيسية",
+    "chat": "اسأل يسوع",
+    "prayerWall": "حائط الصلاة",
+    "bible": "الكتاب المقدس",
+    "journal": "اليوميات",
+    "about": "حول",
+    "settings": "الإعدادات",
+    "studyTools": "أدوات الدراسة",
+    "profile": "الملف الشخصي",
+    "devotions": "التأملات اليومية"
   },
-  chat: {
-    inputPlaceholder: 'اطرح سؤالاً أو صلاة',
-    limitReached: 'لقد وصلت إلى حد الأسئلة لهذا اليوم. عد غدًا أو قم بترقية خطتك.',
-    whatDoYouThink: 'ما رأيك؟',
+  "chat": {
+    "inputPlaceholder": "اطرح سؤالاً أو صلاة",
+    "limitReached": "لقد استخدمت أسئلتك المجانية الخمسة. اختر خطة لمواصلة الحديث مع يسوع.",
+    "dailyLimitReached": "لقد وصلت إلى حد الأسئلة لهذا اليوم. عد غدًا أو قم بترقية خطتك.",
+    "whatDoYouThink": "ما رأيك؟"
   },
-  prayerWall: {
-    title: 'الحائط',
-    subtitle: 'ضع صلاة بين الحجارة.',
-    inputPlaceholder: 'اكتب صلاتك…',
-    anonymous: 'انشر بشكل مجهول',
-    shared: 'شارك على الحائط العام',
-    placed: 'تم وضع صلاتك.',
+  "prayerWall": {
+    "title": "الحائط",
+    "subtitle": "ضع صلاة بين الحجارة.",
+    "inputPlaceholder": "اكتب صلاتك…",
+    "anonymous": "انشر بشكل مجهول",
+    "shared": "شارك على الحائط العام",
+    "placed": "تم وضع صلاتك."
   },
-  about: {
-    title: 'عن يسوع',
-    biography: 'السيرة الذاتية',
-    lineage: 'النسب (إنجيل متى)',
-    prophecies: 'النبوءات المتحققة',
+  "about": {
+    "title": "عن يسوع",
+    "biography": "السيرة الذاتية",
+    "lineage": "النسب (إنجيل متى)",
+    "prophecies": "النبوءات المتحققة"
   },
-  settings: {
-    account: 'الحساب',
-    plan: 'الخطة الحالية',
-    tokens: 'رصيد الرموز',
-    giftTokens: 'إهداء رموز لشخص ما',
-    preferences: 'التفضيلات',
-    notifications: 'إشعارات الآية اليومية',
-    dailyVerse: 'تذكير الآية اليومية',
-    ageAppropriate: 'وضع المحتوى المناسب للعمر',
-    offlineMode: 'وضع عدم الاتصال (المحتوى المخزن مؤقتًا فقط)',
-    language: 'اللغة',
-    privacyData: 'الخصوصية والبيانات',
-    downloadData: 'تنزيل بياناتي',
-    deleteAccount: 'حذف حسابي وجميع بياناتي',
-    support: 'المجتمع والدعم',
-    reportContent: 'الإبلاغ عن محتوى غير لائق',
-    contactSupport: 'التواصل مع الدعم',
-    about: 'حول',
-    version: 'إصدار التطبيق',
-    privacyPolicy: 'سياسة الخصوصية',
-    terms: 'شروط الخدمة',
-    disclosureLink: 'إفصاح الذكاء الاصطناعي',
-    aboutApp: 'حول هذا التطبيق',
+  "settings": {
+    "account": "الحساب",
+    "plan": "الخطة الحالية",
+    "giftPlan": "إهداء خطة لشخص ما",
+    "preferences": "التفضيلات",
+    "notifications": "إشعارات الآية اليومية",
+    "dailyVerse": "تذكير الآية اليومية",
+    "ageAppropriate": "وضع المحتوى المناسب للعمر",
+    "offlineMode": "وضع عدم الاتصال (المحتوى المخزن مؤقتًا فقط)",
+    "language": "اللغة",
+    "privacyData": "الخصوصية والبيانات",
+    "downloadData": "تنزيل بياناتي",
+    "deleteAccount": "حذف حسابي وجميع بياناتي",
+    "support": "المجتمع والدعم",
+    "reportContent": "الإبلاغ عن محتوى غير لائق",
+    "contactSupport": "التواصل مع الدعم",
+    "about": "حول",
+    "version": "إصدار التطبيق",
+    "privacyPolicy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "disclosureLink": "إفصاح الذكاء الاصطناعي",
+    "aboutApp": "حول هذا التطبيق"
   },
+  "favorites": {
+    "title": "المفضلة",
+    "emptyState": "لم يتم حفظ أي شيء بعد. اضغط مطولاً على آية في الكتاب المقدس، أو اضغط على العلامة المرجعية في رد الدردشة.",
+    "shareSuffix": "تمت المشاركة من Jesus Interactive"
+  },
+  "guidedPrayer": {
+    "title": "صلاة موجهة",
+    "stepLabel": "الخطوة {current} من {total}",
+    "nextButton": "التالي",
+    "amenButton": "آمين",
+    "adorationTitle": "العبادة",
+    "adorationPrompt": "ابدأ بإخبار الله ببساطة من هو لك -- صلاحه، قوته، محبته.",
+    "confessionTitle": "الاعتراف",
+    "confessionPrompt": "كن صادقاً بشأن المواضع التي قصرت فيها. هو يعرف بالفعل؛ هو فقط يريدك أن تأتي به إليه.",
+    "thanksgivingTitle": "الشكر",
+    "thanksgivingPrompt": "اذكر ثلاثة أشياء، كبيرة أو صغيرة، تشعر بالامتنان لها الآن.",
+    "supplicationTitle": "الطلب",
+    "supplicationPrompt": "اطلب. قدم طلباتك الحقيقية -- لنفسك وللآخرين -- دون تردد.",
+    "listenTitle": "الإنصات",
+    "listenPrompt": "اجلس بهدوء للحظة. الصلاة ليست حديثاً فقط."
+  },
+  "journal": {
+    "title": "المذكرات",
+    "myEntriesTab": "مذكراتي",
+    "fromJesusTab": "من يسوع",
+    "entriesEmptyState": "لا توجد مذكرات بعد. اضغط + لكتابة واحدة.",
+    "jesusEmptyState": "لم يتم حفظ أي شيء بعد. اضغط مطولاً على آية في الكتاب المقدس، أو اضغط على العلامة المرجعية في رد الدردشة.",
+    "untitledEntry": "مذكرة بدون عنوان",
+    "deleteEntryTitle": "حذف المذكرة",
+    "deleteEntryMessage": "لا يمكن التراجع عن هذا.",
+    "alertCancel": "إلغاء",
+    "alertDelete": "حذف",
+    "titlePlaceholder": "العنوان",
+    "bodyPlaceholder": "اكتب بحرية...",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "shareSuffix": "تمت المشاركة من Jesus Interactive"
+  },
+  "reportIssue": {
+    "title": "الإبلاغ عن مشكلة فنية",
+    "helpText": "هل هناك شيء لا يعمل بشكل صحيح؟ صف ما حدث وسننظر فيه. سيتم تضمين معلومات جهازك وإصدار التطبيق تلقائياً لمساعدتنا في تتبع المشكلة.",
+    "inputPlaceholder": "ماذا حدث؟",
+    "submitButton": "إرسال التقرير",
+    "deviceInfoLabel": "مضمن تلقائياً",
+    "successAlertTitle": "شكراً لإعلامنا",
+    "successAlertMessage": "لقد تلقينا تقريرك وسننظر فيه.",
+    "errorAlertTitle": "تعذر إرسال تقريرك",
+    "errorAlertFallback": "يرجى التحقق من اتصالك والمحاولة مرة أخرى."
+  },
+  "tokenGift": {
+    "title": "شراء وإهداء",
+    "currentPlan": "الخطة الحالية: {planName}",
+    "sectionBuyForSelf": "شراء لنفسك",
+    "rowSubNoAutoRenewal": "لا تجديد تلقائي",
+    "purchasing": "جارٍ الشراء...",
+    "sectionGiftToSomeoneElse": "إهداء لشخص آخر",
+    "giftHelpText": "اشترِ شهادة وأنشئ رمز استرداد لشخص لا يستطيع تحمل تكلفة خطة.",
+    "giftRowTitlePrefix": "إهداء {description}",
+    "giftButtonLabel": "إهداء",
+    "lastGiftCodeLabel": "آخر رمز إهداء تم إنشاؤه",
+    "sectionRedeemCode": "استرداد رمز",
+    "redeemPlaceholder": "XXXX-XXXX-XXXX",
+    "redeemButton": "استرداد",
+    "downgradeWarningTitle": "هذا سيخفض خطتك",
+    "downgradeWarningMessageCertificate": "لديك حالياً {planName}. سيؤدي تطبيق هذه الشهادة إلى تحويل حسابك إلى {newPlanName} لمدة {months} -- ستفقد ميزات {planName} حتى تقوم بالترقية مرة أخرى. متابعة؟",
+    "downgradeWarningMessageRedeem": "لديك حالياً {planName}. سيؤدي استرداد هذا الرمز إلى تحويل حسابك إلى {newPlanName} لمدة {months} -- ستفقد ميزات {planName} حتى تقوم بالترقية مرة أخرى. متابعة؟",
+    "cancelButton": "إلغاء",
+    "continueAnywayButton": "المتابعة على أي حال",
+    "purchaseFailedTitle": "تعذر إكمال الشراء",
+    "purchaseFailedFallback": "يرجى المحاولة مرة أخرى.",
+    "purchaseCompleteTitle": "اكتمل الشراء",
+    "planActiveMessage": "{planName} نشط الآن على حسابك.",
+    "giftCodeCreatedTitle": "تم إنشاء رمز الإهداء",
+    "giftCodeCreatedMessage": "شارك هذا الرمز مع من يحتاجه:\n\n{code}\n\nقيمته {months} من {planName}.",
+    "founderWelcomeTitle": "مرحباً أيها المؤسس",
+    "familyWelcomeTitle": "مرحباً بك في العائلة",
+    "platinumUnlockedMessage": "تم فتح وصول البلاتينيوم -- بدون رسوم، بدون انتهاء.",
+    "redeemedTitle": "تم الاسترداد!",
+    "redeemFailedTitle": "تعذر الاسترداد",
+    "redeemFailedFallback": "يرجى التحقق من الرمز والمحاولة مرة أخرى."
+  },
+  "legalDoc": {
+    "lastUpdatedLabel": "آخر تحديث: "
+  },
+  "wordSearch": {
+    "progressLabel": "{count} من {total} تم العثور عليها",
+    "completedBadge": "اكتملت سابقاً",
+    "completionTitle": "تم العثور على كل الكلمات البالغ عددها {total}",
+    "completionSubtitle": "أحسنت -- لحظة هادئة أمضيتها جيداً.",
+    "nextPuzzleButton": "اللغز التالي",
+    "refreshButton": "تحديث"
+  },
+  "profile": {
+    "photoAccessNeededTitle": "الحاجة إلى الوصول إلى الصور",
+    "photoAccessNeededMessage": "فعّل الوصول إلى مكتبة الصور في الإعدادات لتحميل صورة الملف الشخصي.",
+    "photoPickerErrorTitle": "تعذر فتح منتقي الصور",
+    "photoPickerErrorFallback": "يرجى المحاولة مرة أخرى.",
+    "removePhotoAlertTitle": "إزالة الصورة",
+    "removePhotoAlertMessage": "إزالة صورة ملفك الشخصي؟",
+    "cancelButton": "إلغاء",
+    "removeButton": "إزالة",
+    "uploadPhotoA11yLabel": "تحميل صورة الملف الشخصي",
+    "removePhotoA11yLabel": "إزالة صورة الملف الشخصي",
+    "removePhotoText": "إزالة الصورة",
+    "nameLabel": "الاسم",
+    "namePlaceholder": "أضف اسمك",
+    "accountSectionTitle": "الحساب",
+    "planLabel": "الخطة",
+    "planValue": "{name} · {price}",
+    "freeQuestionsLeftLabel": "الأسئلة المجانية المتبقية",
+    "questionsLeftTodayLabel": "الأسئلة المتبقية اليوم",
+    "unlimitedValue": "غير محدود",
+    "devOnlySectionTitle": "للمطورين فقط",
+    "unlockUnlimitedA11yLabel": "فتح أسئلة غير محدودة (للمطورين فقط)",
+    "unlockUnlimitedButton": "فتح أسئلة غير محدودة",
+    "devNote": "مرئي فقط في إصدارات التطوير -- يضبط خطتك على البلاتينيوم محلياً، تماماً مثل استرداد رمز المؤسس. لن يظهر في إصدار إصدار حقيقي.",
+    "savedSectionTitle": "محفوظ على هذا الجهاز",
+    "favoritesLabel": "المفضلة",
+    "journalEntriesLabel": "مذكرات المجلة",
+    "prayerNotesLabel": "ملاحظات الصلاة",
+    "footerNote": "يتم تخزين اسمك وصورتك على هذا الجهاز فقط -- لا يوجد خادم حسابات خلفهما بعد."
+  },
+  "scriptureSearch": {
+    "loadBooksError": "تعذر تحميل الكتاب المقدس. تحقق من اتصالك وحاول مرة أخرى.",
+    "loadChapterError": "تعذر تحميل هذا الإصحاح.",
+    "translationModalTitle": "الترجمة",
+    "backToBooks": "العودة إلى الأسفار",
+    "chapterLabel": "الإصحاح {number}",
+    "scrollToBottomChapterA11yLabel": "التمرير إلى أسفل الإصحاح",
+    "searchBooksPlaceholder": "ابحث في الأسفار...",
+    "filterAll": "الكل",
+    "filterTorah": "التوراة",
+    "retryButton": "إعادة المحاولة",
+    "bookMeta": "{testament} · {chapters} إصحاحات",
+    "scrollToBottomBookListA11yLabel": "التمرير إلى أسفل قائمة الأسفار"
+  },
+  "sermonWriter": {
+    "upsellTitle": "كاتب العظات ودراسات الكتاب المقدس",
+    "upsellBody": "أنشئ مخطوطة عظة كاملة أو دراسة كتاب مقدس لمجموعة صغيرة حول أي موضوع أو مقطع، مبنية على تفسير سليم. متاحة في خطتي Pro وPlatinum.",
+    "upgradeButton": "ترقية",
+    "upgradeErrorTitle": "حدث خطأ ما",
+    "upgradeErrorMessage": "تعذر فتح شاشة الترقية. يرجى المحاولة مرة أخرى.",
+    "helpText": "أعطها موضوعاً أو مقطعاً وسوف تكتب عظة كاملة أو دراسة كتاب مقدس يمكنك التدريس منها فعلياً -- وليس مجرد مخطط.",
+    "topicLabel": "الموضوع أو الموضوع الرئيسي",
+    "topicPlaceholder": "مثال: الإيمان وسط الشك",
+    "passageLabel": "المرجع المركز (اختياري)",
+    "passagePlaceholder": "مثال: مرقس 9:14-29",
+    "occasionLabel": "المناسبة أو الجمهور (اختياري)",
+    "occasionPlaceholder": "مثال: مجموعة الشباب، صباح الأحد، دراسة مجموعة صغيرة",
+    "lengthLabel": "الطول",
+    "lengthStandard": "قياسي (15-20 دقيقة)",
+    "lengthExtended": "ممتد (30-40 دقيقة)",
+    "generateButton": "إنشاء",
+    "regenerateButton": "إعادة الإنشاء",
+    "generateErrorTitle": "تعذر إنشاء ذلك",
+    "generateErrorFallback": "يرجى التحقق من اتصالك والمحاولة مرة أخرى."
+  },
+  "studyTools": {
+    "linkErrorTitle": "تعذر فتح هذا الرابط",
+    "linkErrorMessage": "يرجى التحقق من اتصالك والمحاولة مرة أخرى.",
+    "intro": "تفاسير وعظات وأدوات دراسة مجانية -- كل الإدخالات أدناه إما في المجال العام أو أداة مجانية نرتبط بها، لذلك لا تواجه أي مشكلات ترخيص هنا.",
+    "sermonWriterCardTitle": "كاتب العظات ودراسات الكتاب المقدس",
+    "sermonWriterCardSubtitle": "أنشئ عظة كاملة أو دراسة حول أي موضوع أو مقطع",
+    "resourceAccessibilityLabel": "{title} بقلم {author}",
+    "scrollToBottomLabel": "التمرير إلى الأسفل"
+  },
+  "globalLibrary": {
+    "title": "أدوات الكتاب المقدس متعددة اللغات",
+    "intro": "الكتاب المقدس والموارد المسيحية بلغات من كل أنحاء العالم -- ترجمات ونصوص مجانية ومتاحة للجمهور.",
+    "bibleSectionTitle": "الكتب المقدسة حسب اللغة",
+    "yourLanguageBibles": "الكتب المقدسة باللغة {language}",
+    "allLanguages": "جميع اللغات",
+    "translationCount": "{count} ترجمة{plural}",
+    "noMatchForYourLanguage": "ليس لدينا كتاب مقدس باللغة {language} في هذا الفهرس بعد -- تصفح جميع اللغات أدناه.",
+    "booksSectionTitle": "كتب وشهادات مسيحية",
+    "booksIntro": "كتب وتعليقات وشهادات مجانية ومتاحة للجمهور من أرشيف الإنترنت، مصفاة حسب لغتك.",
+    "booksLoading": "جارٍ البحث في المكتبة...",
+    "booksEmpty": "لم يتم العثور على نتائج باللغة {language} بعد. جرب لغة أخرى أدناه.",
+    "openBook": "فتح",
+    "languageSectionHeader": "تصفح حسب اللغة",
+    "loadingLanguages": "جارٍ تحميل اللغات المتاحة...",
+    "loadError": "تعذر تحميل المكتبة. تحقق من اتصالك وحاول مرة أخرى.",
+    "retryButton": "إعادة المحاولة"
+  }
 };
 
 export default ar;

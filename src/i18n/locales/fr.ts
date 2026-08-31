@@ -1,109 +1,285 @@
 import type { TranslationShape } from './en';
 
 const fr: TranslationShape = {
-  common: {
-    continue: 'Continuer',
-    back: 'Retour',
-    accept: "J'accepte",
-    decline: 'Refuser',
-    cancel: 'Annuler',
-    save: 'Enregistrer',
-    retry: 'Réessayer',
-    loading: 'Chargement…',
-    send: 'Envoyer',
-    close: 'Fermer',
+  "common": {
+    "continue": "Continuer",
+    "back": "Retour",
+    "accept": "J'accepte",
+    "decline": "Refuser",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "send": "Envoyer",
+    "close": "Fermer"
   },
-  language: {
-    title: 'Choisissez votre langue',
-    subtitle: 'Vous pouvez la modifier à tout moment dans les paramètres.',
+  "language": {
+    "title": "Choisissez votre langue",
+    "subtitle": "Vous pouvez la modifier à tout moment dans les paramètres."
   },
-  disclaimer: {
-    title: 'Avant de commencer',
-    body:
-      "Jesus Interactive utilise l'intelligence artificielle pour simuler une " +
-      "conversation avec la voix de Jésus-Christ, fondée sur les Écritures. " +
-      "C'est un outil de réflexion personnelle et d'encouragement spirituel -- " +
-      "ce n'est pas Jésus lui-même, ni un conseiller agréé, ni un professionnel " +
-      "médical ou juridique, ni un substitut à la prière, aux Écritures, à la " +
-      "communauté ecclésiale, aux soins pastoraux ou au soutien professionnel en " +
-      "santé mentale. En cas de crise, contactez immédiatement un numéro " +
-      "d'urgence local ou une ligne d'écoute.",
-    checkbox: "Je comprends qu'il s'agit d'une simulation par IA et non de Jésus lui-même.",
+  "disclaimer": {
+    "title": "Avant de commencer",
+    "body": "Jesus Interactive utilise l'intelligence artificielle pour simuler une conversation avec la voix de Jésus-Christ, fondée sur les Écritures. C'est un outil de réflexion personnelle et d'encouragement spirituel -- ce n'est pas Jésus lui-même, ni un conseiller agréé, ni un professionnel médical ou juridique, ni un substitut à la prière, aux Écritures, à la communauté ecclésiale, aux soins pastoraux ou au soutien professionnel en santé mentale. En cas de crise, contactez immédiatement un numéro d'urgence local ou une ligne d'écoute.",
+    "checkbox": "Je comprends qu'il s'agit d'une simulation par IA et non de Jésus lui-même."
   },
-  agreement: {
-    title: "Accord utilisateur et indemnisation",
-    checkbox: "J'ai lu et j'accepte l'accord utilisateur, la politique de confidentialité et les termes d'indemnisation.",
+  "agreement": {
+    "title": "Accord utilisateur et indemnisation",
+    "checkbox": "J'ai lu et j'accepte l'accord utilisateur, la politique de confidentialité et les termes d'indemnisation."
   },
-  entrance: {
-    verseReference: 'Matthieu 7:7',
-    verseText: 'Demandez, et l’on vous donnera; cherchez, et vous trouverez; frappez, et l’on vous ouvrira.',
-    cta: 'Entrer',
+  "entrance": {
+    "verseReference": "Matthieu 7:7",
+    "verseText": "Demandez, et l’on vous donnera; cherchez, et vous trouverez; frappez, et l’on vous ouvrira.",
+    "cta": "Entrer"
   },
-  pricing: {
-    title: 'Choisissez votre offre',
-    subtitle: 'Vous pouvez changer ou annuler à tout moment.',
-    tokenTitle: "Ou offrez l'accès",
-    tokenSubtitle: "Achetez des jetons pour vous ou offrez-les à quelqu'un qui n'a pas les moyens de payer un abonnement.",
+  "pricing": {
+    "title": "Choisissez votre offre",
+    "subtitle": "Vous pouvez changer ou annuler à tout moment.",
+    "tokenTitle": "Ou offrez une offre",
+    "tokenSubtitle": "Achetez un chèque-cadeau pour quelqu'un qui n'a pas les moyens de payer un abonnement -- voir Acheter et offrir dans les réglages."
   },
-  home: {
-    title: 'Bienvenue',
-    subtitle: 'Où souhaitez-vous aller ?',
+  "home": {
+    "title": "Bienvenue",
+    "subtitle": "Où souhaitez-vous aller ?"
   },
-  tabs: {
-    home: 'Accueil',
-    chat: 'Demander à Jésus',
-    prayerWall: 'Mur de prière',
-    bible: 'Écriture',
-    journal: 'Journal',
-    about: 'À propos',
-    settings: 'Paramètres',
-    studyTools: "Outils d'étude",
-    profile: 'Profil',
-    devotions: 'Dévotions quotidiennes',
+  "tabs": {
+    "home": "Accueil",
+    "chat": "Demander à Jésus",
+    "prayerWall": "Mur de prière",
+    "bible": "Écriture",
+    "journal": "Journal",
+    "about": "À propos",
+    "settings": "Paramètres",
+    "studyTools": "Outils d'étude",
+    "profile": "Profil",
+    "devotions": "Dévotions quotidiennes"
   },
-  chat: {
-    inputPlaceholder: 'Posez une question ou une prière',
-    limitReached: "Vous avez atteint la limite de questions d'aujourd'hui. Revenez demain ou mettez à niveau votre offre.",
-    whatDoYouThink: 'Qu’en penses-tu ?',
+  "chat": {
+    "inputPlaceholder": "Posez une question ou une prière",
+    "limitReached": "Vous avez utilisé vos 5 questions gratuites. Choisissez une offre pour continuer à parler avec Jésus.",
+    "dailyLimitReached": "Vous avez atteint la limite de questions d'aujourd'hui. Revenez demain ou mettez à niveau votre offre.",
+    "whatDoYouThink": "Qu’en penses-tu ?"
   },
-  prayerWall: {
-    title: 'Le Mur',
-    subtitle: 'Placez une prière entre les pierres.',
-    inputPlaceholder: 'Écrivez votre prière…',
-    anonymous: 'Publier anonymement',
-    shared: 'Partager sur le mur public',
-    placed: 'Votre prière a été placée.',
+  "prayerWall": {
+    "title": "Le Mur",
+    "subtitle": "Placez une prière entre les pierres.",
+    "inputPlaceholder": "Écrivez votre prière…",
+    "anonymous": "Publier anonymement",
+    "shared": "Partager sur le mur public",
+    "placed": "Votre prière a été placée."
   },
-  about: {
-    title: 'À propos de Jésus',
-    biography: 'Biographie',
-    lineage: 'Généalogie (Évangile selon Matthieu)',
-    prophecies: 'Prophéties accomplies',
+  "about": {
+    "title": "À propos de Jésus",
+    "biography": "Biographie",
+    "lineage": "Généalogie (Évangile selon Matthieu)",
+    "prophecies": "Prophéties accomplies"
   },
-  settings: {
-    account: 'Compte',
-    plan: 'Offre actuelle',
-    tokens: 'Solde de jetons',
-    giftTokens: "Offrir des jetons à quelqu'un",
-    preferences: 'Préférences',
-    notifications: 'Notifications push pour le verset du jour',
-    dailyVerse: 'Rappel du verset du jour',
-    ageAppropriate: "Mode de contenu adapté à l'âge",
-    offlineMode: 'Mode hors ligne (contenu en cache uniquement)',
-    language: 'Langue',
-    privacyData: 'Confidentialité et données',
-    downloadData: 'Télécharger mes données',
-    deleteAccount: 'Supprimer mon compte et toutes mes données',
-    support: 'Communauté et assistance',
-    reportContent: 'Signaler un contenu inapproprié',
-    contactSupport: "Contacter l'assistance",
-    about: 'À propos',
-    version: "Version de l'application",
-    privacyPolicy: 'Politique de confidentialité',
-    terms: "Conditions d'utilisation",
-    disclosureLink: "Divulgation de l'IA",
-    aboutApp: 'À propos de cette application',
+  "settings": {
+    "account": "Compte",
+    "plan": "Offre actuelle",
+    "giftPlan": "Offrir une offre à quelqu'un",
+    "preferences": "Préférences",
+    "notifications": "Notifications push pour le verset du jour",
+    "dailyVerse": "Rappel du verset du jour",
+    "ageAppropriate": "Mode de contenu adapté à l'âge",
+    "offlineMode": "Mode hors ligne (contenu en cache uniquement)",
+    "language": "Langue",
+    "privacyData": "Confidentialité et données",
+    "downloadData": "Télécharger mes données",
+    "deleteAccount": "Supprimer mon compte et toutes mes données",
+    "support": "Communauté et assistance",
+    "reportContent": "Signaler un contenu inapproprié",
+    "contactSupport": "Contacter l'assistance",
+    "about": "À propos",
+    "version": "Version de l'application",
+    "privacyPolicy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "disclosureLink": "Divulgation de l'IA",
+    "aboutApp": "À propos de cette application"
   },
+  "favorites": {
+    "title": "Favoris",
+    "emptyState": "Rien enregistré pour l'instant. Appuyez longuement sur un verset dans les Écritures, ou appuyez sur le marque-page dans une réponse du chat.",
+    "shareSuffix": "Partagé depuis Jesus Interactive"
+  },
+  "guidedPrayer": {
+    "title": "Prière guidée",
+    "stepLabel": "Étape {current} sur {total}",
+    "nextButton": "Suivant",
+    "amenButton": "Amen",
+    "adorationTitle": "Adoration",
+    "adorationPrompt": "Commencez simplement par dire à Dieu qui Il est pour vous -- Sa bonté, Sa puissance, Son amour.",
+    "confessionTitle": "Confession",
+    "confessionPrompt": "Soyez honnête sur les domaines où vous avez failli. Il le sait déjà ; Il veut simplement que vous Le Lui apportiez.",
+    "thanksgivingTitle": "Action de grâce",
+    "thanksgivingPrompt": "Nommez trois choses, grandes ou petites, pour lesquelles vous êtes reconnaissant en ce moment.",
+    "supplicationTitle": "Supplication",
+    "supplicationPrompt": "Demandez. Présentez vos vraies requêtes -- pour vous et pour les autres -- sans rien retenir.",
+    "listenTitle": "Écouter",
+    "listenPrompt": "Restez silencieux un instant. La prière ne consiste pas seulement à parler."
+  },
+  "journal": {
+    "title": "Journal",
+    "myEntriesTab": "Mes entrées",
+    "fromJesusTab": "De Jésus",
+    "entriesEmptyState": "Aucune entrée de journal pour l'instant. Appuyez sur + pour en écrire une.",
+    "jesusEmptyState": "Rien enregistré pour l'instant. Appuyez longuement sur un verset dans les Écritures, ou appuyez sur Marque-page dans une réponse du chat.",
+    "untitledEntry": "Entrée sans titre",
+    "deleteEntryTitle": "Supprimer l'entrée",
+    "deleteEntryMessage": "Cette action est irréversible.",
+    "alertCancel": "Annuler",
+    "alertDelete": "Supprimer",
+    "titlePlaceholder": "Titre",
+    "bodyPlaceholder": "Écrivez librement...",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "shareSuffix": "Partagé depuis Jesus Interactive"
+  },
+  "reportIssue": {
+    "title": "Signaler un problème technique",
+    "helpText": "Un dysfonctionnement ? Décrivez ce qui s'est passé et nous l'examinerons. Les informations sur votre appareil et la version de l'application sont incluses automatiquement pour nous aider à le suivre.",
+    "inputPlaceholder": "Que s'est-il passé ?",
+    "submitButton": "Envoyer le rapport",
+    "deviceInfoLabel": "Inclus automatiquement",
+    "successAlertTitle": "Merci de nous avoir prévenus",
+    "successAlertMessage": "Nous avons reçu votre rapport et l'examinerons.",
+    "errorAlertTitle": "Impossible d'envoyer votre rapport",
+    "errorAlertFallback": "Veuillez vérifier votre connexion et réessayer."
+  },
+  "tokenGift": {
+    "title": "Acheter et offrir",
+    "currentPlan": "Abonnement actuel : {planName}",
+    "sectionBuyForSelf": "Acheter pour moi",
+    "rowSubNoAutoRenewal": "Sans renouvellement automatique",
+    "purchasing": "Achat en cours...",
+    "sectionGiftToSomeoneElse": "Offrir à quelqu'un",
+    "giftHelpText": "Achetez un certificat et générez un code échangeable pour quelqu'un qui ne peut pas se permettre un abonnement.",
+    "giftRowTitlePrefix": "Offrir {description}",
+    "giftButtonLabel": "Offrir",
+    "lastGiftCodeLabel": "Dernier code cadeau créé",
+    "sectionRedeemCode": "Utiliser un code",
+    "redeemPlaceholder": "XXXX-XXXX-XXXX",
+    "redeemButton": "Utiliser",
+    "downgradeWarningTitle": "Cela réduira votre abonnement",
+    "downgradeWarningMessageCertificate": "Vous avez actuellement {planName}. L'application de ce certificat bascule votre compte vers {newPlanName} pendant {months} -- vous perdrez les fonctionnalités de {planName} jusqu'à une nouvelle mise à niveau. Continuer ?",
+    "downgradeWarningMessageRedeem": "Vous avez actuellement {planName}. L'utilisation de ce code bascule votre compte vers {newPlanName} pendant {months} -- vous perdrez les fonctionnalités de {planName} jusqu'à une nouvelle mise à niveau. Continuer ?",
+    "cancelButton": "Annuler",
+    "continueAnywayButton": "Continuer quand même",
+    "purchaseFailedTitle": "Impossible de finaliser l'achat",
+    "purchaseFailedFallback": "Veuillez réessayer.",
+    "purchaseCompleteTitle": "Achat terminé",
+    "planActiveMessage": "{planName} est maintenant actif sur votre compte.",
+    "giftCodeCreatedTitle": "Code cadeau créé",
+    "giftCodeCreatedMessage": "Partagez ce code avec quelqu'un qui en a besoin :\n\n{code}\n\nValable pour {months} de {planName}.",
+    "founderWelcomeTitle": "Bienvenue, fondateur",
+    "familyWelcomeTitle": "Bienvenue dans la famille",
+    "platinumUnlockedMessage": "Accès Platinum débloqué -- sans frais, sans expiration.",
+    "redeemedTitle": "Utilisé !",
+    "redeemFailedTitle": "Impossible d'utiliser le code",
+    "redeemFailedFallback": "Veuillez vérifier le code et réessayer."
+  },
+  "legalDoc": {
+    "lastUpdatedLabel": "Dernière mise à jour : "
+  },
+  "wordSearch": {
+    "progressLabel": "{count} sur {total} trouvés",
+    "completedBadge": "Terminé auparavant",
+    "completionTitle": "Les {total} mots trouvés",
+    "completionSubtitle": "Bravo -- un moment de calme bien passé.",
+    "nextPuzzleButton": "Puzzle suivant",
+    "refreshButton": "Actualiser"
+  },
+  "profile": {
+    "photoAccessNeededTitle": "Accès aux photos nécessaire",
+    "photoAccessNeededMessage": "Activez l'accès à la photothèque dans les Réglages pour télécharger une photo de profil.",
+    "photoPickerErrorTitle": "Impossible d'ouvrir le sélecteur de photos",
+    "photoPickerErrorFallback": "Veuillez réessayer.",
+    "removePhotoAlertTitle": "Supprimer la photo",
+    "removePhotoAlertMessage": "Supprimer votre photo de profil ?",
+    "cancelButton": "Annuler",
+    "removeButton": "Supprimer",
+    "uploadPhotoA11yLabel": "Télécharger une photo de profil",
+    "removePhotoA11yLabel": "Supprimer la photo de profil",
+    "removePhotoText": "Supprimer la photo",
+    "nameLabel": "Nom",
+    "namePlaceholder": "Ajoutez votre nom",
+    "accountSectionTitle": "Compte",
+    "planLabel": "Abonnement",
+    "planValue": "{name} · {price}",
+    "freeQuestionsLeftLabel": "Questions gratuites restantes",
+    "questionsLeftTodayLabel": "Questions restantes aujourd'hui",
+    "unlimitedValue": "Illimité",
+    "devOnlySectionTitle": "Dev uniquement",
+    "unlockUnlimitedA11yLabel": "Débloquer les questions illimitées (dev uniquement)",
+    "unlockUnlimitedButton": "Débloquer les questions illimitées",
+    "devNote": "Visible uniquement dans les versions dev -- définit votre abonnement sur Platinum localement, comme l'utilisation du code fondateur. N'apparaîtra pas dans une version réelle.",
+    "savedSectionTitle": "Enregistré sur cet appareil",
+    "favoritesLabel": "Favoris",
+    "journalEntriesLabel": "Entrées du journal",
+    "prayerNotesLabel": "Notes de prière",
+    "footerNote": "Votre nom et votre photo sont stockés uniquement sur cet appareil -- il n'y a pas encore de serveur de compte derrière eux."
+  },
+  "scriptureSearch": {
+    "loadBooksError": "Impossible de charger les Écritures. Vérifiez votre connexion et réessayez.",
+    "loadChapterError": "Impossible de charger ce chapitre.",
+    "translationModalTitle": "Traduction",
+    "backToBooks": "Retour aux livres",
+    "chapterLabel": "Chapitre {number}",
+    "scrollToBottomChapterA11yLabel": "Faire défiler jusqu'en bas du chapitre",
+    "searchBooksPlaceholder": "Rechercher des livres...",
+    "filterAll": "Tout",
+    "filterTorah": "Torah",
+    "retryButton": "Réessayer",
+    "bookMeta": "{testament} · {chapters} chapitres",
+    "scrollToBottomBookListA11yLabel": "Faire défiler jusqu'en bas de la liste des livres"
+  },
+  "sermonWriter": {
+    "upsellTitle": "Rédacteur de sermons et d'études bibliques",
+    "upsellBody": "Générez un manuscrit complet de sermon ou une étude biblique en petit groupe sur n'importe quel sujet ou passage, ancré dans une exégèse solide. Disponible sur les abonnements Pro et Platinum.",
+    "upgradeButton": "Mettre à niveau",
+    "upgradeErrorTitle": "Un problème est survenu",
+    "upgradeErrorMessage": "Impossible d'ouvrir l'écran de mise à niveau. Veuillez réessayer.",
+    "helpText": "Donnez-lui un sujet ou un passage et il rédigera un sermon complet ou une étude biblique que vous pourrez réellement enseigner -- pas seulement un plan.",
+    "topicLabel": "Sujet ou thème",
+    "topicPlaceholder": "ex. La foi au milieu du doute",
+    "passageLabel": "Passage principal (facultatif)",
+    "passagePlaceholder": "ex. Marc 9:14-29",
+    "occasionLabel": "Occasion ou public (facultatif)",
+    "occasionPlaceholder": "ex. Groupe de jeunes, dimanche matin, étude en petit groupe",
+    "lengthLabel": "Durée",
+    "lengthStandard": "Standard (15-20 min)",
+    "lengthExtended": "Étendu (30-40 min)",
+    "generateButton": "Générer",
+    "regenerateButton": "Régénérer",
+    "generateErrorTitle": "Impossible de générer cela",
+    "generateErrorFallback": "Veuillez vérifier votre connexion et réessayer."
+  },
+  "studyTools": {
+    "linkErrorTitle": "Impossible d'ouvrir ce lien",
+    "linkErrorMessage": "Veuillez vérifier votre connexion et réessayer.",
+    "intro": "Commentaires, sermons et outils d'étude gratuits -- chaque entrée ci-dessous est soit du domaine public, soit un outil gratuit vers lequel nous renvoyons, donc rien ici ne pose de problème de licence.",
+    "sermonWriterCardTitle": "Rédacteur de sermons et d'études bibliques",
+    "sermonWriterCardSubtitle": "Générez un sermon complet ou une étude sur n'importe quel sujet ou passage",
+    "resourceAccessibilityLabel": "{title} par {author}",
+    "scrollToBottomLabel": "Faire défiler jusqu'en bas"
+  },
+  "globalLibrary": {
+    "title": "Outils bibliques multilingues",
+    "intro": "Les Écritures et les ressources chrétiennes dans les langues de tous les coins du monde — traductions et textes gratuits du domaine public.",
+    "bibleSectionTitle": "Bibles par langue",
+    "yourLanguageBibles": "Bibles en {language}",
+    "allLanguages": "Toutes les langues",
+    "translationCount": "{count} traduction{plural}",
+    "noMatchForYourLanguage": "Nous n'avons pas encore de Bible en {language} dans ce catalogue — parcourez toutes les langues ci-dessous.",
+    "booksSectionTitle": "Livres et témoignages chrétiens",
+    "booksIntro": "Livres, commentaires et témoignages du domaine public et gratuits provenant de l'Internet Archive, filtrés selon votre langue.",
+    "booksLoading": "Recherche dans la bibliothèque...",
+    "booksEmpty": "Aucun résultat trouvé en {language} pour l'instant. Essayez une autre langue ci-dessous.",
+    "openBook": "Ouvrir",
+    "languageSectionHeader": "Parcourir par langue",
+    "loadingLanguages": "Chargement des langues disponibles...",
+    "loadError": "Impossible de charger la bibliothèque. Vérifiez votre connexion et réessayez.",
+    "retryButton": "Réessayer"
+  }
 };
 
 export default fr;
