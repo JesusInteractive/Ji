@@ -39,6 +39,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const { ElevenLabsClient } = require('@elevenlabs/elevenlabs-js');
 const { Resend } = require('resend');
+const { sql, ensureSchema, hasDatabase } = require('./db');
 
 const app = express();
 // Vercel sits in front of this as a single reverse proxy and sets
@@ -259,25 +260,68 @@ const USER_AGREEMENT = {
   closing: 'By using Jesus Interactive you acknowledge that you have read, understood, and agree to be bound by these Terms of Service, the Privacy Policy, and the AI Disclosure & User Acknowledgment.',
 };
 
+// Rewritten to match the app's actual, device-ID-only architecture (no
+// email/password accounts, no profile) after the pre-launch security
+// review found the previous version -- inherited generic SaaS
+// boilerplate -- described an account system this app has never had,
+// while failing to disclose the one that's real (the Postgres-backed
+// testimony wall / device metadata; see DELETE /v1/account's own
+// comment on the identical drift that had crept into the delete-account
+// page). Source: user-provided rewrite, dated September 2, 2026.
 const PRIVACY_POLICY = {
   title: 'Privacy Policy',
-  lastUpdated: 'August 16, 2026',
+  lastUpdated: 'September 2, 2026',
   intro:
-    'Alizabeth James, an individual doing business as Jesus Interactive ("we," "us," "our," or "Jesus Interactive"), operates the mobile application Jesus Interactive (the "App" or "Service"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use the App.\n\nPlease read this Privacy Policy carefully. By accessing or using the App, you agree to the collection and use of information in accordance with this policy. If you do not agree, do not use the App.',
+    'This policy describes how Jesus Interactive (the "App"), operated by Alizabeth James, an individual doing business as Jesus Interactive, handles information. It is written to match the product as it actually works today, including the corrections raised in a pre-launch security review -- not a generic template.\n\nThere is no email/password login, no member profile, and no profile-preference account. Use is tied to a device ID created on your device. That ID is sent with requests so we can show your testimonies, reactions, reports, and plan history -- and so we can delete those server-side rows when you ask.\n\nThis is a description of current practices, not legal advice. By using the App you agree to the collection and use of information as described below; if you do not agree, do not use the App.\n\nOur promise, in plain language:\n- We do not sell your information.\n- We do not run a traditional account system.\n- If you publish on the testimony wall, that content is public to other users and visible to moderators.\n- Words you type into AI or voice features are sent to those vendors so the feature can run. Do not treat those chats as a sealed confessional.\n- "Delete my data" sends your device ID and cascade-deletes the device-linked rows in our live database. Older on-screen copy that said there was no server-side copy was wrong and has been corrected.',
   sections: [
-    { heading: '1. Information We Collect', body: 'We collect information in the following categories:\n\nA. Information You Provide Directly\n- Account Information: Email address, display name, and password (or authentication credentials) when you create an account.\n- Profile Information: Optional information you choose to provide (e.g., faith tradition preferences, interests).\n- User Content: Messages you send to the AI, sermon drafts you create, community posts, prayer requests, comments, and any other content you submit.\n- Communications: Messages you send to us for support or feedback.\n- Subscription and Purchase Data: Records of your subscription tier and in-app purchases (payment processing is handled by Apple or Google; we do not receive your full payment card details).\n\nB. Information Collected Automatically\n- Device and Usage Data: Device type, operating system version, unique device identifiers, IP address, app version, crash logs, performance data, and general usage statistics (screens viewed, features used, session duration).\n- Log Data: Time and date of access, pages or screens visited, and other diagnostic data.\n- Cookies and Similar Technologies: We may use local storage, cookies, or similar technologies on any associated web components for functionality and analytics.\n\nC. Information from Third Parties\n- Apple App Store / Google Play: Limited subscription and purchase confirmation data necessary to unlock paid features.\n- AI Service Providers: When you use AI features, your message text and limited conversation context are sent to third-party AI providers to generate responses (see Section 3).\n\nWe do not intentionally collect precise location data, contacts, photos, microphone, or camera data unless you explicitly grant permission for a specific feature that requires it.' },
-    { heading: '2. How We Use Your Information', body: 'We use the information we collect to: provide, operate, and maintain the App and its features (including AI chat, Sermon Writer, Bible tools, and Community); process and manage your subscriptions and purchases; personalize your experience (e.g., preferred Bible translation or theme); improve the App, develop new features, and conduct analytics; communicate with you about updates, security alerts, and support; detect, prevent, and address technical issues, fraud, abuse, and violations of our Terms; comply with legal obligations and enforce our rights; and moderate Community content and respond to user reports.' },
-    { heading: '3. AI Features and Third-Party AI Providers', body: 'When you use any AI-powered feature (chat, Sermon Writer, etc.): the text of your prompts and relevant conversation history is transmitted to one or more third-party artificial intelligence providers so that a response can be generated. These providers process the data solely to return a response to us. We configure the service so that your private conversations are not used to train the providers\' foundation models unless you later give separate, explicit opt-in consent (which is never required to use the Service). By using AI features you provide explicit consent to this transmission of your message content to the AI provider(s).\n\nWe will identify the primary AI provider(s) in the App or in an updated version of this Policy when the production provider is finalized. You may choose not to use AI features if you do not wish your messages to be processed by third-party AI services.' },
-    { heading: '4. How We Share Your Information', body: 'We do not sell your personal information.\n\nWe may share information only in these limited circumstances:\n- Service Providers: With vendors who help us operate the App (hosting, analytics, customer support, AI processing, email delivery). These providers are contractually obligated to protect your data and use it only for the services they provide to us.\n- AI Providers: As described in Section 3.\n- Legal Requirements: When required by law, subpoena, court order, or governmental request, or to protect the rights, property, or safety of us, our users, or others.\n- Business Transfers: In connection with a merger, acquisition, reorganization, or sale of assets (your information would remain subject to confidentiality protections).\n- With Your Consent: When you explicitly direct us to share information.\n- Aggregated / De-identified Data: We may share aggregated or de-identified information that cannot reasonably be used to identify you.\n\nCommunity posts and public content you choose to share are visible to other users according to the visibility settings you select.' },
-    { heading: '5. Data Retention', body: 'We retain your information only as long as necessary to provide the Service and fulfill the purposes described in this Policy, unless a longer retention period is required or permitted by law.\n- Account data is retained while your account remains active.\n- Chat history and Sermon Writer content are retained so you can access them; you may delete individual items or request account deletion.\n- After account deletion we will delete or anonymize personal data within a reasonable period, except where we must retain it for legal, security, or legitimate business purposes (e.g., fraud prevention, resolving disputes).' },
-    { heading: '6. Your Rights and Choices', body: 'Depending on your location, you may have rights including: access to the personal data we hold about you; correction of inaccurate data; deletion of your data ("right to be forgotten"); restriction or objection to certain processing; data portability; and withdrawal of consent (where processing is based on consent).\n\nTo exercise these rights, contact us at the email address below. We will respond within the timeframes required by applicable law.\n\nAccount Deletion: You may delete your account from within the App (Settings) or by contacting us. Deletion is permanent and will remove your chat history, saved content, and profile (subject to legal retention requirements).\n\nOpt-Out of Marketing: You can opt out of non-essential communications by following the unsubscribe link or contacting us.\n\nAI Features: You may simply choose not to use AI chat or Sermon Writer features.' },
-    { heading: '7. Children\'s Privacy', body: 'The App is not directed to children under 13 years of age (or the equivalent age of digital consent in your jurisdiction). We do not knowingly collect personal information from children under 13. If we learn that we have collected personal information from a child under 13, we will delete it promptly. If you believe a child has provided us with personal information, please contact us.' },
-    { heading: '8. Data Security', body: 'We implement reasonable administrative, technical, and physical safeguards designed to protect your information. However, no method of transmission over the Internet or electronic storage is 100% secure. We cannot guarantee absolute security.' },
-    { heading: '9. International Users', body: 'The App is operated from the United States. If you access the App from outside the United States, your information may be transferred to, stored, and processed in the United States or other countries where our service providers operate. By using the App you consent to this transfer.\n\nIf you are located in the European Economic Area, United Kingdom, or Switzerland, we process your data in accordance with applicable data-protection laws. Our legal bases for processing include contract performance, legitimate interests, consent, and legal obligations.' },
-    { heading: '10. California Privacy Rights (CCPA/CPRA)', body: 'If you are a California resident, you have additional rights under the California Consumer Privacy Act (as amended by the CPRA), including the right to know, delete, correct, and opt out of the sale or sharing of personal information. We do not sell personal information. To exercise your rights, contact us as described below. We will not discriminate against you for exercising your rights.' },
-    { heading: '11. Third-Party Links and Services', body: 'The App may contain links to third-party websites or services (including Bible text providers). We are not responsible for the privacy practices of those third parties. We encourage you to read their privacy policies.\n\nPayment processing is handled entirely by Apple or Google. Their privacy policies govern the handling of your payment information.' },
-    { heading: '12. Changes to This Privacy Policy', body: 'We may update this Privacy Policy from time to time. We will post the revised Policy in the App and update the "Last Updated" date. Material changes will be communicated through the App or by email when appropriate. Your continued use of the App after the effective date of changes constitutes acceptance of the revised Policy.' },
-    { heading: '13. Contact Us', body: 'If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact:\n\nAlizabeth James, doing business as Jesus Interactive\nCathedral City, California, United States\nEmail: support@jesusinteractive.com\n\nFor privacy-specific requests, please include "Privacy Request" in the subject line and sufficient information for us to verify your identity and respond.\n\nWe aim to respond within a few business days. If you are in crisis, please see our AI Disclosure for emergency resources rather than waiting for a reply here.' },
+    {
+      heading: '1. What Jesus Interactive Is',
+      body: 'Jesus Interactive is a faith app with: Scripture and interactive teaching tools; a testimony wall (posts); reactions and content reports; plan history; optional AI conversation and voice features; and a delete-data / export-data path keyed to your device.\n\nModerators can review reports and act on content. Ordinary users do not log in.',
+    },
+    {
+      heading: '2. Information We Collect',
+      body: 'Device identifier: When you save something on our servers (a post, reaction, report, plan-history item, export, or delete request), the App sends a device ID. We use it to attach your content and history to the same device, show you your own posts and plan history, and cascade-delete your live database rows if you use Delete my data. We do not ask for your name, email, or password to use the App. If you type a name or contact detail into a testimony, report, or chat, that text is stored or processed as content you chose to submit.\n\nContent you submit: testimony/wall posts (because you published them); reactions (because you reacted to a post); reports (because you flagged content for review); plan history (because you used the plan feature); AI/voice prompts and outputs needed to run those features; and delete/export requests. Do not put secrets, other people\'s private data, medical or financial details, or anything you would not want stored, moderated, or sent to an AI vendor.\n\nTechnical and security logs: Vercel records normal request logs. We also write "[audit]" lines in function logs for denied attempts to reach admin routes, successful moderation actions, and data-deletion events. Those logs can include time, route, outcome, and the device ID on the request. They are for security and abuse response, not a public profile.\n\nWhat we do NOT collect as an "account": Jesus Interactive does not create email/password accounts, usernames you sign in with, profile pages or profile-preference records, or a billing profile. Generic policy language about "your account," "your password," or "profile preferences" does not apply here.',
+    },
+    {
+      heading: '3. How We Use Information',
+      body: 'We use the information above to: run the testimony wall, reactions, reports, and plan history; run AI and voice features you choose to use; moderate reported content; honor export and delete requests; and keep admin routes locked down and investigate abuse.\n\nWe do not sell personal information. We do not use your testimony wall posts or chats to build a marketing profile.',
+    },
+    {
+      heading: '4. Yes, There Is a Server-Side Database',
+      body: 'Device-linked rows live in a hosted PostgreSQL database (Neon). That is a server-side copy.\n\nOlder public wording on the delete-data page (and similar error text) that said there was "no server-side database" or "no separate server-side copy retained anywhere" was inaccurate. That wording has been corrected.\n\nWhat Delete my data does: the client sends its device ID; the server cascade-deletes device-linked rows across the live tables that hold your posts, reports, reactions, plan history, and related device-linked rows.\n\nWhat deletion does NOT instantly erase: hosting or audit logs already written; backups or replicas that have not yet rotated; content posted from a different device; copies someone else already saved, screenshotted, or forwarded; and prompts already sent to an AI or voice vendor for a request that already ran.',
+    },
+    {
+      heading: '5. Processors',
+      body: 'These providers process data so the App can run: Vercel (hosting, routes, function/audit logs); Neon (PostgreSQL database); Anthropic (AI features you invoke); xAI (AI features you invoke); ElevenLabs (voice/speech features you invoke); and Resend (email delivery, if/when the App sends mail).\n\nIf you use an AI or voice feature, the text or audio for that request goes to that vendor. Do not paste information you are unwilling to send there.\n\nOperator API keys are not stored in the public client. If a key ever needs rotating, that is done only in the vendor consoles (Anthropic, xAI, ElevenLabs, Neon, Resend, Vercel) by the operator -- never from inside the public App.',
+    },
+    {
+      heading: '6. Moderation and Admin Access',
+      body: 'A small set of operators can use protected admin routes to review reports and act on content. Failed admin access attempts and successful moderation actions are audit-logged. There is no public login for ordinary users.',
+    },
+    {
+      heading: '7. Your Choices',
+      body: 'You may: use the App without creating an account; export device-linked rows from the in-App export control; delete device-linked rows with Delete my data; stay off the wall if you do not want a post stored or seen; and skip AI/voice features if you do not want that prompt sent to a vendor.\n\nIf export or delete fails, email support@jesusinteractive.com and include the device ID shown on that screen if you can copy it.',
+    },
+    {
+      heading: '8. Children',
+      body: 'Jesus Interactive is not directed at children under 13 (or the higher digital-consent age in your country). Do not use it if you are under that age. If you believe a child submitted personal information, contact us and we will delete device-linked rows we can identify.\n\nSpiritual conversation in this App is not a substitute for a parent, pastor, counselor, or emergency help.',
+    },
+    {
+      heading: '9. Retention',
+      body: 'Live database rows last until you delete them, or we remove them for moderation, abuse, or shutdown reasons. Hosting and audit logs follow the provider\'s retention window unless kept for an active security incident. Backups expire on Neon\'s schedule.',
+    },
+    {
+      heading: '10. International Processing',
+      body: 'Servers and vendors may process data in the United States or other countries. If you use the App from elsewhere, your information may be processed outside your country.',
+    },
+    {
+      heading: '11. Changes',
+      body: 'If we add login, email accounts, payments, or new vendors that change this picture, we will update this policy and the date above. On-screen delete and export copy will stay consistent with the real behavior: device ID in, cascade delete across the device-linked tables.',
+    },
+    {
+      heading: '12. Contact',
+      body: 'Alizabeth James, doing business as Jesus Interactive\n30875 Avenida Del Padre\nCathedral City, CA 92234\nEmail: support@jesusinteractive.com\n\nWe aim to respond within a few business days. If you are in crisis, please see our AI Disclosure for emergency resources rather than waiting for a reply here.',
+    },
   ],
 };
 
@@ -309,7 +353,7 @@ const ACCOUNT_DELETION = {
     },
     {
       heading: 'What data is deleted',
-      body: 'The following is permanently deleted, immediately, with no retention period: your conversation history with Jesus, journal entries, prayer wall notes you have placed, saved favorites, your profile name and photo, and your current plan/token balance.\n\nJesus Interactive does not maintain a server-side database of user accounts or content -- everything above is stored only on your device, so this in-app deletion is complete; there is no separate server-side copy retained anywhere afterward.',
+      body: 'The following is permanently deleted, immediately, with no retention period: your conversation history with Jesus, journal entries, prayer wall notes you have placed, saved favorites, your profile name and photo, and your current plan/token balance -- all of which live only on your device.\n\nJesus Interactive does not use email/password accounts -- data we keep for you server-side is tied to this device\'s ID. Tapping delete sends that ID and removes your posts, reports, reactions, plan history, and related rows from our live database.\n\nWhat this does NOT erase: hosting/audit logs already written, unexpired backups, other people\'s posts, and anything already sent to an AI or voice provider for a request that already ran.',
     },
     {
       heading: 'What is kept, and for how long',
@@ -433,6 +477,21 @@ const sttLimiter = rateLimit({
   message: { error: 'Too many voice messages, slow down.' },
   skip: isDeveloperRequest,
 });
+// Gospel Translator (src/screens/GospelTranslatorScreen.tsx) calls this
+// once per line spoken/typed on either side of the conversation -- a
+// real back-and-forth exchange fires it far more often per minute than
+// devotionsLimiter/sermonLimiter's once-per-generation use, closer to
+// TTS/STT's own cadence in that same screen. Cheaper per-call than TTS
+// (short text completion, no audio synthesis), hence the slightly
+// higher ceiling.
+const translateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.TRANSLATE_RATE_LIMIT) || 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many translation requests, slow down.' },
+  skip: isDeveloperRequest,
+});
 // Minting a session token is now the operation worth rate-limiting on its
 // own -- with the old static shared secret, a leak was permanent; with
 // short-lived tokens, an attacker who wants sustained access has to keep
@@ -478,6 +537,46 @@ const sermonLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many sermon requests -- please slow down and try again shortly.' },
+  skip: isDeveloperRequest,
+});
+
+// Cheap (no AI/TTS cost) but still bounded against spam -- one call per
+// app foreground/launch in normal use, so this ceiling is generous.
+const heartbeatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.HEARTBEAT_RATE_LIMIT) || 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, slow down.' },
+  skip: isDeveloperRequest,
+});
+// Posting a testimony is rare in normal use (nowhere near chat/TTS
+// volume) -- tight limit mainly to stop scripted spam of the public feed.
+const testimonyPostLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: Number(process.env.TESTIMONY_POST_RATE_LIMIT) || 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many testimonies posted -- please slow down and try again shortly.' },
+  skip: isDeveloperRequest,
+});
+const testimonyReportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: Number(process.env.TESTIMONY_REPORT_RATE_LIMIT) || 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many reports submitted -- please try again later.' },
+  skip: isDeveloperRequest,
+});
+// Generous -- tapping an emoji is casual, high-frequency interaction on
+// a stream page, not something worth throttling the way posting or
+// reporting are.
+const testimonyReactionLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.TESTIMONY_REACTION_RATE_LIMIT) || 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many reactions, slow down.' },
   skip: isDeveloperRequest,
 });
 
@@ -1366,6 +1465,41 @@ function requireAuth(req, res, next) {
   }
 }
 
+// Stricter than requireAuth: a regular app-issued JWT passes requireAuth
+// (that's the point of it -- any app install can call the billed
+// endpoints) but must NOT be enough to read /v1/admin/* moderation/
+// analytics data. Chain this after requireAuth on those routes.
+function requireDeveloper(req, res, next) {
+  if (!isDeveloperRequest(req)) {
+    // A regular app-issued JWT passing requireAuth but failing this
+    // check is exactly what a client that guessed/probed an admin route
+    // looks like -- worth its own log line (distinct from the generic
+    // per-route error logs below) so it's greppable across every admin
+    // route at once.
+    console.warn(`[audit] admin access denied: ${req.method} ${req.originalUrl} from ${req.ip}`);
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+}
+
+// Every /v1/... route below that touches Postgres needs the schema to
+// exist first; this is a no-op after the first (cached) call on a warm
+// instance. Responds 503 rather than throwing when DATABASE_URL isn't
+// set at all, so a missing/misconfigured database degrades this one
+// feature instead of the whole process.
+async function requireDatabase(req, res, next) {
+  if (!hasDatabase) {
+    return res.status(503).json({ error: 'Database is not configured.' });
+  }
+  try {
+    await ensureSchema();
+    next();
+  } catch (err) {
+    console.error('[db] ensureSchema failed:', err);
+    res.status(503).json({ error: 'Database is temporarily unavailable.' });
+  }
+}
+
 // New front door: no auth required to reach this one (there's nothing to
 // authenticate against yet -- see requireAuth's comment), but it's the
 // only thing standing between an abuser and free token-minting, hence
@@ -1778,6 +1912,132 @@ app.post('/v1/stt/transcribe', sttLimiter, requireAuth, sttUpload.single('audio'
   }
 });
 
+// Gospel Translator (src/screens/GospelTranslatorScreen.tsx): one side
+// speaks/reads in their own language, the other side sees (and can hear)
+// it in theirs. Runs on xAI/Grok rather than Anthropic (unlike devotions/
+// sermon below) specifically because it's the model already proven to
+// reply fluently in all 117 of this app's picker languages (see
+// LANGUAGE_NAMES' own comment and /v1/chat/messages above) -- a mission-
+// field translator is exactly the feature that can't afford to be weak
+// on an uncommon language pair.
+//
+// Reuses /v1/chat/messages' exact xAI request/SSE-parsing shape (same
+// endpoint, same event format) rather than inventing a second way to
+// call xAI, but buffers the full response server-side instead of
+// streaming it back -- a translated line is short and this screen shows
+// it all at once, not word-by-word, so there's nothing for the client to
+// gain from a stream here, only a second protocol to maintain.
+app.post('/v1/translate', translateLimiter, requireAuth, async (req, res) => {
+  try {
+    const { text, sourceLanguageName: clientSourceName, targetLanguageName: clientTargetName } = req.body || {};
+    if (!text || typeof text !== 'string' || !text.trim()) {
+      return res.status(400).json({ error: 'text is required' });
+    }
+    if (text.length > 2000) {
+      return res.status(400).json({ error: 'text is too long (max 2000 characters)' });
+    }
+    // Both names are required (not optional like chat's languageCode
+    // fallback) -- a translator with an unknown source or target
+    // language isn't a translator, so failing fast here beats sending
+    // Grok an ambiguous prompt and hoping it guesses right.
+    const sourceLanguageName =
+      typeof clientSourceName === 'string' && clientSourceName.trim()
+        ? clientSourceName.trim().replace(/\s+/g, ' ').slice(0, 60)
+        : null;
+    const targetLanguageName =
+      typeof clientTargetName === 'string' && clientTargetName.trim()
+        ? clientTargetName.trim().replace(/\s+/g, ' ').slice(0, 60)
+        : null;
+    if (!sourceLanguageName || !targetLanguageName) {
+      return res.status(400).json({ error: 'sourceLanguageName and targetLanguageName are required' });
+    }
+
+    if (!XAI_API_KEY) {
+      return res.status(500).json({ error: 'XAI_API_KEY is not configured' });
+    }
+
+    const system = `You are a professional interpreter helping someone share the Christian gospel face-to-face with a person who speaks a different language. Translate what you're given from ${sourceLanguageName} to ${targetLanguageName} -- faithfully and naturally, the way a skilled human interpreter would actually say it aloud, not a stiff word-for-word rendering. If it's a Bible passage or quotation, translate it faithfully into idiomatic, reverent, natural ${targetLanguageName} -- meaning over literal wording. Output ONLY the translation itself: no notes, no explanations, no quotation marks, no "here is the translation" preamble, no commentary of any kind.`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20_000);
+
+    let xaiRes;
+    try {
+      xaiRes = await fetch('https://api.x.ai/v1/responses', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${XAI_API_KEY}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: XAI_MODEL,
+          input: [
+            { role: 'system', content: system },
+            { role: 'user', content: text.trim() },
+          ],
+          reasoning: { effort: 'none' },
+          stream: true,
+        }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return res.status(504).json({ error: 'Model request timed out' });
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!xaiRes.ok) {
+      const errText = await xaiRes.text();
+      console.error('xAI API error (translate):', errText);
+      return res.status(502).json({ error: 'Model request failed' });
+    }
+
+    let accumulated = '';
+    let streamFailed = false;
+    const reader = xaiRes.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split('\n\n');
+      buffer = events.pop() ?? '';
+      for (const rawEvent of events) {
+        const dataLine = rawEvent.split('\n').find((line) => line.startsWith('data:'));
+        if (!dataLine) continue;
+        let parsed;
+        try {
+          parsed = JSON.parse(dataLine.slice(5).trim());
+        } catch {
+          continue;
+        }
+        if (parsed.type === 'response.output_text.delta' && typeof parsed.delta === 'string') {
+          accumulated += parsed.delta;
+        } else if (parsed.type === 'response.failed' || parsed.type === 'error') {
+          streamFailed = true;
+        }
+      }
+    }
+
+    const translation = accumulated.trim();
+    if (streamFailed && !translation) {
+      return res.status(502).json({ error: 'Model request failed' });
+    }
+    if (!translation) {
+      return res.status(502).json({ error: 'Malformed response from model' });
+    }
+    res.json({ translation });
+  } catch (err) {
+    console.error('Translate error:', err);
+    res.status(500).json({ error: 'Translation failed' });
+  }
+});
+
 // Daily Devotions generation. See src/constants/devotionalReadingPlan.ts
 // for how the client computes today's passage reference (this route
 // takes it as input rather than duplicating the reading-plan logic here
@@ -1997,26 +2257,51 @@ app.post('/v1/sermon/generate', sermonLimiter, requireAuth, async (req, res) => 
   }
 });
 
-// Account deletion / data export. IMPORTANT CONTEXT (see src/context/
-// AppContext.tsx): this app has no database and no per-user server-side
-// storage of any kind -- every real piece of user data (chat messages,
-// journal entries, prayer notes, favorites, plan/tokens) lives ONLY in
-// client-side AsyncStorage. There is currently nothing here for these
-// routes to actually delete or export.
+// Account deletion / data export. Most real user data (chat messages,
+// journal entries, prayer notes, favorites, plan/tokens) lives only in
+// client-side AsyncStorage -- SettingsScreen.tsx's handleDeleteAccount
+// wipes that itself. But db.js's Postgres schema DOES hold server-side,
+// device-linked data now (testimonies you posted, reports/reactions you
+// made on others', and subscription_events) that this route used to
+// claim didn't exist -- it previously just returned { ok: true } without
+// touching Postgres at all, which quietly made the delete-account page's
+// "no separate server-side copy retained anywhere" promise false the
+// moment the testimony wall shipped. This actually cascades now.
 //
-// DELETE /v1/account is still real and honest: it's an authenticated
-// endpoint the client calls as part of account deletion (alongside its
-// own on-device wipe -- see SettingsScreen.tsx's handleDeleteAccount),
-// and it correctly returns success because there is nothing server-side
-// left over to clean up today. THE MOMENT this backend gains any
-// server-side user data (a database, RevenueCat-linked billing records
-// beyond the store's own, moderation/report records, etc.), this handler
-// must be updated to actually cascade-delete all of it -- don't let this
-// route keep silently returning { ok: true } once that's no longer true.
-app.delete('/v1/account', requireAuth, (req, res) => {
-  // Nothing to delete yet (see comment above). Real cascade-delete logic
-  // goes here once there's a database.
-  res.status(200).json({ ok: true });
+// deviceId is a request body field, not something requireAuth's JWT
+// carries (see that function's own comment -- the token doesn't
+// identify who's calling), so it's trusted the same way it already is
+// on every other testimonies/* route: anyone holding a valid session
+// token could pass an arbitrary deviceId here, same as they could
+// on POST /v1/testimonies. That's an accepted gap of this app's
+// device-ID-only identity model generally, not something unique to this
+// route -- real per-user auth is the actual fix, tracked elsewhere.
+app.delete('/v1/account', requireAuth, async (req, res) => {
+  const { deviceId } = req.body || {};
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  if (!hasDatabase) {
+    return res.status(200).json({ ok: true });
+  }
+  try {
+    await ensureSchema();
+    // Order matters: testimonies' own ON DELETE CASCADE (db.js) cleans
+    // up reports/reactions THAT testimony received from other devices,
+    // but this device's own reports/reactions on OTHER people's
+    // testimonies live under their device_id/reporter_device_id, not
+    // this one's testimony rows -- those need deleting explicitly first.
+    await sql`DELETE FROM testimony_reports WHERE reporter_device_id = ${deviceId}`;
+    await sql`DELETE FROM testimony_reactions WHERE device_id = ${deviceId}`;
+    await sql`DELETE FROM testimonies WHERE device_id = ${deviceId}`;
+    await sql`DELETE FROM subscription_events WHERE device_id = ${deviceId}`;
+    await sql`DELETE FROM users WHERE device_id = ${deviceId}`;
+    console.warn(`[audit] account deleted: device ${deviceId} (by ${req.ip})`);
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error('[account] delete failed:', err);
+    res.status(500).json({ error: 'Could not delete account data.' });
+  }
 });
 
 // POST /v1/support/report: Settings' "Report a technical issue" form
@@ -2078,13 +2363,336 @@ app.post('/v1/support/report', supportReportLimiter, requireAuth, async (req, re
 // on-device instead -- see src/services/dataExport.ts and
 // SettingsScreen.tsx's handleDownloadData, which builds and shares the
 // export directly from local AsyncStorage without a server round-trip.
-// Revisit this route only once there's server-side user data worth
-// including in that export (at which point it likely wants to return
-// signed URLs for a server-generated archive instead).
+// db.js's testimonies/reports/reactions tables ARE server-side data now
+// (see DELETE /v1/account above), so "no server-side data at all" is no
+// longer true -- but a testimony a device posted is exactly what that
+// device already sees rendered back to it in the app (Testimony
+// Stream), so there's genuinely nothing hidden left worth a separate
+// export endpoint for. Revisit only if a future server-side data
+// category ISN'T already visible in-app that way (at which point this
+// likely wants to return signed URLs for a server-generated archive).
 app.post('/v1/account/export', requireAuth, (req, res) => {
   res.status(501).json({
-    error: 'Not implemented -- this app stores no user data server-side. Use the in-app "Download my data" export instead.',
+    error:
+      'Not implemented -- everything on your device is already covered by the in-app "Download my data" export; anything you posted server-side (Testimony Stream) is visible in the app itself.',
   });
+});
+
+const TESTIMONY_TEXT_MAX_LENGTH = 2000;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// Fixed, small set -- keeps testimony_reactions from becoming a junk
+// free-text field, and matches the fixed row of tappable emoji the
+// client renders (src/screens/TestimonyStreamScreen.tsx). Must stay in
+// sync with that file's own REACTION_EMOJI constant.
+const ALLOWED_REACTION_EMOJI = ['🙏', '❤️', '🙌', '🔥', '✨'];
+
+// POST /v1/device/heartbeat: called once per app launch/foreground (see
+// src/services/backendData.ts) with the device's locally-generated id
+// (src/services/deviceId.ts -- there's no real account system, see
+// requireAuth's comment) and its current plan. This is the entire
+// "user count" and "subscriptions" picture the developer asked for: an
+// upsert into `users` plus a `subscription_events` row whenever the
+// plan actually changes since the last heartbeat, not a poll -- so
+// /v1/admin/stats below can report both current distribution and how
+// it moved over time. Never trusts the client's plan as an entitlement
+// (nothing here gates a feature on it) -- it's purely descriptive.
+app.post('/v1/device/heartbeat', heartbeatLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { deviceId, plan, planExpiresAt } = req.body || {};
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  const safePlan = typeof plan === 'string' && plan.length <= 40 ? plan : 'free';
+  const safeExpiresAt = typeof planExpiresAt === 'string' ? planExpiresAt : null;
+  try {
+    const existing = await sql`SELECT plan FROM users WHERE device_id = ${deviceId}`;
+    const oldPlan = existing[0]?.plan;
+    await sql`
+      INSERT INTO users (device_id, plan, plan_expires_at, last_seen_at)
+      VALUES (${deviceId}, ${safePlan}, ${safeExpiresAt}, now())
+      ON CONFLICT (device_id) DO UPDATE
+        SET plan = EXCLUDED.plan, plan_expires_at = EXCLUDED.plan_expires_at, last_seen_at = now()
+    `;
+    if (oldPlan === undefined) {
+      await sql`INSERT INTO subscription_events (device_id, plan, event_type) VALUES (${deviceId}, ${safePlan}, 'first_seen')`;
+    } else if (oldPlan !== safePlan) {
+      await sql`INSERT INTO subscription_events (device_id, plan, event_type) VALUES (${deviceId}, ${safePlan}, 'change')`;
+    }
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error('[device/heartbeat] failed:', err);
+    res.status(500).json({ error: 'Could not record heartbeat.' });
+  }
+});
+
+// GET /v1/testimonies/stats: a small, non-sensitive public count (total
+// visible testimonies + how many landed today) -- TestimonyStreamScreen.tsx
+// shows this in its "community" header banner so the page reads as a
+// live, shared space rather than a private list. Deliberately NOT
+// developer-gated like /v1/admin/stats -- an aggregate count carries no
+// per-user data, unlike that endpoint's plan/abuse breakdowns.
+app.get('/v1/testimonies/stats', requireAuth, requireDatabase, async (req, res) => {
+  try {
+    const rows = await sql`
+      SELECT count(*)::int AS total, count(*) FILTER (WHERE created_at > now() - interval '1 day')::int AS today
+      FROM testimonies WHERE status = 'visible'
+    `;
+    res.status(200).json({ total: rows[0].total, today: rows[0].today });
+  } catch (err) {
+    console.error('[testimonies/stats] failed:', err);
+    res.status(500).json({ error: 'Could not load stats.' });
+  }
+});
+
+// GET /v1/testimonies: the live, public Testimony Stream (TestimonyStreamScreen.tsx)
+// -- cursor-paginated by `before` (an ISO timestamp, pass the last item's
+// createdAt to page further back). Only ever returns status='visible'
+// rows; a testimony auto-hides once it crosses the report threshold
+// (see POST /v1/testimonies/:id/report) without needing a delete.
+app.get('/v1/testimonies', requireAuth, requireDatabase, async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 30, 1), 50);
+  const before = typeof req.query.before === 'string' ? req.query.before : null;
+  // Optional -- when passed, the response also says which emoji THIS
+  // device already reacted with per testimony, so the client can render
+  // its own reactions as active/highlighted even across relaunches.
+  // Omitting it (an older client, or a caller that doesn't care) just
+  // skips that lookup and comes back with myReactions: [] on everything.
+  const deviceId = typeof req.query.deviceId === 'string' ? req.query.deviceId : null;
+  try {
+    const rows = before
+      ? await sql`SELECT id, body, created_at FROM testimonies WHERE status = 'visible' AND created_at < ${before} ORDER BY created_at DESC LIMIT ${limit}`
+      : await sql`SELECT id, body, created_at FROM testimonies WHERE status = 'visible' ORDER BY created_at DESC LIMIT ${limit}`;
+    const ids = rows.map((r) => r.id);
+    const countsByTestimony = {};
+    const mineByTestimony = {};
+    if (ids.length > 0) {
+      const counts = await sql`
+        SELECT testimony_id, emoji, count(*)::int AS count
+        FROM testimony_reactions WHERE testimony_id = ANY(${ids})
+        GROUP BY testimony_id, emoji
+      `;
+      for (const c of counts) {
+        (countsByTestimony[c.testimony_id] ??= []).push({ emoji: c.emoji, count: c.count });
+      }
+      if (deviceId) {
+        const mine = await sql`
+          SELECT testimony_id, emoji FROM testimony_reactions
+          WHERE testimony_id = ANY(${ids}) AND device_id = ${deviceId}
+        `;
+        for (const m of mine) {
+          (mineByTestimony[m.testimony_id] ??= []).push(m.emoji);
+        }
+      }
+    }
+    res.status(200).json({
+      testimonies: rows.map((r) => ({
+        id: r.id,
+        text: r.body,
+        createdAt: r.created_at,
+        reactions: countsByTestimony[r.id] || [],
+        myReactions: mineByTestimony[r.id] || [],
+      })),
+    });
+  } catch (err) {
+    console.error('[testimonies] list failed:', err);
+    res.status(500).json({ error: 'Could not load testimonies.' });
+  }
+});
+
+// POST /v1/testimonies: always public, always anonymous (no author field
+// exists on this table at all -- see PrayerWallScreen.tsx's
+// handleShareTestimony comment, "no privacy toggles here on purpose").
+app.post('/v1/testimonies', testimonyPostLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { deviceId, text } = req.body || {};
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    return res.status(400).json({ error: 'text is required' });
+  }
+  if (text.length > TESTIMONY_TEXT_MAX_LENGTH) {
+    return res.status(400).json({ error: `text is too long (max ${TESTIMONY_TEXT_MAX_LENGTH} characters)` });
+  }
+  const trimmed = text.trim();
+  try {
+    await sql`INSERT INTO users (device_id) VALUES (${deviceId}) ON CONFLICT (device_id) DO UPDATE SET last_seen_at = now()`;
+    const rows = await sql`INSERT INTO testimonies (device_id, body) VALUES (${deviceId}, ${trimmed}) RETURNING id, body, created_at`;
+    const row = rows[0];
+    res.status(200).json({ id: row.id, text: row.body, createdAt: row.created_at, reactions: [], myReactions: [] });
+  } catch (err) {
+    console.error('[testimonies] insert failed:', err);
+    res.status(500).json({ error: 'Could not save testimony.' });
+  }
+});
+
+// POST /v1/testimonies/:id/report: one report per (testimony, device)
+// pair (enforced by the DB's UNIQUE constraint, not a client-side
+// check) -- a repeat report from the same device is a silent no-op
+// rather than an error. Crossing 3 reports auto-flags the testimony out
+// of the public GET above; a developer reviews the flagged queue via
+// GET /v1/admin/testimonies?status=flagged and restores or removes it.
+app.post('/v1/testimonies/:id/report', testimonyReportLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { id } = req.params;
+  const { deviceId } = req.body || {};
+  if (!UUID_RE.test(id)) {
+    return res.status(400).json({ error: 'Invalid testimony id' });
+  }
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  try {
+    await sql`INSERT INTO testimony_reports (testimony_id, reporter_device_id) VALUES (${id}, ${deviceId})`;
+  } catch (err) {
+    if (err && err.code === '23505') {
+      // Already reported by this device -- treat as success.
+      return res.status(200).json({ ok: true });
+    }
+    console.error('[testimonies] report insert failed:', err);
+    return res.status(400).json({ error: 'Could not report this testimony.' });
+  }
+  try {
+    const rows = await sql`
+      UPDATE testimonies SET report_count = report_count + 1,
+        status = CASE WHEN report_count + 1 >= 3 THEN 'flagged' ELSE status END
+      WHERE id = ${id}
+      RETURNING report_count, status
+    `;
+    res.status(200).json({ ok: true, reportCount: rows[0]?.report_count ?? null, status: rows[0]?.status ?? null });
+  } catch (err) {
+    console.error('[testimonies] report update failed:', err);
+    res.status(500).json({ error: 'Could not report this testimony.' });
+  }
+});
+
+// POST /v1/testimonies/:id/react: toggles one (device, testimony, emoji)
+// reaction on/off -- tapping an already-active emoji removes it, same
+// as the client's optimistic UI. Always returns the fresh counts and
+// this device's current set so the client can reconcile even if its
+// own optimistic update guessed wrong (e.g. two taps landing out of
+// order).
+app.post('/v1/testimonies/:id/react', testimonyReactionLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { id } = req.params;
+  const { deviceId, emoji } = req.body || {};
+  if (!UUID_RE.test(id)) {
+    return res.status(400).json({ error: 'Invalid testimony id' });
+  }
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  if (!ALLOWED_REACTION_EMOJI.includes(emoji)) {
+    return res.status(400).json({ error: 'Unsupported emoji' });
+  }
+  try {
+    const existing = await sql`
+      SELECT id FROM testimony_reactions
+      WHERE testimony_id = ${id} AND device_id = ${deviceId} AND emoji = ${emoji}
+    `;
+    if (existing.length > 0) {
+      await sql`DELETE FROM testimony_reactions WHERE id = ${existing[0].id}`;
+    } else {
+      await sql`INSERT INTO testimony_reactions (testimony_id, device_id, emoji) VALUES (${id}, ${deviceId}, ${emoji})`;
+    }
+    const counts = await sql`
+      SELECT emoji, count(*)::int AS count FROM testimony_reactions
+      WHERE testimony_id = ${id} GROUP BY emoji
+    `;
+    const mine = await sql`
+      SELECT emoji FROM testimony_reactions WHERE testimony_id = ${id} AND device_id = ${deviceId}
+    `;
+    res.status(200).json({ reactions: counts, myReactions: mine.map((m) => m.emoji) });
+  } catch (err) {
+    console.error('[testimonies] react failed:', err);
+    res.status(500).json({ error: 'Could not react to this testimony.' });
+  }
+});
+
+// Everything under /v1/admin/* is for you only -- requireDeveloper
+// rejects any request that isn't carrying DEVELOPER_TOKEN, even a
+// perfectly valid app-issued session JWT (see requireDeveloper's own
+// comment). Call these with `Authorization: Bearer <DEVELOPER_TOKEN>`.
+
+// GET /v1/admin/stats: the "clock how effective this app is" view --
+// total/new users, plan distribution, testimony volume, and how many
+// devices are flagged abusive. Nothing here is billed, so no rate limit.
+app.get('/v1/admin/stats', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  try {
+    const [userCounts, planCounts, testimonyCounts, abusiveCount] = await Promise.all([
+      sql`SELECT count(*)::int AS total, count(*) FILTER (WHERE created_at > now() - interval '1 day')::int AS new_today FROM users`,
+      sql`SELECT plan, count(*)::int AS count FROM users GROUP BY plan ORDER BY plan`,
+      sql`SELECT count(*)::int AS total, count(*) FILTER (WHERE status = 'visible')::int AS visible, count(*) FILTER (WHERE status = 'flagged')::int AS flagged, count(*) FILTER (WHERE created_at > now() - interval '1 day')::int AS today FROM testimonies`,
+      sql`SELECT count(*)::int AS total FROM users WHERE is_abusive`,
+    ]);
+    res.status(200).json({
+      users: { total: userCounts[0].total, newToday: userCounts[0].new_today },
+      plans: planCounts,
+      testimonies: testimonyCounts[0],
+      abusiveUsers: abusiveCount[0].total,
+    });
+  } catch (err) {
+    console.error('[admin/stats] failed:', err);
+    res.status(500).json({ error: 'Could not load stats.' });
+  }
+});
+
+// GET /v1/admin/testimonies?status=flagged: the moderation queue.
+// Defaults to 'flagged' (the actionable queue); pass status=removed or
+// status=visible to review other buckets.
+app.get('/v1/admin/testimonies', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const status = typeof req.query.status === 'string' ? req.query.status : 'flagged';
+  if (!['visible', 'flagged', 'removed'].includes(status)) {
+    return res.status(400).json({ error: "status must be 'visible', 'flagged', or 'removed'" });
+  }
+  try {
+    const rows = await sql`SELECT id, device_id, body, created_at, status, report_count FROM testimonies WHERE status = ${status} ORDER BY created_at DESC LIMIT 100`;
+    res.status(200).json({ testimonies: rows });
+  } catch (err) {
+    console.error('[admin/testimonies] failed:', err);
+    res.status(500).json({ error: 'Could not load testimonies.' });
+  }
+});
+
+// POST /v1/admin/testimonies/:id/status: moderation action -- restore a
+// flagged testimony back to 'visible', or set 'removed' to hide it
+// permanently (kept in the table for the report history, just excluded
+// from both the public feed and the flagged queue).
+app.post('/v1/admin/testimonies/:id/status', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body || {};
+  if (!UUID_RE.test(id)) {
+    return res.status(400).json({ error: 'Invalid testimony id' });
+  }
+  if (!['visible', 'flagged', 'removed'].includes(status)) {
+    return res.status(400).json({ error: "status must be 'visible', 'flagged', or 'removed'" });
+  }
+  try {
+    const rows = await sql`UPDATE testimonies SET status = ${status} WHERE id = ${id} RETURNING id, status`;
+    if (rows.length === 0) return res.status(404).json({ error: 'Testimony not found' });
+    console.warn(`[audit] testimony ${id} status -> ${status} (by ${req.ip})`);
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error('[admin/testimonies] status update failed:', err);
+    res.status(500).json({ error: 'Could not update testimony.' });
+  }
+});
+
+// POST /v1/admin/users/:deviceId/flag: mark (or unmark) a device as
+// abusive -- `note` is for your own reference (e.g. "spammed testimony
+// feed 2026-09-01"), never shown to any client.
+app.post('/v1/admin/users/:deviceId/flag', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { deviceId } = req.params;
+  const { abusive, note } = req.body || {};
+  try {
+    const rows = await sql`
+      UPDATE users SET is_abusive = ${!!abusive}, abuse_note = ${typeof note === 'string' ? note.slice(0, 1000) : null}
+      WHERE device_id = ${deviceId}
+      RETURNING device_id, is_abusive, abuse_note
+    `;
+    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    console.warn(`[audit] user ${deviceId} abusive -> ${!!abusive} (by ${req.ip})`);
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error('[admin/users] flag failed:', err);
+    res.status(500).json({ error: 'Could not update user.' });
+  }
 });
 
 // Vercel's Node.js runtime imports this file as a module and calls the

@@ -1,0 +1,13 @@
+# Vercel installs dependencies itself -- no reason to upload the local
+# node_modules (98MB, and would be stale/wrong-platform anyway).
+node_modules
+
+# Stray files that ended up in this folder (not backend source) --
+# an 8-minute App Review demo recording (675MB) is what actually caused
+# the last two deploy failures ("fetch failed" on a 675MB upload).
+*.mov
+*.mp4
+*.png
+*.jpg
+*.jpeg
+.DS_Store
