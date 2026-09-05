@@ -40,6 +40,7 @@ const cors = require('cors');
 const { ElevenLabsClient } = require('@elevenlabs/elevenlabs-js');
 const { Resend } = require('resend');
 const { sql, ensureSchema, hasDatabase } = require('./db');
+const { bulkInsertTriviaQuestions, TESTAMENTS: TRIVIA_TESTAMENT_VALUES, DIFFICULTIES: TRIVIA_DIFFICULTY_VALUES, CORRECT_OPTIONS: TRIVIA_CORRECT_OPTION_VALUES } = require('./lib/triviaInsert');
 
 const app = express();
 // Vercel sits in front of this as a single reverse proxy and sets
@@ -577,6 +578,48 @@ const testimonyReactionLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many reactions, slow down.' },
+  skip: isDeveloperRequest,
+});
+// Fetching a question batch is casual/high-frequency (Practice mode,
+// Daily Challenge, Group Play setup all call this) -- generous, same
+// spirit as testimonyReactionLimiter above.
+const triviaQuestionsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.TRIVIA_QUESTIONS_RATE_LIMIT) || 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, slow down.' },
+  skip: isDeveloperRequest,
+});
+// Tighter -- mirrors testimonyPostLimiter's reasoning (stop scripted
+// spam of the public leaderboard).
+const triviaScoreLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: Number(process.env.TRIVIA_SCORE_RATE_LIMIT) || 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many scores submitted -- please slow down and try again shortly.' },
+  skip: isDeveloperRequest,
+});
+// Fetched on every app open/radio-card-tap -- casual, high-frequency,
+// same reasoning as triviaQuestionsLimiter above.
+const radioConfigLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.RADIO_CONFIG_RATE_LIMIT) || 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, slow down.' },
+  skip: isDeveloperRequest,
+});
+// Analytics events fire fairly often (every trial-day check, every
+// feature open) but are pure fire-and-forget from the client -- generous
+// limit, same spirit as triviaQuestionsLimiter.
+const analyticsEventLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.ANALYTICS_EVENT_RATE_LIMIT) || 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, slow down.' },
   skip: isDeveloperRequest,
 });
 
@@ -2406,18 +2449,27 @@ app.post('/v1/device/heartbeat', heartbeatLimiter, requireAuth, requireDatabase,
   try {
     const existing = await sql`SELECT plan FROM users WHERE device_id = ${deviceId}`;
     const oldPlan = existing[0]?.plan;
-    await sql`
+    // RETURNING created_at -- never touched by the SET clause above, so
+    // this always reflects the row's original insert time whether this
+    // call just inserted or updated it. That's this device's
+    // server-anchored trial start (see AppContext.tsx's trialStartedAt):
+    // the client caches it locally too, but the server's value always
+    // wins, so clearing local app storage alone can't reset the 5-day
+    // clock (a full reinstall still can, via a fresh deviceId -- there's
+    // no login system in this app to prevent that).
+    const upserted = await sql`
       INSERT INTO users (device_id, plan, plan_expires_at, last_seen_at)
       VALUES (${deviceId}, ${safePlan}, ${safeExpiresAt}, now())
       ON CONFLICT (device_id) DO UPDATE
         SET plan = EXCLUDED.plan, plan_expires_at = EXCLUDED.plan_expires_at, last_seen_at = now()
+      RETURNING created_at
     `;
     if (oldPlan === undefined) {
       await sql`INSERT INTO subscription_events (device_id, plan, event_type) VALUES (${deviceId}, ${safePlan}, 'first_seen')`;
     } else if (oldPlan !== safePlan) {
       await sql`INSERT INTO subscription_events (device_id, plan, event_type) VALUES (${deviceId}, ${safePlan}, 'change')`;
     }
-    res.status(200).json({ ok: true });
+    res.status(200).json({ ok: true, createdAt: upserted[0].created_at });
   } catch (err) {
     console.error('[device/heartbeat] failed:', err);
     res.status(500).json({ error: 'Could not record heartbeat.' });
@@ -2605,6 +2657,191 @@ app.post('/v1/testimonies/:id/react', testimonyReactionLimiter, requireAuth, req
   }
 });
 
+const TRIVIA_TESTAMENTS = ['old', 'new'];
+const TRIVIA_DIFFICULTIES = ['easy', 'medium', 'hard'];
+const TRIVIA_MODES = ['practice', 'daily', 'group'];
+const TRIVIA_DAILY_CHALLENGE_SIZE = 10;
+
+// GET /v1/trivia/questions: Bible Trivia's Practice mode and Group Play
+// setup both call this -- a random batch, optionally filtered by
+// testament/difficulty/book. Includes correctOption directly in the
+// response: this app has no server-authoritative scoring anywhere else
+// either (testimonies/prayers all trust client-submitted state), so this
+// matches the existing trust model rather than introducing a new
+// anti-cheat layer just for this one feature.
+app.get('/v1/trivia/questions', triviaQuestionsLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const testament = typeof req.query.testament === 'string' ? req.query.testament : null;
+  const difficulty = typeof req.query.difficulty === 'string' ? req.query.difficulty : null;
+  const book = typeof req.query.book === 'string' ? req.query.book : null;
+  const count = Math.min(Math.max(Number(req.query.count) || 10, 1), 50);
+  if (testament && !TRIVIA_TESTAMENTS.includes(testament)) {
+    return res.status(400).json({ error: "testament must be 'old' or 'new'" });
+  }
+  if (difficulty && !TRIVIA_DIFFICULTIES.includes(difficulty)) {
+    return res.status(400).json({ error: "difficulty must be 'easy', 'medium', or 'hard'" });
+  }
+  try {
+    const rows = await sql`
+      SELECT id, book_id, testament, difficulty, question, option_a, option_b, option_c, correct_option, reference
+      FROM trivia_questions
+      WHERE active
+        AND (${testament}::text IS NULL OR testament = ${testament})
+        AND (${difficulty}::text IS NULL OR difficulty = ${difficulty})
+        AND (${book}::text IS NULL OR book_id = ${book})
+      ORDER BY random()
+      LIMIT ${count}
+    `;
+    res.status(200).json({ questions: rows.map(mapTriviaQuestionRow) });
+  } catch (err) {
+    console.error('[trivia/questions] failed:', err);
+    res.status(500).json({ error: 'Could not load trivia questions.' });
+  }
+});
+
+// Shared row -> API shape mapper, used by both /v1/trivia/questions and
+// /v1/trivia/daily so the two never drift.
+function mapTriviaQuestionRow(r) {
+  return {
+    id: r.id,
+    bookId: r.book_id,
+    testament: r.testament,
+    difficulty: r.difficulty,
+    question: r.question,
+    optionA: r.option_a,
+    optionB: r.option_b,
+    optionC: r.option_c,
+    correctOption: r.correct_option,
+    reference: r.reference,
+  };
+}
+
+// Lazily computes (and caches) today's global Daily Challenge set. First
+// request of a new UTC calendar date reads trivia_rotation_state, takes
+// the next TRIVIA_DAILY_CHALLENGE_SIZE ids off the current shuffle order
+// (reshuffling a brand-new random order first if the cursor would run
+// past the end -- the "only reshuffle once the full set has been used"
+// rule), and caches the resulting id list in trivia_daily_sets keyed by
+// date. Every later request that same date (any device) just reads that
+// cached row, which is what makes the set the SAME for every player that
+// day, not random-per-device.
+async function computeOrGetDailySlice(today) {
+  const cached = await sql`SELECT question_ids FROM trivia_daily_sets WHERE challenge_date = ${today}`;
+  if (cached.length > 0) return cached[0].question_ids;
+
+  let state = (await sql`SELECT question_order, cursor_position FROM trivia_rotation_state WHERE id = 1`)[0];
+  if (!state) {
+    const shuffled = await sql`SELECT id FROM trivia_questions WHERE active ORDER BY random()`;
+    const order = shuffled.map((r) => r.id);
+    await sql`INSERT INTO trivia_rotation_state (id, question_order, cursor_position) VALUES (1, ${order}, 0) ON CONFLICT (id) DO NOTHING`;
+    state = { question_order: order, cursor_position: 0 };
+  }
+  let { question_order: order, cursor_position: cursor } = state;
+  if (cursor + TRIVIA_DAILY_CHALLENGE_SIZE > order.length) {
+    // Exhausted -- reshuffle a brand-new order and start over from 0.
+    const shuffled = await sql`SELECT id FROM trivia_questions WHERE active ORDER BY random()`;
+    order = shuffled.map((r) => r.id);
+    cursor = 0;
+  }
+  const slice = order.slice(cursor, cursor + TRIVIA_DAILY_CHALLENGE_SIZE);
+  await sql`
+    UPDATE trivia_rotation_state SET question_order = ${order}, cursor_position = ${cursor + TRIVIA_DAILY_CHALLENGE_SIZE}, shuffled_at = now()
+    WHERE id = 1
+  `;
+  // Two devices racing to be the first request of a new day can both
+  // reach here and each advance the cursor once -- harmless "skips one
+  // extra slice" slop (self-heals once the array exhausts and reshuffles
+  // anyway), but trivia_daily_sets' primary key + ON CONFLICT DO NOTHING
+  // guarantees every device still converges on the SAME cached slice for
+  // that date, which is the actual correctness requirement here.
+  const inserted = await sql`
+    INSERT INTO trivia_daily_sets (challenge_date, question_ids) VALUES (${today}, ${slice})
+    ON CONFLICT (challenge_date) DO NOTHING
+    RETURNING question_ids
+  `;
+  if (inserted.length > 0) return inserted[0].question_ids;
+  const existing = await sql`SELECT question_ids FROM trivia_daily_sets WHERE challenge_date = ${today}`;
+  return existing[0].question_ids;
+}
+
+// GET /v1/trivia/daily: today's shared Daily Challenge set (see
+// computeOrGetDailySlice above). correctOption is included for the same
+// reason as /v1/trivia/questions above.
+app.get('/v1/trivia/daily', triviaQuestionsLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const questionIds = await computeOrGetDailySlice(today);
+    const rows = await sql`
+      SELECT id, book_id, testament, difficulty, question, option_a, option_b, option_c, correct_option, reference
+      FROM trivia_questions WHERE id = ANY(${questionIds})
+    `;
+    // SELECT ... WHERE id = ANY(...) doesn't preserve array order -- put
+    // the rows back in the shuffled order the rotation actually chose.
+    const byId = new Map(rows.map((r) => [r.id, r]));
+    const questions = questionIds.map((id) => byId.get(id)).filter(Boolean).map(mapTriviaQuestionRow);
+    res.status(200).json({ date: today, questions });
+  } catch (err) {
+    console.error('[trivia/daily] failed:', err);
+    res.status(500).json({ error: "Could not load today's challenge." });
+  }
+});
+
+// POST /v1/trivia/scores: submits one completed round -- Practice,
+// today's Daily Challenge, or one player's turn in a Group Play session
+// (mode: 'group', one call per player, see GroupSetupView/ScoreView).
+// displayName is user-entered, no account/login involved (same
+// deviceId-only identity model as testimonies).
+app.post('/v1/trivia/scores', triviaScoreLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { deviceId, displayName, score, total, mode, challengeDate } = req.body || {};
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  if (!displayName || typeof displayName !== 'string' || displayName.trim().length === 0) {
+    return res.status(400).json({ error: 'displayName is required' });
+  }
+  if (!Number.isInteger(score) || !Number.isInteger(total) || score < 0 || total <= 0 || score > total || total > 100) {
+    return res.status(400).json({ error: 'score/total must be integers with 0 <= score <= total <= 100' });
+  }
+  if (!TRIVIA_MODES.includes(mode)) {
+    return res.status(400).json({ error: "mode must be 'practice', 'daily', or 'group'" });
+  }
+  const trimmedName = displayName.trim().slice(0, 60);
+  const dateForDaily = mode === 'daily' && typeof challengeDate === 'string' ? challengeDate : null;
+  try {
+    await sql`INSERT INTO users (device_id) VALUES (${deviceId}) ON CONFLICT (device_id) DO UPDATE SET last_seen_at = now()`;
+    const rows = await sql`
+      INSERT INTO trivia_scores (device_id, display_name, score, total, mode, challenge_date)
+      VALUES (${deviceId}, ${trimmedName}, ${score}, ${total}, ${mode}, ${dateForDaily})
+      RETURNING id, created_at
+    `;
+    res.status(200).json({ id: rows[0].id, createdAt: rows[0].created_at });
+  } catch (err) {
+    console.error('[trivia/scores] insert failed:', err);
+    res.status(500).json({ error: 'Could not save score.' });
+  }
+});
+
+// GET /v1/trivia/leaderboard?range=week|all-time: top scores, either the
+// trailing 7 days or unfiltered.
+app.get('/v1/trivia/leaderboard', requireAuth, requireDatabase, async (req, res) => {
+  const range = typeof req.query.range === 'string' ? req.query.range : 'week';
+  const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+  if (!['week', 'all-time'].includes(range)) {
+    return res.status(400).json({ error: "range must be 'week' or 'all-time'" });
+  }
+  try {
+    const rows = range === 'week'
+      ? await sql`SELECT display_name, score, total, mode, created_at FROM trivia_scores WHERE created_at > now() - interval '7 days' ORDER BY score DESC, created_at DESC LIMIT ${limit}`
+      : await sql`SELECT display_name, score, total, mode, created_at FROM trivia_scores ORDER BY score DESC, created_at DESC LIMIT ${limit}`;
+    res.status(200).json({
+      range,
+      entries: rows.map((r) => ({ displayName: r.display_name, score: r.score, total: r.total, mode: r.mode, createdAt: r.created_at })),
+    });
+  } catch (err) {
+    console.error('[trivia/leaderboard] failed:', err);
+    res.status(500).json({ error: 'Could not load leaderboard.' });
+  }
+});
+
 // Everything under /v1/admin/* is for you only -- requireDeveloper
 // rejects any request that isn't carrying DEVELOPER_TOKEN, even a
 // perfectly valid app-issued session JWT (see requireDeveloper's own
@@ -2693,6 +2930,234 @@ app.post('/v1/admin/users/:deviceId/flag', requireAuth, requireDeveloper, requir
     console.error('[admin/users] flag failed:', err);
     res.status(500).json({ error: 'Could not update user.' });
   }
+});
+
+// This is the actual "add/edit questions later without rebuilding the
+// app" mechanism the Bible Trivia feature is designed around -- the
+// question bank lives here in Postgres, fetched at runtime by the app,
+// not bundled into it. Editing/adding a question is just calling one of
+// these three routes with DEVELOPER_TOKEN; no app store release needed.
+
+// POST /v1/admin/trivia/questions/bulk: bulk-create, used by both a
+// human posting a handful of new questions and
+// scripts/seed-trivia-questions.js loading the initial 1500 in one
+// script run (which calls bulkInsertTriviaQuestions directly against the
+// database rather than over HTTP -- see that script's own comment).
+app.post('/v1/admin/trivia/questions/bulk', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { questions } = req.body || {};
+  if (!Array.isArray(questions) || questions.length === 0 || questions.length > 500) {
+    return res.status(400).json({ error: 'questions must be a non-empty array (max 500 per call)' });
+  }
+  try {
+    const ids = await bulkInsertTriviaQuestions(sql, questions);
+    console.warn(`[audit] admin bulk-inserted ${ids.length} trivia questions (by ${req.ip})`);
+    res.status(200).json({ inserted: ids.length, ids });
+  } catch (err) {
+    if (err && err.validationErrors) {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error('[admin/trivia/questions/bulk] failed:', err);
+    res.status(500).json({ error: 'Could not insert trivia questions.' });
+  }
+});
+
+// POST /v1/admin/trivia/questions/:id: edit one question in place --
+// every field optional, only the ones present get updated. Editing
+// (rather than delete+recreate) keeps the question's id stable, which
+// matters since trivia_rotation_state/trivia_daily_sets reference ids
+// directly.
+app.post('/v1/admin/trivia/questions/:id', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { id } = req.params;
+  const { bookId, testament, difficulty, question, optionA, optionB, optionC, correctOption, reference } = req.body || {};
+  if (!UUID_RE.test(id)) {
+    return res.status(400).json({ error: 'Invalid question id' });
+  }
+  if (testament !== undefined && !TRIVIA_TESTAMENT_VALUES.includes(testament)) {
+    return res.status(400).json({ error: "testament must be 'old' or 'new'" });
+  }
+  if (difficulty !== undefined && !TRIVIA_DIFFICULTY_VALUES.includes(difficulty)) {
+    return res.status(400).json({ error: "difficulty must be 'easy', 'medium', or 'hard'" });
+  }
+  if (correctOption !== undefined && !TRIVIA_CORRECT_OPTION_VALUES.includes(correctOption)) {
+    return res.status(400).json({ error: "correctOption must be 'A', 'B', or 'C'" });
+  }
+  try {
+    const rows = await sql`
+      UPDATE trivia_questions SET
+        book_id = COALESCE(${bookId ?? null}, book_id),
+        testament = COALESCE(${testament ?? null}, testament),
+        difficulty = COALESCE(${difficulty ?? null}, difficulty),
+        question = COALESCE(${question ?? null}, question),
+        option_a = COALESCE(${optionA ?? null}, option_a),
+        option_b = COALESCE(${optionB ?? null}, option_b),
+        option_c = COALESCE(${optionC ?? null}, option_c),
+        correct_option = COALESCE(${correctOption ?? null}, correct_option),
+        reference = COALESCE(${reference ?? null}, reference),
+        updated_at = now()
+      WHERE id = ${id}
+      RETURNING id
+    `;
+    if (rows.length === 0) return res.status(404).json({ error: 'Question not found' });
+    console.warn(`[audit] admin edited trivia question ${id} (by ${req.ip})`);
+    res.status(200).json({ id: rows[0].id });
+  } catch (err) {
+    console.error('[admin/trivia/questions] edit failed:', err);
+    res.status(500).json({ error: 'Could not update question.' });
+  }
+});
+
+// POST /v1/admin/trivia/questions/:id/status: soft-disable/re-enable a
+// question (active=false) rather than deleting it -- a deleted id could
+// still be referenced by a past trivia_daily_sets/trivia_rotation_state
+// row, so retiring a bad question this way keeps that history valid.
+app.post('/v1/admin/trivia/questions/:id/status', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { id } = req.params;
+  const { active } = req.body || {};
+  if (!UUID_RE.test(id)) {
+    return res.status(400).json({ error: 'Invalid question id' });
+  }
+  try {
+    const rows = await sql`UPDATE trivia_questions SET active = ${!!active}, updated_at = now() WHERE id = ${id} RETURNING id, active`;
+    if (rows.length === 0) return res.status(404).json({ error: 'Question not found' });
+    console.warn(`[audit] trivia question ${id} active -> ${!!active} (by ${req.ip})`);
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error('[admin/trivia/questions] status update failed:', err);
+    res.status(500).json({ error: 'Could not update question.' });
+  }
+});
+
+// GET /v1/radio/config: "24/7 Global Praise and Worship"'s current
+// stream config -- JIRadioScreen.tsx fetches this at runtime (same
+// backend-hosted pattern as trivia's question bank) rather than having
+// any stream URL baked into the app, so a radio.co plan upgrade (which
+// may or may not keep the same stream URL -- unconfirmed by radio.co's
+// own docs) is a single POST /v1/admin/radio/config call, never an app
+// release. 404 (not 500) when unseeded -- that's an expected "not
+// configured yet" state during rollout, and the client falls back to
+// its own hardcoded default stream on ANY failure here, 404 included.
+app.get('/v1/radio/config', radioConfigLimiter, requireAuth, requireDatabase, async (req, res) => {
+  try {
+    const rows = await sql`SELECT station_name, stream_url, schedule, updated_at FROM radio_config WHERE id = 1`;
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Radio config not set.' });
+    }
+    const r = rows[0];
+    res.status(200).json({ stationName: r.station_name, streamUrl: r.stream_url, schedule: r.schedule, updatedAt: r.updated_at });
+  } catch (err) {
+    console.error('[radio/config] failed:', err);
+    res.status(500).json({ error: 'Could not load radio config.' });
+  }
+});
+
+// POST /v1/admin/radio/config: the actual "update the stream URL
+// without an app release" mechanism -- one upsert-or-edit route (unlike
+// trivia's three-route split, which exists because trivia has many rows;
+// this is a singleton, so partial edits via COALESCE cover both "seed it
+// for the first time" and "just change the stream URL after a radio.co
+// plan upgrade" without clobbering the other fields).
+app.post('/v1/admin/radio/config', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { stationName, streamUrl, schedule } = req.body || {};
+  if (streamUrl !== undefined && (typeof streamUrl !== 'string' || !/^https?:\/\//.test(streamUrl))) {
+    return res.status(400).json({ error: 'streamUrl must be a valid http(s) URL' });
+  }
+  if (schedule !== undefined && !Array.isArray(schedule)) {
+    return res.status(400).json({ error: 'schedule must be an array' });
+  }
+  try {
+    const rows = await sql`
+      INSERT INTO radio_config (id, station_name, stream_url, schedule, updated_at)
+      VALUES (1, COALESCE(${stationName ?? null}, '24/7 Global Praise and Worship'), ${streamUrl}, COALESCE(${schedule ? JSON.stringify(schedule) : null}::jsonb, '[]'::jsonb), now())
+      ON CONFLICT (id) DO UPDATE SET
+        station_name = COALESCE(${stationName ?? null}, radio_config.station_name),
+        stream_url = COALESCE(${streamUrl ?? null}, radio_config.stream_url),
+        schedule = COALESCE(${schedule ? JSON.stringify(schedule) : null}::jsonb, radio_config.schedule),
+        updated_at = now()
+      RETURNING station_name, stream_url, schedule, updated_at
+    `;
+    console.warn(`[audit] admin updated radio_config (by ${req.ip})`);
+    res.status(200).json({ stationName: rows[0].station_name, streamUrl: rows[0].stream_url, schedule: rows[0].schedule, updatedAt: rows[0].updated_at });
+  } catch (err) {
+    console.error('[admin/radio/config] failed:', err);
+    res.status(500).json({ error: 'Could not update radio config.' });
+  }
+});
+
+const ANALYTICS_EVENT_NAME_MAX_LENGTH = 100;
+const ANALYTICS_PROPERTIES_MAX_BYTES = 2048;
+
+// POST /v1/analytics/event: general-purpose analytics ingest -- backs
+// BOTH the specific 10-event trial/paywall funnel (activation, day-2
+// return, trial completion, trial-to-paid conversion, ad-unlock rate;
+// no in-app dashboard reads this in v1, server-side data collection
+// only) AND general product events already fired elsewhere in the app
+// (e.g. ChatScreen.tsx's 'question_sent'). No fixed eventName allowlist
+// here -- see analytics_events' own comment in db.js for why. Fire-and-
+// forget from the client (src/services/analytics.ts) -- a failure here
+// must never surface in the UI, so this route's only job is to validate
+// and store, never to matter to the caller's own success path.
+app.post('/v1/analytics/event', analyticsEventLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { deviceId, eventName, properties } = req.body || {};
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  if (!eventName || typeof eventName !== 'string' || eventName.length > ANALYTICS_EVENT_NAME_MAX_LENGTH) {
+    return res.status(400).json({ error: 'eventName is required' });
+  }
+  const safeProperties = properties && typeof properties === 'object' ? properties : {};
+  if (Buffer.byteLength(JSON.stringify(safeProperties)) > ANALYTICS_PROPERTIES_MAX_BYTES) {
+    return res.status(400).json({ error: 'properties payload too large' });
+  }
+  try {
+    await sql`INSERT INTO analytics_events (device_id, event_name, properties) VALUES (${deviceId}, ${eventName}, ${JSON.stringify(safeProperties)}::jsonb)`;
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error('[analytics/event] failed:', err);
+    res.status(500).json({ error: 'Could not record event.' });
+  }
+});
+
+// POST /v1/webhooks/revenuecat: the ONLY source of subscription_cancelled
+// analytics rows -- a cancellation can happen entirely outside the app
+// (directly in App Store/Play Store settings) or from a user who never
+// reopens it, so this has to come from RevenueCat itself, not a
+// client-side check. Deliberately NOT gated by requireAuth (this is
+// RevenueCat calling in, not the app calling out) -- instead verifies a
+// shared secret you configure in RevenueCat's dashboard (Project ->
+// Integrations -> Webhooks), same constant-time-compare pattern
+// isDeveloperToken() uses just above, so a stray/forged POST here can't
+// forge cancellation events. Requires initPurchases(deviceId) to
+// actually be called client-side (see purchases.ts) so RevenueCat's
+// app_user_id equals our deviceId -- otherwise this can't attribute the
+// event to the right device at all.
+const REVENUECAT_WEBHOOK_SECRET = process.env.REVENUECAT_WEBHOOK_SECRET;
+app.post('/v1/webhooks/revenuecat', requireDatabase, async (req, res) => {
+  if (!REVENUECAT_WEBHOOK_SECRET) {
+    console.warn('[webhooks/revenuecat] REVENUECAT_WEBHOOK_SECRET is not set -- rejecting.');
+    return res.status(503).json({ error: 'Webhook not configured.' });
+  }
+  const provided = extractBearerToken(req) ?? '';
+  const expected = Buffer.from(REVENUECAT_WEBHOOK_SECRET);
+  const actual = Buffer.from(provided);
+  const authorized = expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+  if (!authorized) {
+    console.warn(`[audit] revenuecat webhook rejected (bad/missing secret) from ${req.ip}`);
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const event = req.body?.event;
+  if (!event || typeof event !== 'object') {
+    return res.status(400).json({ error: 'Missing event' });
+  }
+  if (event.type === 'CANCELLATION' && typeof event.app_user_id === 'string') {
+    try {
+      await sql`INSERT INTO analytics_events (device_id, event_name, properties) VALUES (${event.app_user_id}, 'subscription_cancelled', ${JSON.stringify({ productId: event.product_id ?? null })}::jsonb)`;
+    } catch (err) {
+      console.error('[webhooks/revenuecat] insert failed:', err);
+      // Still 200 -- RevenueCat retries on non-2xx, and a failed
+      // analytics insert isn't worth it re-delivering the same webhook.
+    }
+  }
+  res.status(200).json({ ok: true });
 });
 
 // Vercel's Node.js runtime imports this file as a module and calls the

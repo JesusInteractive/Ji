@@ -92,6 +92,113 @@ function ensureSchema() {
           created_at TIMESTAMPTZ NOT NULL DEFAULT now()
         )
       `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS trivia_questions (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          book_id TEXT NOT NULL,
+          testament TEXT NOT NULL,
+          difficulty TEXT NOT NULL,
+          question TEXT NOT NULL,
+          option_a TEXT NOT NULL,
+          option_b TEXT NOT NULL,
+          option_c TEXT NOT NULL,
+          correct_option TEXT NOT NULL,
+          reference TEXT NOT NULL,
+          active BOOLEAN NOT NULL DEFAULT true,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT trivia_questions_testament_chk CHECK (testament IN ('old','new')),
+          CONSTRAINT trivia_questions_difficulty_chk CHECK (difficulty IN ('easy','medium','hard')),
+          CONSTRAINT trivia_questions_correct_chk CHECK (correct_option IN ('A','B','C'))
+        )
+      `;
+      await sql`
+        CREATE INDEX IF NOT EXISTS trivia_questions_filter_idx
+          ON trivia_questions (testament, difficulty, book_id) WHERE active
+      `;
+      // Singleton (id always 1): the current global shuffle order of
+      // active question ids plus how far into it we are. Computed once
+      // here server-side -- never per-device -- so every player sees the
+      // same Daily Challenge set. See trivia_daily_sets below for the
+      // per-day cache this feeds.
+      await sql`
+        CREATE TABLE IF NOT EXISTS trivia_rotation_state (
+          id SMALLINT PRIMARY KEY DEFAULT 1,
+          question_order UUID[] NOT NULL,
+          cursor_position INT NOT NULL DEFAULT 0,
+          shuffled_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT trivia_rotation_state_singleton_chk CHECK (id = 1)
+        )
+      `;
+      // One row per calendar date -- first request of a new day computes
+      // and inserts it (see server.js's /v1/trivia/daily), every later
+      // request that day (any device) just reads this row.
+      await sql`
+        CREATE TABLE IF NOT EXISTS trivia_daily_sets (
+          challenge_date DATE PRIMARY KEY,
+          question_ids UUID[] NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        )
+      `;
+      await sql`
+        CREATE TABLE IF NOT EXISTS trivia_scores (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          device_id TEXT NOT NULL,
+          display_name TEXT NOT NULL,
+          score INT NOT NULL,
+          total INT NOT NULL,
+          mode TEXT NOT NULL,
+          challenge_date DATE,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT trivia_scores_mode_chk CHECK (mode IN ('practice','daily','group'))
+        )
+      `;
+      await sql`
+        CREATE INDEX IF NOT EXISTS trivia_scores_leaderboard_idx
+          ON trivia_scores (score DESC, created_at DESC)
+      `;
+      // Singleton (id always 1): "24/7 Global Praise and Worship"'s
+      // radio.co stream config -- station_name/stream_url/schedule are
+      // fetched at runtime by JIRadioScreen.tsx (same backend-hosted
+      // pattern as trivia_questions above), so swapping stream_url after
+      // a radio.co plan upgrade is a single admin API call, never an app
+      // release. No seed row here -- stream_url has no sane default;
+      // seeded once via POST /v1/admin/radio/config after the station is
+      // actually live. GET /v1/radio/config returns 404 (not 500) until
+      // then, and the app falls back to its own hardcoded default stream.
+      await sql`
+        CREATE TABLE IF NOT EXISTS radio_config (
+          id SMALLINT PRIMARY KEY DEFAULT 1,
+          station_name TEXT NOT NULL DEFAULT '24/7 Global Praise and Worship',
+          stream_url TEXT NOT NULL,
+          schedule JSONB NOT NULL DEFAULT '[]'::jsonb,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT radio_config_singleton_chk CHECK (id = 1)
+        )
+      `;
+      // General-purpose analytics event log -- backs BOTH the specific
+      // 10-event trial/paywall funnel (activation, day-2 return, trial
+      // completion, trial-to-paid conversion) AND general product events
+      // already fired elsewhere in the app (e.g. ChatScreen.tsx's
+      // 'question_sent'). No CHECK constraint on event_name: unlike
+      // trivia_questions' closed enums, this table's whole point is
+      // accepting whatever event name a call site fires, validated only
+      // for shape/length at the API layer (server.js's
+      // /v1/analytics/event), not a fixed allowlist that would need a
+      // schema change every time a new event is added.
+      await sql`
+        CREATE TABLE IF NOT EXISTS analytics_events (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          device_id TEXT NOT NULL,
+          event_name TEXT NOT NULL,
+          properties JSONB NOT NULL DEFAULT '{}'::jsonb,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        )
+      `;
+      await sql`
+        CREATE INDEX IF NOT EXISTS analytics_events_name_created_idx
+          ON analytics_events (event_name, created_at)
+      `;
       return true;
     })();
   }
