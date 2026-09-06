@@ -144,12 +144,17 @@ export default function HomeScreen() {
           // press keeps that proven-safe.
           <View
             key={tab}
+            // Carries the row's 47%-column width -- the inner
+            // TouchableOpacity just fills this (width: 100%). Giving the
+            // wrapper itself no size here was the bug: a nested
+            // percentage width resolved against an unsized flex parent is
+            // ambiguous, and yoga was resolving it inconsistently
+            // (cramped cards, badly-wrapped labels, and a wrong
+            // measurement below since onLayout was reading that same
+            // ambiguous box).
+            style={styles.cardTile}
             onPointerEnter={() => setHoveredKey(tab)}
             onPointerLeave={() => setHoveredKey(null)}
-            // Measured here, not on the TouchableOpacity below -- onLayout
-            // reports position relative to its IMMEDIATE parent, and this
-            // wrapping View (not the inner TouchableOpacity) is the one
-            // actually positioned within the row.
             onLayout={
               tab === 'PrayerWall'
                 ? (e) => setPrayerCardCenterX(e.nativeEvent.layout.x + e.nativeEvent.layout.width / 2)
@@ -159,6 +164,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={[styles.card, hoveredKey === tab && styles.cardHovered]}
               onPress={() => navigation.navigate(tab)}
+              onPressOut={() => setHoveredKey((k) => (k === tab ? null : k))}
               accessibilityRole="button"
               accessibilityLabel={t.tabs[labelKey]}
             >
@@ -465,8 +471,13 @@ const styles = StyleSheet.create({
     gap: 14,
     position: 'relative',
   },
-  card: {
+  // The actual flex-row column -- sized here, not on the TouchableOpacity
+  // inside it (see this tile's own comment in the render above).
+  cardTile: {
     width: '47%',
+  },
+  card: {
+    width: '100%',
     backgroundColor: Colors.royalLight,
     borderRadius: 16,
     paddingVertical: 24,
