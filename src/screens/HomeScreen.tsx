@@ -146,17 +146,21 @@ export default function HomeScreen() {
             key={tab}
             onPointerEnter={() => setHoveredKey(tab)}
             onPointerLeave={() => setHoveredKey(null)}
+            // Measured here, not on the TouchableOpacity below -- onLayout
+            // reports position relative to its IMMEDIATE parent, and this
+            // wrapping View (not the inner TouchableOpacity) is the one
+            // actually positioned within the row.
+            onLayout={
+              tab === 'PrayerWall'
+                ? (e) => setPrayerCardCenterX(e.nativeEvent.layout.x + e.nativeEvent.layout.width / 2)
+                : undefined
+            }
           >
             <TouchableOpacity
               style={[styles.card, hoveredKey === tab && styles.cardHovered]}
               onPress={() => navigation.navigate(tab)}
               accessibilityRole="button"
               accessibilityLabel={t.tabs[labelKey]}
-              onLayout={
-                tab === 'PrayerWall'
-                  ? (e) => setPrayerCardCenterX(e.nativeEvent.layout.x + e.nativeEvent.layout.width / 2)
-                  : undefined
-              }
             >
               {tab === 'PrayerWall' ? (
                 <MaterialCommunityIcons name="hands-pray" size={32} color={Colors.gold} />
