@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -134,15 +134,7 @@ export default function HomeScreen() {
 
       <View style={styles.grid}>
         {QUICK_LINKS.map(({ tab, icon, labelKey }) => (
-          // Hover detection lives on a plain wrapping View (onPointerEnter/
-          // onPointerLeave), deliberately NOT on Pressable's own onHoverIn/
-          // onHoverOut -- Pressable's hover props pull in its pointer-event
-          // responder handling, which was found (by testing, not just in
-          // theory) to swallow the parent ScrollView's pan gesture on this
-          // screen, silently breaking scroll for touch users everywhere on
-          // Home, not just on these cards. TouchableOpacity for the actual
-          // press keeps that proven-safe.
-          <View
+          <Pressable
             key={tab}
             // Carries the row's 47%-column width -- the inner
             // TouchableOpacity just fills this (width: 100%). Giving the
@@ -152,9 +144,19 @@ export default function HomeScreen() {
             // (cramped cards, badly-wrapped labels, and a wrong
             // measurement below since onLayout was reading that same
             // ambiguous box).
+            //
+            // Pressable, not plain View, for hover -- onHoverIn/onHoverOut
+            // is React Native's own documented hover API (unlike a bare
+            // View's onPointerEnter/onPointerLeave, which isn't confirmed
+            // to actually fire on this RN version/Simulator). No onPress
+            // here, though -- press stays on the nested TouchableOpacity
+            // below, keeping this Pressable's only job as hover detection
+            // so it can't reintroduce the ScrollView gesture conflict
+            // that using Pressable for press+hover together caused
+            // earlier.
             style={styles.cardTile}
-            onPointerEnter={() => setHoveredKey(tab)}
-            onPointerLeave={() => setHoveredKey(null)}
+            onHoverIn={() => setHoveredKey(tab)}
+            onHoverOut={() => setHoveredKey(null)}
             onLayout={
               tab === 'PrayerWall'
                 ? (e) => setPrayerCardCenterX(e.nativeEvent.layout.x + e.nativeEvent.layout.width / 2)
@@ -175,7 +177,7 @@ export default function HomeScreen() {
               )}
               <Text style={styles.cardLabel}>{t.tabs[labelKey]}</Text>
             </TouchableOpacity>
-          </View>
+          </Pressable>
         ))}
 
         <TouchableOpacity
@@ -206,7 +208,7 @@ export default function HomeScreen() {
         <Text style={styles.verseRef}>{dailyPromise.reference}</Text>
       </ImageBackground>
 
-      <View onPointerEnter={() => setHoveredKey('wordSearch')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('wordSearch')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, styles.firstBottomCard, hoveredKey === 'wordSearch' && styles.aboutCardHovered]}
           onPress={() =>
@@ -225,9 +227,9 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
 
-      <View onPointerEnter={() => setHoveredKey('trivia')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('trivia')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, hoveredKey === 'trivia' && styles.aboutCardHovered]}
           onPress={() =>
@@ -245,9 +247,9 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
 
-      <View onPointerEnter={() => setHoveredKey('jiRadio')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('jiRadio')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, hoveredKey === 'jiRadio' && styles.aboutCardHovered]}
           onPress={() =>
@@ -274,7 +276,7 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
 
       <View style={styles.quickSearchBar}>
         <Ionicons name="search" size={16} color={Colors.gold} />
@@ -295,7 +297,7 @@ export default function HomeScreen() {
         )}
       </View>
 
-      <View onPointerEnter={() => setHoveredKey('gospelTranslator')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('gospelTranslator')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, hoveredKey === 'gospelTranslator' && styles.aboutCardHovered]}
           onPress={() =>
@@ -315,9 +317,9 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
 
-      <View onPointerEnter={() => setHoveredKey('commonQuestions')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('commonQuestions')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, hoveredKey === 'commonQuestions' && styles.aboutCardHovered]}
           onPress={() =>
@@ -336,9 +338,9 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
 
-      <View onPointerEnter={() => setHoveredKey('aboutApp')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('aboutApp')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, hoveredKey === 'aboutApp' && styles.aboutCardHovered]}
           onPress={() =>
@@ -359,9 +361,9 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
 
-      <View onPointerEnter={() => setHoveredKey('approvedCharities')} onPointerLeave={() => setHoveredKey(null)}>
+      <Pressable onHoverIn={() => setHoveredKey('approvedCharities')} onHoverOut={() => setHoveredKey(null)}>
         <TouchableOpacity
           style={[styles.aboutCard, hoveredKey === 'approvedCharities' && styles.aboutCardHovered]}
           onPress={() =>
@@ -387,7 +389,7 @@ export default function HomeScreen() {
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
         </TouchableOpacity>
-      </View>
+      </Pressable>
       </ScrollView>
       <DraggableScrollbar
         contentHeight={contentHeight}
