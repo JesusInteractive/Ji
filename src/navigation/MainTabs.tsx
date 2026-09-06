@@ -92,7 +92,7 @@ export default function MainTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: Colors.gold,
-        tabBarInactiveTintColor: Colors.muted,
+        tabBarInactiveTintColor: Colors.gold,
         tabBarStyle: { backgroundColor: Colors.royal, borderTopColor: Colors.royalLight },
         tabBarIcon: ({ color, size }) =>
           route.name === 'PrayerWall' ? (

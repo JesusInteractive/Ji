@@ -283,7 +283,7 @@ export default function HomeScreen() {
         <TextInput
           style={styles.quickSearchInput}
           placeholder="Quick Scripture Search (e.g. John 3:16)"
-          placeholderTextColor={Colors.muted}
+          placeholderTextColor={Colors.gold}
           value={quickSearchText}
           onChangeText={setQuickSearchText}
           onSubmitEditing={runQuickSearch}
