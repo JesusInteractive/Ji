@@ -251,7 +251,11 @@ const sk: TranslationShape = {
     "generateButton": "Generovať",
     "regenerateButton": "Generovať znova",
     "generateErrorTitle": "Nepodarilo sa to vygenerovať",
-    "generateErrorFallback": "Skontrolujte pripojenie a skúste to znova."
+    "generateErrorFallback": "Skontrolujte pripojenie a skúste to znova.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nepodarilo sa otvoriť tento odkaz",
@@ -279,6 +283,20 @@ const sk: TranslationShape = {
     "loadingLanguages": "Načítavam dostupné jazyky...",
     "loadError": "Nepodarilo sa načítať knižnicu. Skontrolujte pripojenie a skúste to znova.",
     "retryButton": "Skúsiť znova"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Toto je vaša študijná knižnica. Klepnite na knihu, ktorú chcete čítať. Členovia Platinum môžu počuť, ako im AI Ježiš číta knihy v ich jazyku.",
+    "enterLibrary": "Vstúpiť do knižnice",
+    "readAloudShelfTitle": "Čítať nahlas",
+    "readAloudShelfSubtitle": "AI Ježiš môže tieto knihy čítať nahlas. Platinum.",
+    "readerLoadError": "Nepodarilo sa načítať túto knihu. Skontrolujte pripojenie a skúste to znova.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narácia",
+    "jesusVoiceDisclosure": "AI Ježiš číta iba knihy uvedené v katalógu Čítanie nahlas. Ide o hlas vytvorený pre túto aplikáciu, zakorenený v Písme — nie o nahrávku skutočnej osoby. Dostupnosť závisí od podpory jazyka.",
+    "notAvailableLanguage": "Zatiaľ nie je dostupné v tomto jazyku",
+    "textOnlyLabel": "Iba text",
+    "readAloudFilterLabel": "Čítať nahlas",
+    "catalogSearchPlaceholder": "Hľadať v knižnici"
   }
 };
 

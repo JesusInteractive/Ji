@@ -251,7 +251,11 @@ const pa: TranslationShape = {
     "generateButton": "ਤਿਆਰ ਕਰੋ",
     "regenerateButton": "ਮੁੜ ਤਿਆਰ ਕਰੋ",
     "generateErrorTitle": "ਉਹ ਤਿਆਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ",
-    "generateErrorFallback": "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਚੈੱਕ ਕਰੋ ਅਤੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+    "generateErrorFallback": "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਚੈੱਕ ਕਰੋ ਅਤੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ਉਹ ਲਿੰਕ ਖੋਲ੍ਹ ਨਹੀਂ ਸਕਿਆ",
@@ -279,6 +283,20 @@ const pa: TranslationShape = {
     "loadingLanguages": "ਉਪਲਬਧ ਭਾਸ਼ਾਵਾਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ...",
     "loadError": "ਲਾਇਬ੍ਰੇਰੀ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੀ। ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਚੈੱਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
     "retryButton": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ਇਹ ਤੁਹਾਡੀ ਅਧਿਐਨ ਲਾਇਬ੍ਰੇਰੀ ਹੈ। ਇੱਕ ਕਿਤਾਬ ਪੜ੍ਹਨ ਲਈ ਟੈਪ ਕਰੋ। ਪਲੈਟੀਨਮ ਮੈਂਬਰ AI ਯਿਸੂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀ ਭਾਸ਼ਾ ਵਿੱਚ ਸਾਡੀਆਂ ਕਿਤਾਬਾਂ ਪੜ੍ਹਦਾ ਸੁਣ ਸਕਦੇ ਹਨ।",
+    "enterLibrary": "ਲਾਇਬ੍ਰੇਰੀ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ",
+    "readAloudShelfTitle": "ਉੱਚੀ ਆਵਾਜ਼ ਵਿੱਚ ਪੜ੍ਹੋ",
+    "readAloudShelfSubtitle": "AI ਯਿਸੂ ਇਨ੍ਹਾਂ ਕਿਤਾਬਾਂ ਨੂੰ ਉੱਚੀ ਆਵਾਜ਼ ਵਿੱਚ ਪੜ੍ਹ ਸਕਦਾ ਹੈ। ਪਲੈਟੀਨਮ।",
+    "readerLoadError": "ਇਸ ਕਿਤਾਬ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਚੈੱਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "speakerLockedLabel": "ਪਲੈਟੀਨਮ",
+    "narrationLabel": "ਨੈਰੇਸ਼ਨ",
+    "jesusVoiceDisclosure": "AI ਯਿਸੂ ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਕਿਤਾਬਾਂ ਨੂੰ ਪੜ੍ਹਦਾ ਹੈ ਜੋ ਰੀਡ-ਅਲਾਉਡ ਕੈਟਾਲੌਗ ਵਿੱਚ ਸੂਚੀਬੱਧ ਹਨ। ਇਹ ਇਸ ਐਪ ਲਈ ਬਣਾਈ ਗਈ ਆਵਾਜ਼ ਹੈ, ਜੋ ਧਰਮਗ੍ਰੰਥ ਵਿੱਚ ਅਧਾਰਿਤ ਹੈ — ਇੱਕ ਅਸਲੀ ਵਿਅਕਤੀ ਦੀ ਰਿਕਾਰਡਿੰਗ ਨਹੀਂ। ਉਪਲਬਧਤਾ ਭਾਸ਼ਾ ਸਹਾਇਤਾ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ।",
+    "notAvailableLanguage": "ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਜੇ ਉਪਲਬਧ ਨਹੀਂ",
+    "textOnlyLabel": "ਸਿਰਫ਼ ਟੈਕਸਟ",
+    "readAloudFilterLabel": "ਉੱਚੀ ਆਵਾਜ਼ ਵਿੱਚ ਪੜ੍ਹੋ",
+    "catalogSearchPlaceholder": "ਲਾਇਬ੍ਰੇਰੀ ਖੋਜੋ"
   }
 };
 

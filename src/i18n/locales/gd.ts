@@ -251,7 +251,11 @@ const gd: TranslationShape = {
     "generateButton": "Cruthaich",
     "regenerateButton": "Cruthaich a-rithist",
     "generateErrorTitle": "Cha b' urrainn dhuinn sin a chruthachadh",
-    "generateErrorFallback": "Thoir sùil air do cheangal agus feuch a-rithist."
+    "generateErrorFallback": "Thoir sùil air do cheangal agus feuch a-rithist.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Cha b' urrainn dhuinn an ceangal sin fhosgladh",
@@ -279,6 +283,20 @@ const gd: TranslationShape = {
     "loadingLanguages": "A' luchdachadh cànanan rim faighinn...",
     "loadError": "Cha b' urrainn dhuinn an leabhar-lann a luchdachadh. Thoir sùil air do cheangal agus feuch a-rithist.",
     "retryButton": "Feuch a-rithist"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Seo do leabharlann ionnsachaidh. Tap air leabhar gus a leughadh. Faodaidh buill Platinum cluinntinn aig Ìosa AI na leabhraichean a tha againn sa chànan aca.",
+    "enterLibrary": "Rach a-steach don leabharlann",
+    "readAloudShelfTitle": "Leughadh A-mach",
+    "readAloudShelfSubtitle": "Faodaidh Ìosa AI na leabhraichean seo a leughadh a-mach. Platinum.",
+    "readerLoadError": "Cha b' urrainn dhuinn an leabhar seo a luchdachadh. Thoir sùil air a' cheangal agad agus feuch a-rithist.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Aithris",
+    "jesusVoiceDisclosure": "Chan eil Ìosa AI a' leughadh ach na leabhraichean air an liosta sa Chatalog Leughaidh A-mach. Seo guth air a dhealbhadh airson an aplacaid seo, stèidhichte air an Sgriobtar — chan e clàradh de dhuine fìor. Tha e an crochadh air taic chànan.",
+    "notAvailableLanguage": "Chan eil ri fhaighinn sa chànan seo fhathast",
+    "textOnlyLabel": "Teacs a-mhàin",
+    "readAloudFilterLabel": "Leughadh A-mach",
+    "catalogSearchPlaceholder": "Lorg sa leabharlann"
   }
 };
 

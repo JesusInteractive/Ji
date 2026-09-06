@@ -251,7 +251,11 @@ const hu: TranslationShape = {
     "generateButton": "Létrehozás",
     "regenerateButton": "Újragenerálás",
     "generateErrorTitle": "Nem sikerült létrehozni",
-    "generateErrorFallback": "Kérjük, ellenőrizze a kapcsolatot, és próbálja újra."
+    "generateErrorFallback": "Kérjük, ellenőrizze a kapcsolatot, és próbálja újra.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nem sikerült megnyitni a hivatkozást",
@@ -279,6 +283,20 @@ const hu: TranslationShape = {
     "loadingLanguages": "Elérhető nyelvek betöltése...",
     "loadError": "Nem sikerült betölteni a könyvtárat. Ellenőrizze a kapcsolatot és próbálja újra.",
     "retryButton": "Újra"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ez a tanulmánykönyvtárad. Koppints egy könyvre az olvasáshoz. A Platinum tagok hallgathatják, ahogy az AI Jézus felolvassa a könyveket a nyelvükön.",
+    "enterLibrary": "Belépés a könyvtárba",
+    "readAloudShelfTitle": "Felolvasás",
+    "readAloudShelfSubtitle": "Az AI Jézus felolvassa ezeket a könyveket. Platinum.",
+    "readerLoadError": "Nem sikerült betölteni ezt a könyvet. Ellenőrizd a kapcsolatot, és próbáld újra.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narráció",
+    "jesusVoiceDisclosure": "Az AI Jézus csak a Felolvasási Katalógusban felsorolt könyveket olvassa fel. Ez az app számára modellezett hang, amely a Szentíráson alapul – nem egy valódi személy felvett hangja. A rendelkezésre állás a nyelvi támogatástól függ.",
+    "notAvailableLanguage": "Még nem elérhető ezen a nyelven",
+    "textOnlyLabel": "Csak szöveg",
+    "readAloudFilterLabel": "Felolvasás",
+    "catalogSearchPlaceholder": "Keresés a könyvtárban"
   }
 };
 

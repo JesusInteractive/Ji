@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { GIFT_CERTIFICATES, MONETIZATION_EXPLAINER, PLANS } from '../constants/pricing';
 import { useApp } from '../context/AppContext';
 import { generateGiftCodeLocally, redeemGiftCode } from '../services/tokenGifting';
-import { isFounderCode, isFamilyCode } from '../services/founderAccess';
+import { isFounderCode, isFamilyCode, isDevCode } from '../services/founderAccess';
 import { purchaseGiftCertificate } from '../services/purchases';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useI18n, interpolate } from '../i18n';
@@ -43,6 +43,8 @@ export default function TokenGiftScreen() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
 
   const handleBuyForSelf = async (
     certId: string,
@@ -120,6 +122,13 @@ export default function TokenGiftScreen() {
       return;
     }
 
+    if (isDevCode(redeemInput)) {
+      selectPlan('platinum');
+      Alert.alert(t.tokenGift.redeemedTitle, t.tokenGift.platinumUnlockedMessage);
+      setRedeemInput('');
+      return;
+    }
+
     const result = await redeemGiftCode(redeemInput.trim());
     if (result.success && result.planId) {
       const planId = result.planId;
@@ -153,14 +162,16 @@ export default function TokenGiftScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
     <ScrollView
       ref={scrollRef}
-      style={styles.container}
+      style={{ flex: 1 }}
       contentContainerStyle={styles.content}
       onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
       onContentSizeChange={(_width, height) => setContentHeight(height)}
       onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
       scrollEventThrottle={16}
+      scrollEnabled={!scrollbarDragging}
     >
       <Text style={styles.title}>{t.tokenGift.title}</Text>
       <Text style={styles.balance}>{interpolate(t.tokenGift.currentPlan, { planName: planName(plan) })}</Text>
@@ -236,7 +247,10 @@ export default function TokenGiftScreen() {
         scrollRef.current?.scrollTo({ y: offset, animated: false });
         setScrollOffset(offset);
       }}
+      onDragStart={() => setScrollbarDragging(true)}
+      onDragEnd={() => setScrollbarDragging(false)}
     />
+    </ImageBackground>
     </View>
   );
 }

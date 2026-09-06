@@ -251,7 +251,11 @@ const el: TranslationShape = {
     "generateButton": "Δημιουργία",
     "regenerateButton": "Επαναδημιουργία",
     "generateErrorTitle": "Δεν ήταν δυνατή η δημιουργία",
-    "generateErrorFallback": "Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
+    "generateErrorFallback": "Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Δεν ήταν δυνατό το άνοιγμα αυτού του συνδέσμου",
@@ -279,6 +283,20 @@ const el: TranslationShape = {
     "loadingLanguages": "Φόρτωση διαθέσιμων γλωσσών...",
     "loadError": "Δεν ήταν δυνατή η φόρτωση της βιβλιοθήκης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
     "retryButton": "Επανάληψη"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Αυτή είναι η βιβλιοθήκη μελετών σας. Πατήστε ένα βιβλίο για να το διαβάσετε. Τα μέλη Platinum μπορούν να ακούσουν τον AI Ιησού να διαβάζει τα βιβλία μας στη γλώσσα τους.",
+    "enterLibrary": "Είσοδος στη βιβλιοθήκη",
+    "readAloudShelfTitle": "Ανάγνωση φωναχτά",
+    "readAloudShelfSubtitle": "Ο AI Ιησούς μπορεί να διαβάσει αυτά τα βιβλία φωναχτά. Platinum.",
+    "readerLoadError": "Δεν ήταν δυνατή η φόρτωση αυτού του βιβλίου. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Αφήγηση",
+    "jesusVoiceDisclosure": "Ο AI Ιησούς διαβάζει μόνο τα βιβλία που αναφέρονται στον Κατάλογο Ανάγνωσης Φωναχτά. Αυτή είναι μια φωνή δημιουργημένη για αυτήν την εφαρμογή, βασισμένη στη Γραφή — όχι ηχογράφηση πραγματικού προσώπου. Η διαθεσιμότητα εξαρτάται από την υποστήριξη γλώσσας.",
+    "notAvailableLanguage": "Δεν είναι ακόμη διαθέσιμο σε αυτή τη γλώσσα",
+    "textOnlyLabel": "Μόνο κείμενο",
+    "readAloudFilterLabel": "Ανάγνωση φωναχτά",
+    "catalogSearchPlaceholder": "Αναζήτηση στη βιβλιοθήκη"
   }
 };
 

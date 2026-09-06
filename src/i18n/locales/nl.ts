@@ -251,7 +251,11 @@ const nl: TranslationShape = {
     "generateButton": "Genereren",
     "regenerateButton": "Opnieuw genereren",
     "generateErrorTitle": "Kon dat niet genereren",
-    "generateErrorFallback": "Controleer je verbinding en probeer het opnieuw."
+    "generateErrorFallback": "Controleer je verbinding en probeer het opnieuw.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kon die link niet openen",
@@ -279,6 +283,20 @@ const nl: TranslationShape = {
     "loadingLanguages": "Beschikbare talen laden...",
     "loadError": "Kon de bibliotheek niet laden. Controleer je verbinding en probeer het opnieuw.",
     "retryButton": "Opnieuw proberen"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Dit is je studiebibliotheek. Tik op een boek om het te lezen. Platinum-leden kunnen AI Jezus de boeken die we in hun taal hebben laten voorlezen.",
+    "enterLibrary": "Bibliotheek openen",
+    "readAloudShelfTitle": "Voorlezen",
+    "readAloudShelfSubtitle": "AI Jezus kan deze boeken hardop voorlezen. Platinum.",
+    "readerLoadError": "Kon dit boek niet laden. Controleer je verbinding en probeer het opnieuw.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Voorlezen",
+    "jesusVoiceDisclosure": "AI Jezus leest alleen de boeken die in de Voorlees-catalogus staan. Dit is een stem die voor deze app is gemodelleerd, gebaseerd op de Schrift — geen opname van een echt persoon. Beschikbaarheid hangt af van taalondersteuning.",
+    "notAvailableLanguage": "Nog niet beschikbaar in deze taal",
+    "textOnlyLabel": "Alleen tekst",
+    "readAloudFilterLabel": "Voorlezen",
+    "catalogSearchPlaceholder": "Zoek in de bibliotheek"
   }
 };
 

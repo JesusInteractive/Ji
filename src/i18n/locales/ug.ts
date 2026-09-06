@@ -251,7 +251,11 @@ const ug: TranslationShape = {
     "generateButton": "ھاسىل قىل",
     "regenerateButton": "قايتا ھاسىل قىل",
     "generateErrorTitle": "ھاسىل قىلغىلى بولمىدى",
-    "generateErrorFallback": "ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ."
+    "generateErrorFallback": "ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ئۇلىنىشنى ئاچقىلى بولمىدى",
@@ -279,6 +283,20 @@ const ug: TranslationShape = {
     "loadingLanguages": "ئىشلەتكىلى بولىدىغان تىللارنى يۈكلەۋاتىدۇ...",
     "loadError": "كۇتۇپخانىنى يۈكلىيەلمىدى. ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.",
     "retryButton": "قايتا سىنا"
+  },
+  "studyLibrary": {
+    "entranceTitle": "بۇ سىزنىڭ تەتقىقات كۈتۈپخانىڭىز. بىر كىتابنى بېسىپ ئوقۇڭ. Platinum ئەزالار AI ئىيسا تەمىنلەيدىغان كىتابلارنى ئۆز تىلىدا ئاڭلىيالايدۇ.",
+    "enterLibrary": "كۈتۈپخانىغا كىرىڭ",
+    "readAloudShelfTitle": "ئاۋازلىق ئوقۇش",
+    "readAloudShelfSubtitle": "AI ئىيسا بۇ كىتابلارنى ئاۋازلىق ئوقۇيالايدۇ. Platinum.",
+    "readerLoadError": "بۇ كىتابنى يۈكلىگىلى بولمىدى. ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناڭ.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "ئاۋازلىق ئوقۇش",
+    "jesusVoiceDisclosure": "AI ئىيسا پەقەت Read-Aloud Catalog تىزىملىكىدىكى كىتابلارنىلا ئوقۇيدۇ. بۇ ئەپ ئۈچۈن مودېللانغان ئاۋاز بولۇپ، مۇقەددەس كىتابقا ئاساسلانغان — ھەقىقىي كىشىنىڭ خاتىرىسى ئەمەس. تىل قوللىشىغا قاراپ ئىشلىتىلىدۇ.",
+    "notAvailableLanguage": "بۇ تىلدا تېخى ئىشلەتمەيدۇ",
+    "textOnlyLabel": "تېكىستلا",
+    "readAloudFilterLabel": "ئاۋازلىق ئوقۇش",
+    "catalogSearchPlaceholder": "كۈتۈپخانىدىن ئىزدەش"
   }
 };
 

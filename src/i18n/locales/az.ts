@@ -251,7 +251,11 @@ const az: TranslationShape = {
     "generateButton": "Yarat",
     "regenerateButton": "Yenidən yarat",
     "generateErrorTitle": "Yaradıla bilmədi",
-    "generateErrorFallback": "Bağlantınızı yoxlayın və yenidən cəhd edin."
+    "generateErrorFallback": "Bağlantınızı yoxlayın və yenidən cəhd edin.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Link açıla bilmədi",
@@ -279,6 +283,20 @@ const az: TranslationShape = {
     "loadingLanguages": "Mövcud dillər yüklənir...",
     "loadError": "Kitabxananı yükləmək mümkün olmadı. Bağlantınızı yoxlayın və yenidən cəhd edin.",
     "retryButton": "Yenidən cəhd et"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Bu sizin tədqiqat kitabxananızdır. Kitabı oxumaq üçün üzərinə toxunun. Platinum üzvlər AI İsa tərəfindən kitablarımızın onların dilində oxunmasını eşidə bilərlər.",
+    "enterLibrary": "Kitabxanaya daxil olun",
+    "readAloudShelfTitle": "Səsli oxu",
+    "readAloudShelfSubtitle": "AI İsa bu kitabları uca səslə oxuya bilər. Platinum.",
+    "readerLoadError": "Bu kitabı yükləmək mümkün olmadı. Bağlantınızı yoxlayın və yenidən cəhd edin.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Nəql",
+    "jesusVoiceDisclosure": "AI İsa yalnız Səsli Oxu Kataloqunda sadalanan kitabları oxuyur. Bu, bu tətbiq üçün modelləşdirilmiş, Müqəddəs Yazılara əsaslanan səsdir — real şəxsin qeydi deyil. Mövcudluq dil dəstəyindən asılıdır.",
+    "notAvailableLanguage": "Bu dildə hələ mövcud deyil",
+    "textOnlyLabel": "Yalnız mətn",
+    "readAloudFilterLabel": "Səsli oxu",
+    "catalogSearchPlaceholder": "Kitabxananı axtar"
   }
 };
 

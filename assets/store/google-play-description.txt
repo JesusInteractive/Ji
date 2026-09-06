@@ -1,0 +1,53 @@
+Short description (80 char limit)
+Global AI Bible companion: Ask Jesus, Gospel Translator, sermon writer, prayer.
+
+---
+Full description (4000 char limit)
+Jesus Interactive is a premium Global AI Bible Companion -- Multi-Language Bible Tools in 117 languages, Sermon & Bible Study Writer, Ask Jesus, Gospel Translator, prayer, study, and worship in one app.
+
+Read Bibles by language. Open Christian books and testimonies. Generate a full sermon or Bible study on any topic or passage. Ask Jesus questions, translate the gospel for someone in their own language, keep a Journal, post on the Prayer Wall, and start the day with Daily Devotions and Daily Promises.
+
+A PREMIUM BIBLE COMPANION
+Subscribe to unlock the full toolkit: Multi-Language Bible Tools, Sermon & Bible Study Writer, Ask Jesus, Gospel Translator, study library, prayer, and worship. Pricing is shown on the purchase screen before you confirm.
+
+WHAT'S INCLUDED IN 2.0
+* Multi-Language Bible Tools -- Bibles by language, Christian books & testimonies
+* 117 languages
+* Sermon & Bible Study Writer -- full sermon or study on any topic or passage
+* Gospel Translator -- live, two-way speech translation for sharing the gospel
+* Study Tools library -- 243 books
+* Ask Jesus
+* Daily Devotions and Daily Promises
+* Prayer Wall
+* Journal
+* Bible Word Search
+* Audio Jesus
+* 24/7 Praise and Worship Radio
+
+MULTI-LANGUAGE BIBLE TOOLS
+Choose a Bible in your language. Explore Christian books and testimonies. Built for a global church.
+
+SERMON & BIBLE STUDY WRITER
+Enter a topic or passage and generate a full sermon or Bible study. For pastors, teachers, and students of the Word. Edit it, pray over it, and make it your own.
+
+GOSPEL TRANSLATOR
+Live, two-way speech translation for sharing the gospel across languages -- speak or type on either side, and it translates and reads back instantly. Built for missions and cross-language conversations.
+
+ASK JESUS
+Ask Jesus is a Scripture-rooted companion -- not a substitute for the Bible, prayer, or your local church.
+
+PRAYER, JOURNAL, WORSHIP
+Prayer Wall. Private Journal. Audio Jesus and 24/7 Praise and Worship Radio.
+
+Always test what you read against Scripture.
+
+---
+Note: Google Play doesn't have a separate "What's New" field submitted alongside the store listing the way Apple does -- release notes go in the Play Console's own "What's new in this version" field on the release page (Production > Releases), not the Store Listing page. Use the same bullet list from the Apple "What's New" if prompted there:
+
+* Multi-Language Bible Tools -- Bibles by language, Christian books & testimonies
+* 117 languages
+* Sermon & Bible Study Writer
+* Gospel Translator -- live, two-way speech translation for sharing the gospel
+* 243 study books
+* Ask Jesus, Daily Devotions & Promises, Prayer Wall, Journal
+* Bible Word Search, Audio Jesus, 24/7 Praise & Worship Radio

@@ -251,7 +251,11 @@ const zh: TranslationShape = {
     "generateButton": "生成",
     "regenerateButton": "重新生成",
     "generateErrorTitle": "无法生成",
-    "generateErrorFallback": "请检查网络连接后重试。"
+    "generateErrorFallback": "请检查网络连接后重试。",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "无法打开链接",
@@ -279,6 +283,20 @@ const zh: TranslationShape = {
     "loadingLanguages": "正在加载可用语言...",
     "loadError": "无法加载图书馆。请检查您的网络连接并重试。",
     "retryButton": "重试"
+  },
+  "studyLibrary": {
+    "entranceTitle": "这是您的研读图书馆。点击一本书即可阅读。白金会员可以听到AI耶稣用他们的语言朗读我们所拥有的书籍。",
+    "enterLibrary": "进入图书馆",
+    "readAloudShelfTitle": "朗读",
+    "readAloudShelfSubtitle": "AI耶稣可以朗读这些书籍。白金会员专享。",
+    "readerLoadError": "无法加载此书。请检查您的网络连接并重试。",
+    "speakerLockedLabel": "白金",
+    "narrationLabel": "朗读",
+    "jesusVoiceDisclosure": "AI耶稣仅朗读朗读目录中列出的书籍。这是专为本应用建模的声音，以圣经为基础——并非真实人物的录音。可用性取决于语言支持。",
+    "notAvailableLanguage": "尚未支持此语言",
+    "textOnlyLabel": "仅文本",
+    "readAloudFilterLabel": "朗读",
+    "catalogSearchPlaceholder": "搜索图书馆"
   }
 };
 

@@ -251,7 +251,11 @@ const de: TranslationShape = {
     "generateButton": "Generieren",
     "regenerateButton": "Neu generieren",
     "generateErrorTitle": "Konnte nicht generiert werden",
-    "generateErrorFallback": "Bitte prüfe deine Verbindung und versuche es erneut."
+    "generateErrorFallback": "Bitte prüfe deine Verbindung und versuche es erneut.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Link konnte nicht geöffnet werden",
@@ -279,6 +283,20 @@ const de: TranslationShape = {
     "loadingLanguages": "Verfügbare Sprachen werden geladen...",
     "loadError": "Die Bibliothek konnte nicht geladen werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
     "retryButton": "Erneut versuchen"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Hier ist deine Studienbibliothek. Tippe auf ein Buch, um es zu lesen. Platinum-Mitglieder können sich die Bücher von AI Jesus in ihrer Sprache vorlesen lassen.",
+    "enterLibrary": "Zur Bibliothek",
+    "readAloudShelfTitle": "Vorlesen",
+    "readAloudShelfSubtitle": "AI Jesus kann diese Bücher vorlesen. Platinum.",
+    "readerLoadError": "Dieses Buch konnte nicht geladen werden. Überprüfe deine Verbindung und versuche es erneut.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Vorlesen",
+    "jesusVoiceDisclosure": "AI Jesus liest nur die Bücher, die im Vorlese-Katalog aufgeführt sind. Dies ist eine für diese App modellierte Stimme, basierend auf der Schrift – keine Aufnahme einer realen Person. Die Verfügbarkeit hängt von der Sprachunterstützung ab.",
+    "notAvailableLanguage": "Noch nicht in dieser Sprache verfügbar",
+    "textOnlyLabel": "Nur Text",
+    "readAloudFilterLabel": "Vorlesen",
+    "catalogSearchPlaceholder": "Bibliothek durchsuchen"
   }
 };
 

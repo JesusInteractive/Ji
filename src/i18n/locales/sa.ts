@@ -251,7 +251,11 @@ const sa: TranslationShape = {
     "generateButton": "उत्पादय",
     "regenerateButton": "पुनः उत्पादय",
     "generateErrorTitle": "तत् उत्पादयितुं न शक्तम्",
-    "generateErrorFallback": "कृपया सम्बन्धं परीक्ष्य पुनः प्रयासं कुरु।"
+    "generateErrorFallback": "कृपया सम्बन्धं परीक्ष्य पुनः प्रयासं कुरु।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "एतत् लिङ्क् उद्घाटयितुं न शक्तम्",
@@ -279,6 +283,20 @@ const sa: TranslationShape = {
     "loadingLanguages": "उपलब्धाः भाषाः लोड् भवन्ति...",
     "loadError": "पुस्तकालयं लोड् कर्तुं न शक्यते। स्वसम्बन्धं परीक्ष्य पुनः प्रयत्नं कुर्वन्तु।",
     "retryButton": "पुनः प्रयत्नः"
+  },
+  "studyLibrary": {
+    "entranceTitle": "एषः भवतः अध्ययनपुस्तकालयः अस्ति। पुस्तकं स्पृशन्तु पठितुम्। प्लैटिनम सदस्याः एआई येशुः तेषां भाषायां पुस्तकानि पठन्तं श्रोतुं शक्नुवन्ति।",
+    "enterLibrary": "पुस्तकालयं प्रविशन्तु",
+    "readAloudShelfTitle": "उच्चैः पठनम्",
+    "readAloudShelfSubtitle": "एआई येशुः एतानि पुस्तकानि उच्चैः पठितुं शक्नोति। प्लैटिनम।",
+    "readerLoadError": "एतत् पुस्तकं लोड् कर्तुं न शक्यते। स्वस्य संयोजनं परीक्ष्य पुनः प्रयतन्तु।",
+    "speakerLockedLabel": "प्लैटिनम",
+    "narrationLabel": "वाचनम्",
+    "jesusVoiceDisclosure": "एआई येशुः केवलं उच्चैः पठनसूचीमध्ये निर्दिष्टानि पुस्तकानि एव पठति। एषा वाणी अस्य अनुप्रयोगार्थं निर्मिता, शास्त्राधारिता — न तु वास्तविकव्यक्तेः अभिलेखः। उपलब्धता भाषासहाय्याधीना अस्ति।",
+    "notAvailableLanguage": "अस्यां भाषायां अद्यापि उपलब्धं नास्ति",
+    "textOnlyLabel": "केवलं पाठः",
+    "readAloudFilterLabel": "उच्चैः पठनम्",
+    "catalogSearchPlaceholder": "पुस्तकालयं अन्विष्यन्तु"
   }
 };
 

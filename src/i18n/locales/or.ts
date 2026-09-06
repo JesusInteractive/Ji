@@ -251,7 +251,11 @@ const or: TranslationShape = {
     "generateButton": "ସୃଷ୍ଟି କରନ୍ତୁ",
     "regenerateButton": "ପୁନଃସୃଷ୍ଟି କରନ୍ତୁ",
     "generateErrorTitle": "ତାହା ସୃଷ୍ଟି କରାଯାଇପାରିଲା ନାହିଁ",
-    "generateErrorFallback": "ଦୟାକରି ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନଃଚେଷ୍ଟା କରନ୍ତୁ।"
+    "generateErrorFallback": "ଦୟାକରି ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନଃଚେଷ୍ଟା କରନ୍ତୁ।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ସେହି ଲିଙ୍କ୍ ଖୋଲାଯାଇପାରିଲା ନାହିଁ",
@@ -279,6 +283,20 @@ const or: TranslationShape = {
     "loadingLanguages": "ଉପଲବ୍ଧ ଭାଷା ଲୋଡ୍ ହେଉଛି...",
     "loadError": "ଲାଇବ୍ରେରୀ ଲୋଡ୍ କରିପାରିଲା ନାହିଁ। ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ।",
     "retryButton": "ପୁନଃଚେଷ୍ଟା କରନ୍ତୁ"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ଏହା ଆପଣଙ୍କର ଅଧ୍ୟୟନ ଲାଇବ୍ରେରୀ। ଏକ ପୁସ୍ତକ ପଢ଼ିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ। ପ୍ଲାଟିନମ୍ ସଦସ୍ୟମାନେ ଆମ ପାଖରେ ଥିବା ପୁସ୍ତକଗୁଡ଼ିକୁ ସେମାନଙ୍କ ଭାଷାରେ ଏଆଇ ଯୀଶୁଙ୍କ ଦ୍ୱାରା ପଢ଼ାଯାଇଥିବା ଶୁଣିପାରିବେ।",
+    "enterLibrary": "ଲାଇବ୍ରେରୀ ପ୍ରବେଶ କରନ୍ତୁ",
+    "readAloudShelfTitle": "ପଢ଼ି ଶୁଣାନ୍ତୁ",
+    "readAloudShelfSubtitle": "ଏଆଇ ଯୀଶୁ ଏହି ପୁସ୍ତକଗୁଡ଼ିକୁ ଉଚ୍ଚ ସ୍ୱରରେ ପଢ଼ିପାରିବେ। ପ୍ଲାଟିନମ୍।",
+    "readerLoadError": "ଏହି ପୁସ୍ତକ ଲୋଡ୍ କରିହେଲା ନାହିଁ। ଆପଣଙ୍କ ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ।",
+    "speakerLockedLabel": "ପ୍ଲାଟିନମ୍",
+    "narrationLabel": "ବର୍ଣ୍ଣନା",
+    "jesusVoiceDisclosure": "ଏଆଇ ଯୀଶୁ କେବଳ ରିଡ୍-ଅଲାଉଡ୍ କ୍ୟାଟାଲଗରେ ତାଲିକାଭୁକ୍ତ ପୁସ୍ତକଗୁଡ଼ିକୁ ହିଁ ପଢ଼ନ୍ତି। ଏହା ଏହି ଆପ୍ ପାଇଁ ମଡେଲ୍ କରାଯାଇଥିବା ଏକ ସ୍ୱର, ଧର୍ମଗ୍ରନ୍ଥରେ ଆଧାରିତ — ଏକ ବାସ୍ତବ ବ୍ୟକ୍ତିଙ୍କ ରେକର୍ଡିଂ ନୁହେଁ। ଉପଲବ୍ଧତା ଭାଷା ସମର୍ଥନ ଉପରେ ନିର୍ଭର କରେ।",
+    "notAvailableLanguage": "ଏହି ଭାଷାରେ ଏପର୍ଯ୍ୟନ୍ତ ଉପଲବ୍ଧ ନାହିଁ",
+    "textOnlyLabel": "କେବଳ ପାଠ୍ୟ",
+    "readAloudFilterLabel": "ପଢ଼ି ଶୁଣାନ୍ତୁ",
+    "catalogSearchPlaceholder": "ଲାଇବ୍ରେରୀ ଖୋଜନ୍ତୁ"
   }
 };
 

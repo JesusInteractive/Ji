@@ -251,7 +251,11 @@ const sd: TranslationShape = {
     "generateButton": "ٺاھيو",
     "regenerateButton": "وري ٺاھيو",
     "generateErrorTitle": "اھو ٺاھي نہ سگھيو",
-    "generateErrorFallback": "مھرباني ڪري پنھنجو ڪنيڪشن چيڪ ڪريو ۽ ٻيهر ڪوشش ڪريو."
+    "generateErrorFallback": "مھرباني ڪري پنھنجو ڪنيڪشن چيڪ ڪريو ۽ ٻيهر ڪوشش ڪريو.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "اھو لنڪ نہ کولي سگھيو",
@@ -279,6 +283,20 @@ const sd: TranslationShape = {
     "loadingLanguages": "دستياب ٻوليون لوڊ ٿي رهيون آهن...",
     "loadError": "لائبريري لوڊ نه ٿي سگهي. پنهنجو ڪنيڪشن چيڪ ڪريو ۽ ٻيهر ڪوشش ڪريو.",
     "retryButton": "ٻيهر ڪوشش ڪريو"
+  },
+  "studyLibrary": {
+    "entranceTitle": "هي توهان جي مطالعي لائبريري آهي. ڪتاب پڙهڻ لاءِ ان تي ٽيپ ڪريو. پلاٽينم ميمبر AI عيسيٰ کي اسان وٽ موجود ڪتابن کي سندن ٻوليءَ ۾ پڙھندي ٻڌي سگھن ٿا.",
+    "enterLibrary": "لائبريري ۾ داخل ٿيو",
+    "readAloudShelfTitle": "زور سان پڙهو",
+    "readAloudShelfSubtitle": "AI عيسيٰ انهن ڪتابن کي زور سان پڙهي سگھي ٿو. پلاٽينم.",
+    "readerLoadError": "هي ڪتاب لوڊ نه ٿي سگھيو. پنهنجو ڪنيڪشن چيڪ ڪريو ۽ وري ڪوشش ڪريو.",
+    "speakerLockedLabel": "پلاٽينم",
+    "narrationLabel": "زور سان پڙهڻ",
+    "jesusVoiceDisclosure": "AI عيسيٰ صرف ريڊ الائوڊ ڪيٽلاگ ۾ درج ڪتاب پڙهي ٿو. هي آواز هن ايپ لاءِ تيار ڪيو ويو آهي، صحيفن تي ٻڌل — ڪنهن حقيقي شخص جي رڪارڊنگ نه. دستيابي ٻوليءَ جي سپورٽ تي منحصر آهي.",
+    "notAvailableLanguage": "هن ٻوليءَ ۾ اڃا دستياب نه آهي",
+    "textOnlyLabel": "صرف متن",
+    "readAloudFilterLabel": "زور سان پڙهو",
+    "catalogSearchPlaceholder": "لائبريري ۾ ڳولا ڪريو"
   }
 };
 

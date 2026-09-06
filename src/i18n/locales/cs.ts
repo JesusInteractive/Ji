@@ -251,7 +251,11 @@ const cs: TranslationShape = {
     "generateButton": "Vygenerovat",
     "regenerateButton": "Vygenerovat znovu",
     "generateErrorTitle": "Nepodařilo se vygenerovat",
-    "generateErrorFallback": "Zkontrolujte připojení a zkuste to znovu."
+    "generateErrorFallback": "Zkontrolujte připojení a zkuste to znovu.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Odkaz se nepodařilo otevřít",
@@ -279,6 +283,20 @@ const cs: TranslationShape = {
     "loadingLanguages": "Načítám dostupné jazyky...",
     "loadError": "Nepodařilo se načíst knihovnu. Zkontrolujte připojení a zkuste to znovu.",
     "retryButton": "Zkusit znovu"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Toto je vaše studijní knihovna. Klepněte na knihu, abyste ji mohli číst. Členové Platinum mohou slyšet, jak AI Ježíš předčítá knihy, které máme v jejich jazyce.",
+    "enterLibrary": "Vstoupit do knihovny",
+    "readAloudShelfTitle": "Předčítání",
+    "readAloudShelfSubtitle": "AI Ježíš může tyto knihy předčítat nahlas. Platinum.",
+    "readerLoadError": "Knihu se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Předčítání",
+    "jesusVoiceDisclosure": "AI Ježíš čte pouze knihy uvedené v katalogu Předčítání. Jedná se o hlas vytvořený pro tuto aplikaci, založený na Písmu — nikoli o nahrávku skutečné osoby. Dostupnost závisí na jazykové podpoře.",
+    "notAvailableLanguage": "V tomto jazyce zatím není dostupné",
+    "textOnlyLabel": "Pouze text",
+    "readAloudFilterLabel": "Předčítání",
+    "catalogSearchPlaceholder": "Hledat v knihovně"
   }
 };
 

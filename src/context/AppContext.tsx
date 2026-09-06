@@ -8,8 +8,11 @@ import type {
   PrayerNote,
   TestimonyNote,
 } from '../types';
-import { PLANS } from '../constants/pricing';
 import { encryptLocalText, decryptLocalText } from '../services/security';
+import { sendDeviceHeartbeat } from '../services/testimonyApi';
+import { getDeviceId } from '../services/deviceId';
+import { initPurchases } from '../services/purchases';
+import { logEvent } from '../services/analytics';
 
 // Shared by MagnifyButton (Chat/Scripture/Study Tools) and Settings'
 // "Larger text" row, so both read/write the same textZoom scale and stay
@@ -29,8 +32,22 @@ export const STORAGE_KEYS = {
   testimonies: 'ji_testimonies_v1',
   wordSearchCompleted: 'ji_word_search_completed_v1',
   profile: 'ji_profile_v1',
-  dailyQuota: 'ji_daily_quota_v1',
+  // Own key rather than folded into `profile` above -- who to notify in
+  // an emergency is reasoned-about (and wiped/exported) independently of
+  // the display name/photo.
+  emergencyContacts: 'ji_emergency_contacts_v1',
   planExpiresAt: 'ji_plan_expires_at_v1',
+  // Server-anchored 5-day trial start (see the boot effect below) --
+  // cached here only so the app has an immediate value before the first
+  // heartbeat resolves; the server's users.created_at always overwrites
+  // this once it responds, so clearing local storage alone can't reset
+  // the trial clock (a full reinstall still can, via a fresh deviceId).
+  trialStartedAt: 'ji_trial_started_at_v1',
+  // One-shot/once-per-day guards for the trial analytics events below --
+  // never read for anything except "have we already logged this."
+  trialStartedLogged: 'ji_trial_started_logged_v1',
+  trialDayReturnedLoggedDate: 'ji_trial_day_returned_logged_date_v1',
+  trialExpiredLogged: 'ji_trial_expired_logged_v1',
 };
 
 // Local calendar date (not UTC) as YYYY-MM-DD -- keys the persisted daily
@@ -97,11 +114,18 @@ interface AppContextValue {
   planExpiresAt: string | null;
   onboardingComplete: boolean;
 
-  // Usage -- a one-time lifetime allowance for the free introductory
-  // offer (never refills), or a genuinely-daily allowance for paid plans
-  // (refills every calendar day). See PLANS[].resetsDaily.
-  remainingQuestions: number;
-  setRemainingQuestions: (n: number | ((prev: number) => number)) => void;
+  // 5-day trial (see useFeatureAccess.ts, which is what every gated
+  // screen actually reads) -- trialStartedAt is server-anchored (see
+  // STORAGE_KEYS.trialStartedAt's own comment), null only in the brief
+  // window before the first heartbeat/cache read resolves.
+  trialStartedAt: string | null;
+  daysSinceFirstOpen: number;
+  isInTrial: boolean;
+  // A real paid plan (or an active gift-certificate grant) OR still
+  // within the 5-day trial -- the one thing every feature-gated screen
+  // actually checks (via useFeatureAccess.ts). No ad-unlock branch: the
+  // only way back in after day 5 is a subscription.
+  hasFullAccess: boolean;
 
   // Chat
   messages: ChatMessage[];
@@ -169,6 +193,18 @@ interface AppContextValue {
   profilePhotoUri: string | null;
   setProfilePhotoUri: (uri: string | null) => void;
 
+  // Emergency Panic Button contacts -- also purely local/device-only,
+  // same caveat as the profile fields above. Both required before the
+  // SOS button (ProfileScreen.tsx) activates.
+  familyContactName: string;
+  setFamilyContactName: (name: string) => void;
+  familyContactPhone: string;
+  setFamilyContactPhone: (phone: string) => void;
+  ministryContactName: string;
+  setMinistryContactName: (name: string) => void;
+  ministryContactPhone: string;
+  setMinistryContactPhone: (phone: string) => void;
+
   ready: boolean;
 }
 
@@ -181,7 +217,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hasSeenEntrance, setHasSeenEntrance] = useState(false);
   const [plan, setPlan] = useState<PlanId | null>(null);
   const [planExpiresAt, setPlanExpiresAtState] = useState<string | null>(null);
-  const [remainingQuestions, setRemainingQuestions] = useState(5);
+  const [trialStartedAt, setTrialStartedAt] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
@@ -194,12 +230,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [textZoom, setTextZoom] = useState(1);
   const [displayName, setDisplayNameState] = useState('');
   const [profilePhotoUri, setProfilePhotoUriState] = useState<string | null>(null);
+  const [familyContactName, setFamilyContactNameState] = useState('');
+  const [familyContactPhone, setFamilyContactPhoneState] = useState('');
+  const [ministryContactName, setMinistryContactNameState] = useState('');
+  const [ministryContactPhone, setMinistryContactPhoneState] = useState('');
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     (async () => {
+      // Captured here (rather than read back from state, which wouldn't
+      // be committed yet inside this same effect) so the post-load
+      // heartbeat below reports whatever plan was actually restored,
+      // not always 'free'.
+      let heartbeatPlan: PlanId = 'free';
+      let heartbeatExpiresAt: string | null = null;
       try {
-        const [onboardingRaw, planRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, dailyQuotaRaw, wordSearchCompletedRaw, planExpiresAtRaw] =
+        const [onboardingRaw, planRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, wordSearchCompletedRaw, planExpiresAtRaw, cachedTrialStartedAt, emergencyContactsRaw] =
           await Promise.all([
             AsyncStorage.getItem(STORAGE_KEYS.onboarding),
             AsyncStorage.getItem(STORAGE_KEYS.plan),
@@ -209,10 +255,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             AsyncStorage.getItem(STORAGE_KEYS.prayers),
             AsyncStorage.getItem(STORAGE_KEYS.testimonies),
             AsyncStorage.getItem(STORAGE_KEYS.profile),
-            AsyncStorage.getItem(STORAGE_KEYS.dailyQuota),
             AsyncStorage.getItem(STORAGE_KEYS.wordSearchCompleted),
             AsyncStorage.getItem(STORAGE_KEYS.planExpiresAt),
+            AsyncStorage.getItem(STORAGE_KEYS.trialStartedAt),
+            AsyncStorage.getItem(STORAGE_KEYS.emergencyContacts),
           ]);
+        if (cachedTrialStartedAt) setTrialStartedAt(cachedTrialStartedAt);
 
         if (onboardingRaw) {
           const parsed = JSON.parse(onboardingRaw);
@@ -238,48 +286,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           }
           setPlan(restoredPlanId);
           setPlanExpiresAtState(restoredExpiresAt);
-          // Restoring `plan` alone left remainingQuestions stuck at its
-          // hardcoded initial value (5, the free-tier default) on every
-          // app restart, regardless of which plan was actually restored
-          // -- e.g. Platinum's unlimited access silently reverted to "5
-          // questions left" until selectPlan() was called again in that
-          // session. Recompute it from the restored plan the same way
-          // selectPlan() itself does.
-          const restoredPlan = PLANS.find((p) => p.id === restoredPlanId);
-          const fullLimit = restoredPlan?.dailyQuestionLimit ?? Infinity;
-          const resetsDaily = restoredPlan?.resetsDaily ?? true;
-          // That full-limit recompute alone reintroduced a different bug:
-          // a free-tier user who used up today's questions could force-
-          // quit and relaunch to get a fresh 5, unlimited times a day,
-          // since nothing about *usage* was ever persisted, only the
-          // plan's limit. ji_daily_quota_v1 persists {date, remaining} so
-          // a same-day relaunch restores what was actually left.
-          //
-          // For a plan that resetsDaily (Basic/Pro/Platinum), a new
-          // calendar day (date mismatch) still resets to the full limit,
-          // same as before. For the free introductory offer
-          // (resetsDaily: false), the date is never checked at all -- its
-          // 5 questions are a one-time lifetime allowance, so whatever
-          // was left last session is still what's left now, even on a
-          // new day. It only refills via selectPlan() itself (choosing
-          // Free during onboarding, or a redeemed gift certificate/
-          // subscription later granting a different plan).
-          let restoredRemaining = fullLimit;
-          if (dailyQuotaRaw) {
-            try {
-              const parsedQuota = JSON.parse(dailyQuotaRaw) as { date: string; remaining: number };
-              if (!resetsDaily || parsedQuota.date === todayKey()) {
-                restoredRemaining = parsedQuota.remaining;
-              }
-            } catch {
-              // Fall through to fullLimit if the cached quota is corrupt.
-            }
-          }
-          setRemainingQuestions(restoredRemaining);
-          AsyncStorage.setItem(
-            STORAGE_KEYS.dailyQuota,
-            JSON.stringify({ date: todayKey(), remaining: restoredRemaining })
-          ).catch(() => {});
+          heartbeatPlan = restoredPlanId;
+          heartbeatExpiresAt = restoredExpiresAt;
         }
         if (messagesRaw) setMessages(JSON.parse(messagesRaw));
         const journal = await readEncryptedJson<JournalEntry[]>(journalRaw);
@@ -290,6 +298,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setDisplayNameState(parsed.displayName ?? '');
           setProfilePhotoUriState(parsed.profilePhotoUri ?? null);
         }
+        if (emergencyContactsRaw) {
+          const parsed = JSON.parse(emergencyContactsRaw);
+          setFamilyContactNameState(parsed.familyContactName ?? '');
+          setFamilyContactPhoneState(parsed.familyContactPhone ?? '');
+          setMinistryContactNameState(parsed.ministryContactName ?? '');
+          setMinistryContactPhoneState(parsed.ministryContactPhone ?? '');
+        }
         const prayers = await readEncryptedJson<PrayerNote[]>(prayersRaw);
         if (prayers) setPrayerNotes(prayers);
         const testimonies = await readEncryptedJson<TestimonyNote[]>(testimoniesRaw);
@@ -297,9 +312,85 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (wordSearchCompletedRaw) setCompletedWordSearchPuzzles(JSON.parse(wordSearchCompletedRaw));
       } finally {
         setReady(true);
+        // Fire-and-forget: sendDeviceHeartbeat swallows its own errors,
+        // and this shouldn't delay setReady/first paint.
+        (async () => {
+          const deviceId = await getDeviceId();
+          // Wires this app's RevenueCat identity to its own deviceId --
+          // previously never called anywhere (purchases.ts's
+          // initPurchases existed but nothing invoked it), so no
+          // purchase/restore/webhook-attribution could actually work.
+          initPurchases(deviceId).catch(() => {});
+          const heartbeatResult = await sendDeviceHeartbeat(heartbeatPlan, heartbeatExpiresAt);
+          if (heartbeatResult?.createdAt) {
+            // Server's value always wins over whatever's cached locally --
+            // see STORAGE_KEYS.trialStartedAt's own comment.
+            setTrialStartedAt(heartbeatResult.createdAt);
+            AsyncStorage.setItem(STORAGE_KEYS.trialStartedAt, heartbeatResult.createdAt).catch(() => {});
+          } else {
+            // Heartbeat failed (offline first launch, etc.) -- if this
+            // device has never gotten a server-anchored value at all,
+            // cache "now" once so it still gets a real anchor instead of
+            // being stuck at permanent day-zero every launch until the
+            // network comes back.
+            setTrialStartedAt((current) => {
+              if (current) return current;
+              const now = new Date().toISOString();
+              AsyncStorage.setItem(STORAGE_KEYS.trialStartedAt, now).catch(() => {});
+              return now;
+            });
+          }
+        })();
       }
     })();
   }, []);
+
+  // Derived trial state -- daysSinceFirstOpen is 0 on day 1 (the day
+  // trialStartedAt was set), so isInTrial covers days 0-4, five full
+  // calendar days, before the paywall locks everything down.
+  const daysSinceFirstOpen = trialStartedAt
+    ? Math.floor((Date.now() - new Date(trialStartedAt).getTime()) / 86_400_000)
+    : 0;
+  const isInTrial = daysSinceFirstOpen < 5;
+  const isPaidPlan = plan === 'basic' || plan === 'pro' || plan === 'platinum';
+  const hasFullAccess = isPaidPlan || isInTrial;
+
+  // Trial analytics -- each fires at most once (trial_started) or once
+  // per calendar day (trial_day_returned) or once ever at the moment it
+  // becomes true (trial_expired), guarded by their own AsyncStorage
+  // flags so remounts/re-renders never spam duplicate rows. Best-effort:
+  // logEvent() itself already swallows all errors.
+  useEffect(() => {
+    if (!ready || !trialStartedAt) return;
+    (async () => {
+      const already = await AsyncStorage.getItem(STORAGE_KEYS.trialStartedLogged);
+      if (already) return;
+      await logEvent('trial_started', { trialStartedAt });
+      AsyncStorage.setItem(STORAGE_KEYS.trialStartedLogged, '1').catch(() => {});
+    })();
+  }, [ready, trialStartedAt]);
+
+  useEffect(() => {
+    if (!ready || !trialStartedAt || !isInTrial) return;
+    const day = Math.min(Math.max(daysSinceFirstOpen + 1, 1), 5);
+    (async () => {
+      const today = todayKey();
+      const lastLogged = await AsyncStorage.getItem(STORAGE_KEYS.trialDayReturnedLoggedDate);
+      if (lastLogged === today) return;
+      await logEvent('trial_day_returned', { day });
+      AsyncStorage.setItem(STORAGE_KEYS.trialDayReturnedLoggedDate, today).catch(() => {});
+    })();
+  }, [ready, trialStartedAt, isInTrial, daysSinceFirstOpen]);
+
+  useEffect(() => {
+    if (!ready || !trialStartedAt || isInTrial) return;
+    (async () => {
+      const already = await AsyncStorage.getItem(STORAGE_KEYS.trialExpiredLogged);
+      if (already) return;
+      await logEvent('trial_expired', {});
+      AsyncStorage.setItem(STORAGE_KEYS.trialExpiredLogged, '1').catch(() => {});
+    })();
+  }, [ready, trialStartedAt, isInTrial]);
 
   const persistOnboarding = useCallback(
     (patch: Partial<{ hasSelectedLanguage: boolean; hasAcceptedDisclosure: boolean; hasAcceptedAgreement: boolean; hasSeenEntrance: boolean }>) => {
@@ -340,29 +431,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       AsyncStorage.removeItem(STORAGE_KEYS.planExpiresAt).catch(() => {});
     }
-    const found = PLANS.find((p) => p.id === planId);
-    const fullLimit = found?.dailyQuestionLimit ?? Infinity;
-    setRemainingQuestions(fullLimit);
-    AsyncStorage.setItem(
-      STORAGE_KEYS.dailyQuota,
-      JSON.stringify({ date: todayKey(), remaining: fullLimit })
-    ).catch(() => {});
-  }, []);
-
-  // The raw useState setter above isn't itself persisted -- ChatScreen
-  // decrementing remainingQuestions through it (each question asked)
-  // would otherwise hit the exact same "resets on relaunch" bug this
-  // whole ji_daily_quota_v1 mechanism exists to close. This is the one
-  // actually exposed to consumers below.
-  const updateRemainingQuestions = useCallback((n: number | ((prev: number) => number)) => {
-    setRemainingQuestions((prev) => {
-      const next = typeof n === 'function' ? n(prev) : n;
-      AsyncStorage.setItem(
-        STORAGE_KEYS.dailyQuota,
-        JSON.stringify({ date: todayKey(), remaining: next })
-      ).catch(() => {});
-      return next;
-    });
+    // Records the actual moment the plan changed (upgrade, downgrade,
+    // gift redemption, expiry reverting to free) -- see
+    // backend/server.js's /v1/device/heartbeat comment for why this is
+    // event-driven rather than just polled from launch.
+    sendDeviceHeartbeat(planId, expiresAt);
   }, []);
 
   const addMessage = useCallback((m: ChatMessage) => {
@@ -463,6 +536,55 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistProfile]
   );
 
+  // Own key/patch-merge helper, same shape as persistProfile above, kept
+  // separate (see STORAGE_KEYS.emergencyContacts's own comment).
+  const persistEmergencyContacts = useCallback(
+    (patch: Partial<{
+      familyContactName: string;
+      familyContactPhone: string;
+      ministryContactName: string;
+      ministryContactPhone: string;
+    }>) => {
+      AsyncStorage.setItem(
+        STORAGE_KEYS.emergencyContacts,
+        JSON.stringify({ familyContactName, familyContactPhone, ministryContactName, ministryContactPhone, ...patch })
+      ).catch(() => {});
+    },
+    [familyContactName, familyContactPhone, ministryContactName, ministryContactPhone]
+  );
+
+  const setFamilyContactName = useCallback(
+    (name: string) => {
+      setFamilyContactNameState(name);
+      persistEmergencyContacts({ familyContactName: name });
+    },
+    [persistEmergencyContacts]
+  );
+
+  const setFamilyContactPhone = useCallback(
+    (phone: string) => {
+      setFamilyContactPhoneState(phone);
+      persistEmergencyContacts({ familyContactPhone: phone });
+    },
+    [persistEmergencyContacts]
+  );
+
+  const setMinistryContactName = useCallback(
+    (name: string) => {
+      setMinistryContactNameState(name);
+      persistEmergencyContacts({ ministryContactName: name });
+    },
+    [persistEmergencyContacts]
+  );
+
+  const setMinistryContactPhone = useCallback(
+    (phone: string) => {
+      setMinistryContactPhoneState(phone);
+      persistEmergencyContacts({ ministryContactPhone: phone });
+    },
+    [persistEmergencyContacts]
+  );
+
   const wipeAllLocalData = useCallback(async () => {
     await AsyncStorage.multiRemove(Object.values(STORAGE_KEYS));
     setHasSelectedLanguage(false);
@@ -471,7 +593,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setHasSeenEntrance(false);
     setPlan(null);
     setPlanExpiresAtState(null);
-    setRemainingQuestions(5);
+    // Deliberately NOT a trial reset -- the next heartbeat re-fetches
+    // this same device's server-anchored users.created_at (deviceId
+    // itself isn't regenerated by this wipe), so the trial clock picks
+    // up exactly where it was, not a fresh 5 days.
+    setTrialStartedAt(null);
     setMessages([]);
     setJournalEntries([]);
     setFavorites([]);
@@ -480,6 +606,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCompletedWordSearchPuzzles([]);
     setDisplayNameState('');
     setProfilePhotoUriState(null);
+    setFamilyContactNameState('');
+    setFamilyContactPhoneState('');
+    setMinistryContactNameState('');
+    setMinistryContactPhoneState('');
   }, []);
 
   const value = useMemo<AppContextValue>(
@@ -497,9 +627,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       selectPlan,
       planExpiresAt,
       onboardingComplete:
-        hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasSeenEntrance && plan !== null,
-      remainingQuestions,
-      setRemainingQuestions: updateRemainingQuestions,
+        hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasSeenEntrance,
+      trialStartedAt,
+      daysSinceFirstOpen,
+      isInTrial,
+      hasFullAccess,
       messages,
       addMessage,
       clearMessages,
@@ -528,13 +660,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDisplayName,
       profilePhotoUri,
       setProfilePhotoUri,
+      familyContactName,
+      setFamilyContactName,
+      familyContactPhone,
+      setFamilyContactPhone,
+      ministryContactName,
+      setMinistryContactName,
+      ministryContactPhone,
+      setMinistryContactPhone,
       ready,
     }),
     [
       hasSelectedLanguage, markLanguageSelected, hasAcceptedDisclosure, acceptDisclosure,
       hasAcceptedAgreement, acceptAgreement, hasSeenEntrance, markEntranceSeen, plan, selectPlan,
-      planExpiresAt,
-      remainingQuestions, updateRemainingQuestions, messages, addMessage, clearMessages,
+      planExpiresAt, trialStartedAt, daysSinceFirstOpen, isInTrial, hasFullAccess,
+      messages, addMessage, clearMessages,
       journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
       prayerNotes, addPrayerNote, testimonyNotes, addTestimonyNote,
       completedWordSearchPuzzles, addCompletedWordSearchPuzzle,
@@ -542,6 +682,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       voiceRepliesEnabled,
       textZoom, setTextZoom,
       displayName, setDisplayName, profilePhotoUri, setProfilePhotoUri, ready,
+      familyContactName, setFamilyContactName, familyContactPhone, setFamilyContactPhone,
+      ministryContactName, setMinistryContactName, ministryContactPhone, setMinistryContactPhone,
     ]
   );
 

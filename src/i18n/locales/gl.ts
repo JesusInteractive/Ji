@@ -251,7 +251,11 @@ const gl: TranslationShape = {
     "generateButton": "Xerar",
     "regenerateButton": "Xerar de novo",
     "generateErrorTitle": "Non se puido xerar iso",
-    "generateErrorFallback": "Comproba a túa conexión e téntao de novo."
+    "generateErrorFallback": "Comproba a túa conexión e téntao de novo.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Non se puido abrir esa ligazón",
@@ -279,6 +283,20 @@ const gl: TranslationShape = {
     "loadingLanguages": "Cargando idiomas dispoñibles...",
     "loadError": "Non se puido cargar a biblioteca. Comproba a túa conexión e téntao de novo.",
     "retryButton": "Reintentar"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Esta é a túa biblioteca de estudo. Toca nun libro para lelo. Os membros Platinum poden oír a Xesús IA ler os libros que temos no seu idioma.",
+    "enterLibrary": "Entrar na biblioteca",
+    "readAloudShelfTitle": "Lectura en voz alta",
+    "readAloudShelfSubtitle": "Xesús IA pode ler estes libros en voz alta. Platinum.",
+    "readerLoadError": "Non se puido cargar este libro. Comproba a túa conexión e téntao de novo.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narración",
+    "jesusVoiceDisclosure": "Xesús IA só le os libros listados no Catálogo de Lectura en Voz Alta. Esta é unha voz modelada para esta app, baseada na Escritura — non unha gravación dunha persoa real. A dispoñibilidade depende do soporte do idioma.",
+    "notAvailableLanguage": "Aínda non dispoñible neste idioma",
+    "textOnlyLabel": "Só texto",
+    "readAloudFilterLabel": "Lectura en voz alta",
+    "catalogSearchPlaceholder": "Buscar na biblioteca"
   }
 };
 

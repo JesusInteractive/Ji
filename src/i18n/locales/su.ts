@@ -251,7 +251,11 @@ const su: TranslationShape = {
     "generateButton": "Jieun",
     "regenerateButton": "Jieun deui",
     "generateErrorTitle": "Teu bisa jieun éta",
-    "generateErrorFallback": "Mangga pariksa sambungan anjeun sarta coba deui."
+    "generateErrorFallback": "Mangga pariksa sambungan anjeun sarta coba deui.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Teu bisa muka tautan éta",
@@ -279,6 +283,20 @@ const su: TranslationShape = {
     "loadingLanguages": "Ngamuat basa anu sadia...",
     "loadError": "Teu bisa ngamuat perpustakaan. Cek sambungan anjeun sarta coba deui.",
     "retryButton": "Coba deui"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ieu perpustakaan studi anjeun. Ketok buku pikeun maca. Anggota Platinum tiasa ngadengekeun AI Jesus maca buku-buku anu kami gaduh dina basana.",
+    "enterLibrary": "Lebet ka perpustakaan",
+    "readAloudShelfTitle": "Maca Nyaring",
+    "readAloudShelfSubtitle": "AI Jesus tiasa maca buku-buku ieu nyaring. Platinum.",
+    "readerLoadError": "Henteu tiasa ngamuat buku ieu. Pariksa sambungan anjeun teras cobian deui.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narasi",
+    "jesusVoiceDisclosure": "AI Jesus ngan maca buku-buku anu kadaptar dina Katalog Maca Nyaring. Ieu sora anu dimodelkeun pikeun ieu app, dumasar kana Kitab Suci — lain rekaman jalma nyata. Kasadiaan gumantung kana pangrojong basa.",
+    "notAvailableLanguage": "Teu sadia dina basa ieu acan",
+    "textOnlyLabel": "Ngan teks",
+    "readAloudFilterLabel": "Maca Nyaring",
+    "catalogSearchPlaceholder": "Teangan di perpustakaan"
   }
 };
 

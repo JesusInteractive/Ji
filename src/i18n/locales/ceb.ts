@@ -251,7 +251,11 @@ const ceb: TranslationShape = {
     "generateButton": "Himoa",
     "regenerateButton": "Himoa Pag-usab",
     "generateErrorTitle": "Dili mahimo kana",
-    "generateErrorFallback": "Palihug susiha ang imong koneksyon ug sulayi pag-usab."
+    "generateErrorFallback": "Palihug susiha ang imong koneksyon ug sulayi pag-usab.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Dili maabli kana nga link",
@@ -279,6 +283,20 @@ const ceb: TranslationShape = {
     "loadingLanguages": "Nag-load sa mga available nga pinulongan...",
     "loadError": "Dili ma-load ang library. Susiha ang imong koneksyon ug sulayi pag-usab.",
     "retryButton": "Sulayi Pag-usab"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Kini ang imong library sa pagtuon. I-tap ang usa ka libro aron mabasa. Ang mga Platinum members makadungog sa AI Jesus nga nagbasa sa mga libro nga anaa kanamo sa ilang pinulongan.",
+    "enterLibrary": "Pagsulod sa library",
+    "readAloudShelfTitle": "Basa og Kusog",
+    "readAloudShelfSubtitle": "Makabasa og kusog ang AI Jesus niining mga libro. Platinum.",
+    "readerLoadError": "Dili ma-load kini nga libro. Susiha ang imong koneksyon ug sulayi pag-usab.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narasyon",
+    "jesusVoiceDisclosure": "Ang AI Jesus nagbasa lang sa mga libro nga nakalista sa Read-Aloud Catalog. Kini usa ka tingog nga gi-model para niining app, gibase sa Kasulatan — dili recording sa tinuod nga tawo. Ang pagka-available nagdepende sa suporta sa pinulongan.",
+    "notAvailableLanguage": "Wala pa magamit niining pinulongana",
+    "textOnlyLabel": "Teksto lang",
+    "readAloudFilterLabel": "Basa og Kusog",
+    "catalogSearchPlaceholder": "Pangitaa ang library"
   }
 };
 

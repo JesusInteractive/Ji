@@ -251,7 +251,11 @@ const wo: TranslationShape = {
     "generateButton": "Jëfandikoo",
     "regenerateButton": "Jëfandikoo",
     "generateErrorTitle": "Duñu jëfandikoo loolu",
-    "generateErrorFallback": "Seetal sa jëmmal te jéemaat."
+    "generateErrorFallback": "Seetal sa jëmmal te jéemaat.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Duñu ubbi link bi",
@@ -279,6 +283,20 @@ const wo: TranslationShape = {
     "loadingLanguages": "Yeb làkk yi...",
     "loadError": "Jéexul yeb bibliothèque bi. Seetal sa connexion te jéemaat.",
     "retryButton": "Jéemaat"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Lii mooy sa bibliyoteg jàng. Bësal ab téere ngir jàng ko. Ay Platinum man nañu dégg AI Jesus di jàng téere yi nu am ci seen làkk.",
+    "enterLibrary": "Dugg ci bibliyoteg bi",
+    "readAloudShelfTitle": "Jàng ci baat",
+    "readAloudShelfSubtitle": "AI Jesus man na jàng téere yooyu ci baat. Platinum.",
+    "readerLoadError": "Manuloon yeb téere bi. Seetal sa jokkoo te jéemaat.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Jàng ci baat",
+    "jesusVoiceDisclosure": "AI Jesus jàng rekk téere yi ñu lim ci Katalog Jàng ci Baat. Lii mooy baat bu ñu modelal ngir app bi, bu ñu dëpp ci Mbindu Yàlla — du enregistrement bu nit bu dëgg. Disponibilité bi dépende ci support làkk.",
+    "notAvailableLanguage": "Jëfanduwul ci làkk wii ci jamono jii",
+    "textOnlyLabel": "Mbind rekk",
+    "readAloudFilterLabel": "Jàng ci baat",
+    "catalogSearchPlaceholder": "Seet ci bibliyoteg bi"
   }
 };
 

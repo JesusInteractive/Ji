@@ -251,7 +251,11 @@ const ga: TranslationShape = {
     "generateButton": "Gineáil",
     "regenerateButton": "Athghineáil",
     "generateErrorTitle": "Níorbh fhéidir é sin a ghiniúint",
-    "generateErrorFallback": "Seiceáil do cheangal agus bain triail eile as."
+    "generateErrorFallback": "Seiceáil do cheangal agus bain triail eile as.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Níorbh fhéidir an nasc sin a oscailt",
@@ -279,6 +283,20 @@ const ga: TranslationShape = {
     "loadingLanguages": "Ag luchtú teangacha atá ar fáil...",
     "loadError": "Níorbh fhéidir an leabharlann a luchtú. Seiceáil do nasc agus bain triail eile as.",
     "retryButton": "Bain triail arís"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Seo é do leabharlann staidéir. Tapáil leabhar chun léamh. Is féidir le baill Platinam éisteacht le hÍosa AI ag léamh na leabhar atá againn ina dteanga.",
+    "enterLibrary": "Iontráil an leabharlann",
+    "readAloudShelfTitle": "Léamh Os Ard",
+    "readAloudShelfSubtitle": "Is féidir le hÍosa AI na leabhair seo a léamh os ard. Platinam.",
+    "readerLoadError": "Níorbh fhéidir an leabhar seo a luchtú. Seiceáil do cheangal agus bain triail eile as.",
+    "speakerLockedLabel": "Platinam",
+    "narrationLabel": "Aithris",
+    "jesusVoiceDisclosure": "Ní léann Íosa AI ach na leabhair atá liostaithe i gCatalóg Léamh Os Ard. Is guth é seo atá múnlaithe don aip seo, bunaithe ar an Scrioptúr — ní taifeadadh de dhuine fíor é. Braitheann an infhaighteacht ar thacaíocht teanga.",
+    "notAvailableLanguage": "Níl sé ar fáil sa teanga seo fós",
+    "textOnlyLabel": "Téacs amháin",
+    "readAloudFilterLabel": "Léamh Os Ard",
+    "catalogSearchPlaceholder": "Cuardaigh an leabharlann"
   }
 };
 

@@ -251,7 +251,11 @@ const ta: TranslationShape = {
     "generateButton": "உருவாக்கவும்",
     "regenerateButton": "மீண்டும் உருவாக்கவும்",
     "generateErrorTitle": "அதை உருவாக்க முடியவில்லை",
-    "generateErrorFallback": "உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்."
+    "generateErrorFallback": "உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "அந்த இணைப்பைத் திறக்க முடியவில்லை",
@@ -279,6 +283,20 @@ const ta: TranslationShape = {
     "loadingLanguages": "கிடைக்கும் மொழிகளை ஏற்றுகிறது...",
     "loadError": "நூலகத்தை ஏற்ற முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
     "retryButton": "மீண்டும் முயற்சி"
+  },
+  "studyLibrary": {
+    "entranceTitle": "இது உங்கள் ஆய்வு நூலகம். படிக்க ஒரு புத்தகத்தைத் தட்டவும். பிளாட்டினம் உறுப்பினர்கள் AI இயேசு தங்கள் மொழியில் உள்ள புத்தகங்களை வாசிப்பதைக் கேட்கலாம்.",
+    "enterLibrary": "நூலகத்திற்குள் நுழையவும்",
+    "readAloudShelfTitle": "உரக்க வாசிப்பு",
+    "readAloudShelfSubtitle": "AI இயேசு இந்தப் புத்தகங்களை உரக்க வாசிக்க முடியும். பிளாட்டினம்.",
+    "readerLoadError": "இந்தப் புத்தகத்தை ஏற்ற முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.",
+    "speakerLockedLabel": "பிளாட்டினம்",
+    "narrationLabel": "ஒலி வாசிப்பு",
+    "jesusVoiceDisclosure": "AI இயேசு உரக்க வாசிப்பு பட்டியலில் உள்ள புத்தகங்களை மட்டுமே வாசிக்கிறது. இது இந்த ஆப்ஸிற்காக உருவாக்கப்பட்ட குரல், வேதாகமத்தை அடிப்படையாகக் கொண்டது — உண்மையான நபரின் பதிவு அல்ல. கிடைக்கும் தன்மை மொழி ஆதரவைப் பொறுத்தது.",
+    "notAvailableLanguage": "இந்த மொழியில் இன்னும் கிடைக்கவில்லை",
+    "textOnlyLabel": "உரை மட்டும்",
+    "readAloudFilterLabel": "உரக்க வாசிப்பு",
+    "catalogSearchPlaceholder": "நூலகத்தில் தேடவும்"
   }
 };
 

@@ -1,13 +1,21 @@
 import type { GiftCertificate, Plan } from '../types';
 
 export const PLANS: Plan[] = [
+  // Not a selectable card -- PricingScreen filters this one out of the
+  // picker entirely (see its own comment) since it doesn't represent a
+  // real choice anymore. It only exists so "current plan" displays
+  // (ProfileScreen/SettingsScreen's PLANS.find(...) ?? PLANS[0]) have
+  // something sensible to show for a device that hasn't subscribed:
+  // everyone gets 5 days of full access from first open (see
+  // AppContext.tsx's trialStartedAt/isInTrial), then must pick a paid
+  // plan below -- there's no "stay on free forever" tier anymore.
   {
     id: 'free',
-    name: 'Introductory Offer',
+    name: 'Free',
     priceLabel: '$0',
-    dailyQuestionLimit: 5,
+    dailyQuestionLimit: null,
     resetsDaily: false,
-    features: ['5 questions, one time', 'Then choose a plan to keep going'],
+    features: ['Full access during your 5-day trial'],
   },
   {
     id: 'basic',
@@ -43,6 +51,7 @@ export const PLANS: Plan[] = [
       'Highest priority responses',
       'Maximum conversation memory',
       'Advanced sermon writer (longer, more detailed sermons)',
+      'AI Jesus reads the Read-Aloud Catalog aloud (availability depends on language support)',
       'Exclusive features and early access',
       'Priority support',
     ],
@@ -53,7 +62,7 @@ export const PLANS: Plan[] = [
 // Plain-language explainer of the whole monetization model, surfaced in
 // PricingScreen and TokenGiftScreen so the mechanics are never a mystery.
 export const MONETIZATION_EXPLAINER = {
-  free: 'Start with 5 free questions, one time -- no trial, no credit card. Once they\'re used, choose a plan to keep talking with Jesus.',
+  free: 'Every install gets 5 days of full access, free, no credit card needed. After that, choose a plan to keep going.',
   paid: 'Basic, Pro, and Platinum are monthly subscriptions that raise or remove the daily question limit, add saved conversation history across devices, priority responses, and (Pro & up) the sermon writer for pastors.',
   tokens:
     'Don\'t want an ongoing subscription? Buy a gift certificate instead -- it activates a real plan on your account for a fixed number of months, no auto-renewal.',

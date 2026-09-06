@@ -31,3 +31,14 @@ export const FAMILY_UNLOCK_CODE = (process.env.EXPO_PUBLIC_FAMILY_CODE ?? 'JESUS
 export function isFamilyCode(code: string): boolean {
   return code.trim().toUpperCase() === FAMILY_UNLOCK_CODE;
 }
+
+// Third shared code, for testers/devs -- same trade-off and same effect
+// (free Platinum) as FOUNDER_UNLOCK_CODE/FAMILY_UNLOCK_CODE above, just a
+// separate word so it can be handed to a different group without reusing
+// the other two. Change EXPO_PUBLIC_DEV_CODE in .env to whatever you
+// want; this fallback only applies if that's unset.
+export const DEV_UNLOCK_CODE = (process.env.EXPO_PUBLIC_DEV_CODE ?? 'JESUSDEV').toUpperCase();
+
+export function isDevCode(code: string): boolean {
+  return code.trim().toUpperCase() === DEV_UNLOCK_CODE;
+}

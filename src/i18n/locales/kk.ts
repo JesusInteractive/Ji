@@ -251,7 +251,11 @@ const kk: TranslationShape = {
     "generateButton": "Жасау",
     "regenerateButton": "Қайта жасау",
     "generateErrorTitle": "Жасау мүмкін болмады",
-    "generateErrorFallback": "Қосылымды тексеріп, қайталаңыз."
+    "generateErrorFallback": "Қосылымды тексеріп, қайталаңыз.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Сілтемені ашу мүмкін болмады",
@@ -279,6 +283,20 @@ const kk: TranslationShape = {
     "loadingLanguages": "Қолжетімді тілдер жүктелуде...",
     "loadError": "Кітапхананы жүктеу мүмкін болмады. Қосылымыңызды тексеріп, қайталап көріңіз.",
     "retryButton": "Қайталау"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Бұл сіздің оқу кітапханаңыз. Кітапты оқу үшін түртіңіз. Платина мүшелері AI Иса кітаптарды өз тілдерінде дауыстап оқып бергенін ести алады.",
+    "enterLibrary": "Кітапханаға кіру",
+    "readAloudShelfTitle": "Дауыстап оқу",
+    "readAloudShelfSubtitle": "AI Иса бұл кітаптарды дауыстап оқи алады. Платина.",
+    "readerLoadError": "Кітапты жүктеу мүмкін болмады. Қосылымыңызды тексеріп, қайталап көріңіз.",
+    "speakerLockedLabel": "Платина",
+    "narrationLabel": "Оқу",
+    "jesusVoiceDisclosure": "AI Иса тек Дауыстап оқу каталогындағы кітаптарды оқиды. Бұл қолданба үшін жасалған дауыс, Киелі жазбаларға негізделген — нақты адамның жазбасы емес. Қолжетімділік тіл қолдауына байланысты.",
+    "notAvailableLanguage": "Бұл тілде әлі қолжетімді емес",
+    "textOnlyLabel": "Тек мәтін",
+    "readAloudFilterLabel": "Дауыстап оқу",
+    "catalogSearchPlaceholder": "Кітапханадан іздеу"
   }
 };
 

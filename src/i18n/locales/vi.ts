@@ -251,7 +251,11 @@ const vi: TranslationShape = {
     "generateButton": "Tạo",
     "regenerateButton": "Tạo lại",
     "generateErrorTitle": "Không thể tạo",
-    "generateErrorFallback": "Vui lòng kiểm tra kết nối và thử lại."
+    "generateErrorFallback": "Vui lòng kiểm tra kết nối và thử lại.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Không thể mở liên kết đó",
@@ -279,6 +283,20 @@ const vi: TranslationShape = {
     "loadingLanguages": "Đang tải các ngôn ngữ có sẵn...",
     "loadError": "Không thể tải thư viện. Hãy kiểm tra kết nối và thử lại.",
     "retryButton": "Thử lại"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Đây là thư viện học tập của bạn. Nhấn vào một cuốn sách để đọc. Thành viên Platinum có thể nghe AI Jesus đọc to các sách chúng tôi có bằng ngôn ngữ của họ.",
+    "enterLibrary": "Vào thư viện",
+    "readAloudShelfTitle": "Đọc to",
+    "readAloudShelfSubtitle": "AI Jesus có thể đọc to các sách này. Platinum.",
+    "readerLoadError": "Không thể tải sách này. Kiểm tra kết nối của bạn và thử lại.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Giọng đọc",
+    "jesusVoiceDisclosure": "AI Jesus chỉ đọc các sách được liệt kê trong Danh mục Đọc to. Đây là giọng nói được mô phỏng cho ứng dụng này, dựa trên Kinh Thánh — không phải bản ghi âm của một người thật. Sự khả dụng phụ thuộc vào hỗ trợ ngôn ngữ.",
+    "notAvailableLanguage": "Chưa có sẵn bằng ngôn ngữ này",
+    "textOnlyLabel": "Chỉ văn bản",
+    "readAloudFilterLabel": "Đọc to",
+    "catalogSearchPlaceholder": "Tìm kiếm thư viện"
   }
 };
 

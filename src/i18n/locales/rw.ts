@@ -251,7 +251,11 @@ const rw: TranslationShape = {
     "generateButton": "Kora",
     "regenerateButton": "Kora",
     "generateErrorTitle": "Ntibishoboka gukora icyo",
-    "generateErrorFallback": "Reba ukwihuza kandi ugerageze."
+    "generateErrorFallback": "Reba ukwihuza kandi ugerageze.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ntibishoboka gufungura iyo link",
@@ -279,6 +283,20 @@ const rw: TranslationShape = {
     "loadingLanguages": "Gutwara indimi zihari...",
     "loadError": "Ntibishobotse gutwara isomero. Reba ukwihuza kwawe hanyuma ugerageze.",
     "retryButton": "Gerageza"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Iyi ni biblioteka yawe y'inyigisho. Kanda igitabo kugira ngo ukisome. Abanyamuryango ba Platinum bashobora kumva AI Yesu asoma ibitabo dufite mu rurimi rwabo.",
+    "enterLibrary": "Injira mu biblioteka",
+    "readAloudShelfTitle": "Soma Uhamye",
+    "readAloudShelfSubtitle": "AI Yesu ashobora gusoma ibi bitabo uhamye. Platinum.",
+    "readerLoadError": "Ntibishobotse gupakira iki gitabo. Reba ukwihuza kwawe maze ugerageze nanone.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Gusoma",
+    "jesusVoiceDisclosure": "AI Yesu asoma gusa ibitabo biri mu katalogo ya 'Soma Uhamye'. Iyi ni ijwi ryakozwe kuri iyi app, rishingiye ku Byanditswe — si inyandiko y'umuntu nyakuri. Kuboneka birashingira ku rurimi rwemewe.",
+    "notAvailableLanguage": "Ntibiboneka mu rurimi rw'uyu munsi",
+    "textOnlyLabel": "Inyandiko gusa",
+    "readAloudFilterLabel": "Soma Uhamye",
+    "catalogSearchPlaceholder": "Shakisha mu biblioteka"
   }
 };
 

@@ -12,6 +12,7 @@
 
 import type { JesusMood, PlanId } from '../types';
 import { languageDisplayName } from '../i18n/languages';
+import { getDeviceId } from './deviceId';
 
 // EXPO_PUBLIC_ vars are inlined into the client bundle at build time by
 // Expo/Metro -- see .env.example. Every service that needs the backend's
@@ -203,9 +204,17 @@ export async function deleteAccountAndAllData(authToken: string): Promise<{ ok: 
   // tokens, analytics linkage (if any), and billing metadata not
   // legally required to retain, per the Privacy Policy's retention
   // section. Confirm this is irreversible in the UI before calling it.
+  //
+  // deviceId in the body is what lets server.js's DELETE /v1/account
+  // find this device's rows (testimonies posted, reports/reactions
+  // made, plan/usage metadata) -- requireAuth's JWT carries no device
+  // claim, so without this the server would have nothing to key the
+  // deletion on. See that route's own comment in server.js.
+  const deviceId = await getDeviceId();
   return request('/v1/account', {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${authToken}` },
+    body: JSON.stringify({ deviceId }),
   });
 }
 

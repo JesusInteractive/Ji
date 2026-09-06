@@ -251,7 +251,11 @@ const hi: TranslationShape = {
     "generateButton": "उत्पन्न करें",
     "regenerateButton": "पुनः उत्पन्न करें",
     "generateErrorTitle": "उत्पन्न नहीं किया जा सका",
-    "generateErrorFallback": "कृपया अपना कनेक्शन जाँचें और पुनः प्रयास करें।"
+    "generateErrorFallback": "कृपया अपना कनेक्शन जाँचें और पुनः प्रयास करें।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "वह लिंक नहीं खोला जा सका",
@@ -279,6 +283,20 @@ const hi: TranslationShape = {
     "loadingLanguages": "उपलब्ध भाषाएँ लोड हो रही हैं...",
     "loadError": "पुस्तकालय लोड नहीं हो सका। अपना कनेक्शन जाँचें और पुनः प्रयास करें।",
     "retryButton": "पुनः प्रयास करें"
+  },
+  "studyLibrary": {
+    "entranceTitle": "यह आपकी अध्ययन लाइब्रेरी है। पढ़ने के लिए किसी किताब पर टैप करें। प्लैटिनम सदस्य AI यीशु को उन किताबों को अपनी भाषा में पढ़ते हुए सुन सकते हैं जो हमारे पास हैं।",
+    "enterLibrary": "लाइब्रेरी में प्रवेश करें",
+    "readAloudShelfTitle": "जोर से पढ़ें",
+    "readAloudShelfSubtitle": "AI यीशु इन किताबों को जोर से पढ़ सकते हैं। प्लैटिनम।",
+    "readerLoadError": "इस किताब को लोड नहीं किया जा सका। अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+    "speakerLockedLabel": "प्लैटिनम",
+    "narrationLabel": "नैरेशन",
+    "jesusVoiceDisclosure": "AI यीशु केवल रीड-अलाउड कैटलॉग में सूचीबद्ध किताबें ही पढ़ते हैं। यह इस ऐप के लिए मॉडल की गई एक आवाज है, जो धर्मग्रंथ पर आधारित है — किसी वास्तविक व्यक्ति की रिकॉर्डिंग नहीं। उपलब्धता भाषा समर्थन पर निर्भर करती है।",
+    "notAvailableLanguage": "इस भाषा में अभी उपलब्ध नहीं",
+    "textOnlyLabel": "केवल टेक्स्ट",
+    "readAloudFilterLabel": "जोर से पढ़ें",
+    "catalogSearchPlaceholder": "लाइब्रेरी खोजें"
   }
 };
 

@@ -251,7 +251,11 @@ const sq: TranslationShape = {
     "generateButton": "Gjenero",
     "regenerateButton": "Gjenero përsëri",
     "generateErrorTitle": "Nuk u gjenerua ai",
-    "generateErrorFallback": "Kontrollo lidhjen dhe provo përsëri."
+    "generateErrorFallback": "Kontrollo lidhjen dhe provo përsëri.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nuk mund të hapej ai link",
@@ -279,6 +283,20 @@ const sq: TranslationShape = {
     "loadingLanguages": "Duke ngarkuar gjuhët e disponueshme...",
     "loadError": "Nuk u ngarkua biblioteka. Kontrolloni lidhjen tuaj dhe provoni përsëri.",
     "retryButton": "Provo përsëri"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Kjo është biblioteka juaj e studimit. Prekni një libër për ta lexuar. Anëtarët Platinum mund të dëgjojnë AI Jezusin të lexojë librat që kemi në gjuhën e tyre.",
+    "enterLibrary": "Hyr në bibliotekë",
+    "readAloudShelfTitle": "Lexim me zë",
+    "readAloudShelfSubtitle": "AI Jezusi mund t'i lexojë këto libra me zë. Platinum.",
+    "readerLoadError": "Nuk u ngarkua libri. Kontrolloni lidhjen tuaj dhe provoni përsëri.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Naracion",
+    "jesusVoiceDisclosure": "AI Jezusi lexon vetëm librat e listuar në Katalogun e Leximit me Zë. Ky është një zë i modeluar për këtë aplikacion, i bazuar në Shkrimet — jo një regjistrim i një personi real. Disponibiliteti varet nga mbështetja e gjuhës.",
+    "notAvailableLanguage": "Nuk është i disponueshëm ende në këtë gjuhë",
+    "textOnlyLabel": "Vetëm tekst",
+    "readAloudFilterLabel": "Lexim me zë",
+    "catalogSearchPlaceholder": "Kërko në bibliotekë"
   }
 };
 

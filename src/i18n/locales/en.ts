@@ -45,7 +45,7 @@ const en = {
     tokenSubtitle: 'Buy a gift certificate for someone who can’t afford a plan -- see Buy & Gift in Settings.',
   },
   home: {
-    title: 'Welcome',
+    title: 'Welcome Friend',
     subtitle: 'Where would you like to go?',
   },
   tabs: {
@@ -264,6 +264,24 @@ const en = {
     regenerateButton: 'Regenerate',
     generateErrorTitle: "Couldn't generate that",
     generateErrorFallback: 'Please check your connection and try again.',
+    downloadButton: 'Download',
+    downloadingButton: 'Preparing file…',
+    downloadErrorTitle: "Couldn't save that",
+    downloadErrorFallback: 'Please try again.',
+  },
+  studyLibrary: {
+    entranceTitle: 'This is your study library. Tap a book to read. Platinum members can hear AI Jesus read the books we have in their language.',
+    enterLibrary: 'Enter the library',
+    readAloudShelfTitle: 'Read Aloud',
+    readAloudShelfSubtitle: 'AI Jesus can read these books aloud. Platinum.',
+    readerLoadError: "Couldn't load this book. Check your connection and try again.",
+    speakerLockedLabel: 'Platinum',
+    narrationLabel: 'Narration',
+    jesusVoiceDisclosure: 'AI Jesus reads only the books listed in the Read-Aloud Catalog. This is a voice modeled for this app, grounded in Scripture — not a recording of a real person. Availability depends on language support.',
+    notAvailableLanguage: 'Not available in this language yet',
+    textOnlyLabel: 'Text only',
+    readAloudFilterLabel: 'Read Aloud',
+    catalogSearchPlaceholder: 'Search the library',
   },
   globalLibrary: {
     title: 'Multi-Language Bible Tools',

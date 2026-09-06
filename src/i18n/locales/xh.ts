@@ -251,7 +251,11 @@ const xh: TranslationShape = {
     "generateButton": "Yenza",
     "regenerateButton": "Yenza kwakhona",
     "generateErrorTitle": "Ayikwazanga ukwenza loo nto",
-    "generateErrorFallback": "Nceda ujonge uqhagamshelwano lwakho uze uzame kwakhona."
+    "generateErrorFallback": "Nceda ujonge uqhagamshelwano lwakho uze uzame kwakhona.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ayikwazanga ukuvula elo khonkco",
@@ -279,6 +283,20 @@ const xh: TranslationShape = {
     "loadingLanguages": "Kulayishwa iilwimi ezikhoyo...",
     "loadError": "Ayikwazanga kulayisha ilayibrari. Khangela uqhagamshelwano lwakho uze uzame kwakhona.",
     "retryButton": "Zama kwakhona"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Le yilayibrari yakho yokufunda. Cofa incwadi ukuze uyifunde. Amalungu ePlatinum anokuva uJesu we-AI efunda iincwadi esinazo ngolwimi lwabo.",
+    "enterLibrary": "Ngena elayibrari",
+    "readAloudShelfTitle": "Funda ngokuvakalayo",
+    "readAloudShelfSubtitle": "UJesu we-AI angazifunda ngokuvakalayo ezi ncwadi. Platinum.",
+    "readerLoadError": "Ayikwazanga kulayisha le ncwadi. Jonga uqhagamshelwano lwakho uze uzame kwakhona.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ukufunda ngokuvakalayo",
+    "jesusVoiceDisclosure": "UJesu we-AI ufunda kuphela iincwadi ezidweliswe kwiKatalogi yokuFunda ngokuVakalayo. Eli lilizwi elenziwe ngokwe app, elisekelwe kwiSibhalo — hayi ukurekhodwa komntu wokwenyani. Ukufumaneka kuxhomekeke kwinkxaso yolwimi.",
+    "notAvailableLanguage": "Ayifumaneki ngolwimi ngoku",
+    "textOnlyLabel": "Umbhalo kuphela",
+    "readAloudFilterLabel": "Funda ngokuvakalayo",
+    "catalogSearchPlaceholder": "Khangela ilayibrari"
   }
 };
 

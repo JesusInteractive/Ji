@@ -251,7 +251,11 @@ const ja: TranslationShape = {
     "generateButton": "生成",
     "regenerateButton": "再生成",
     "generateErrorTitle": "生成できませんでした",
-    "generateErrorFallback": "接続を確認して、もう一度お試しください。"
+    "generateErrorFallback": "接続を確認して、もう一度お試しください。",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "リンクを開けませんでした",
@@ -279,6 +283,20 @@ const ja: TranslationShape = {
     "loadingLanguages": "利用可能な言語を読み込み中...",
     "loadError": "ライブラリを読み込めませんでした。接続を確認して、もう一度お試しください。",
     "retryButton": "再試行"
+  },
+  "studyLibrary": {
+    "entranceTitle": "こちらがあなたの学習ライブラリです。本をタップして読んでください。プラチナメンバーは、AIイエスが対応言語で本を朗読するのを聞くことができます。",
+    "enterLibrary": "ライブラリに入る",
+    "readAloudShelfTitle": "朗読",
+    "readAloudShelfSubtitle": "AIイエスがこれらの本を声に出して読むことができます。プラチナ会員限定。",
+    "readerLoadError": "この本を読み込めませんでした。接続を確認して、もう一度お試しください。",
+    "speakerLockedLabel": "プラチナ",
+    "narrationLabel": "ナレーション",
+    "jesusVoiceDisclosure": "AIイエスは、朗読カタログに掲載されている本のみを読み上げます。これはこのアプリのために作られた声で、聖書に基づいています — 実在の人物の録音ではありません。利用可能かどうかは言語サポートによります。",
+    "notAvailableLanguage": "この言語ではまだ利用できません",
+    "textOnlyLabel": "テキストのみ",
+    "readAloudFilterLabel": "朗読",
+    "catalogSearchPlaceholder": "ライブラリを検索"
   }
 };
 

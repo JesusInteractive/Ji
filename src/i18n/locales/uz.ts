@@ -251,7 +251,11 @@ const uz: TranslationShape = {
     "generateButton": "Yaratish",
     "regenerateButton": "Qayta yaratish",
     "generateErrorTitle": "Uni yaratib bo‘lmadi",
-    "generateErrorFallback": "Iltimos, ulanishni tekshiring va qayta urinib ko‘ring."
+    "generateErrorFallback": "Iltimos, ulanishni tekshiring va qayta urinib ko‘ring.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Bu havolani ochib bo‘lmadi",
@@ -279,6 +283,20 @@ const uz: TranslationShape = {
     "loadingLanguages": "Mavjud tillar yuklanmoqda...",
     "loadError": "Kutubxonani yuklab bo'lmadi. Ulanishingizni tekshiring va qayta urinib ko'ring.",
     "retryButton": "Qayta urinish"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Bu sizning o‘qish kutubxonangiz. Kitobni o‘qish uchun bosing. Platinum a’zolari AI Iso bizdagi kitoblarni o‘z tillarida o‘qib berishini eshitishlari mumkin.",
+    "enterLibrary": "Kutubxonaga kirish",
+    "readAloudShelfTitle": "Ovozli o‘qish",
+    "readAloudShelfSubtitle": "AI Iso bu kitoblarni ovoz bilan o‘qishi mumkin. Platinum.",
+    "readerLoadError": "Kitobni yuklab bo‘lmadi. Ulanishingizni tekshiring va qayta urinib ko‘ring.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ovozli o‘qish",
+    "jesusVoiceDisclosure": "AI Iso faqat Ovozli o‘qish katalogida ro‘yxatlangan kitoblarni o‘qiydi. Bu ilova uchun yaratilgan, Muqaddas Kitobga asoslangan ovoz — haqiqiy shaxsning yozuvi emas. Mavjudligi til qo‘llab-quvvatlashiga bog‘liq.",
+    "notAvailableLanguage": "Bu tilda hali mavjud emas",
+    "textOnlyLabel": "Faqat matn",
+    "readAloudFilterLabel": "Ovozli o‘qish",
+    "catalogSearchPlaceholder": "Kutubxonani qidirish"
   }
 };
 

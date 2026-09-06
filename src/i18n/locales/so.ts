@@ -251,7 +251,11 @@ const so: TranslationShape = {
     "generateButton": "Abuur",
     "regenerateButton": "Dib u abuur",
     "generateErrorTitle": "Waan abuurin kari waayey taas",
-    "generateErrorFallback": "Fadlan hubi xidhiidhkaaga oo isku day mar kale."
+    "generateErrorFallback": "Fadlan hubi xidhiidhkaaga oo isku day mar kale.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Waan furi kari waayey xidhiidhkaas",
@@ -279,6 +283,20 @@ const so: TranslationShape = {
     "loadingLanguages": "Luuqadaha la heli karo ayaa la soo dejinayaa...",
     "loadError": "Maktabadda lama soo dejin karo. Hubi xiriirkaaga oo markale isku day.",
     "retryButton": "Dib u day"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Tani waa maktabaddaada daraasadda. Taabo buug si aad u akhrido. Xubnaha Platinum waxay maqli karaan AI Ciise oo akhrinaya buugagga aan ku hayno luqaddooda.",
+    "enterLibrary": "Geli maktabadda",
+    "readAloudShelfTitle": "Akhri Cod",
+    "readAloudShelfSubtitle": "AI Ciise wuxuu akhri karaa buugaggaan cod dheer. Platinum.",
+    "readerLoadError": "Waan soo dejin waayay buuggan. Hubi xiriirkaaga oo markale isku day.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Akhrista",
+    "jesusVoiceDisclosure": "AI Ciise wuxuu akhriyaa oo keliya buugagga ku qoran Buugga Akhrista Cod. Tani waa cod loo qaabeeyey app-kan, oo ku saleysan Qoraalka Quduuska ah — ma aha duubista qof dhab ah. Helitaanka wuxuu ku xiran yahay taageerada luqadda.",
+    "notAvailableLanguage": "Wali lagama heli karo luqaddan",
+    "textOnlyLabel": "Qoraal kaliya",
+    "readAloudFilterLabel": "Akhri Cod",
+    "catalogSearchPlaceholder": "Raadi maktabadda"
   }
 };
 

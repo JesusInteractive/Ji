@@ -251,7 +251,11 @@ const ka: TranslationShape = {
     "generateButton": "გენერირება",
     "regenerateButton": "ხელახლა გენერირება",
     "generateErrorTitle": "ვერ გენერირდა",
-    "generateErrorFallback": "გთხოვთ, შეამოწმოთ კავშირი და სცადოთ ხელახლა."
+    "generateErrorFallback": "გთხოვთ, შეამოწმოთ კავშირი და სცადოთ ხელახლა.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ვერ გაიხსნა ეს ბმული",
@@ -279,6 +283,20 @@ const ka: TranslationShape = {
     "loadingLanguages": "ხელმისაწვდომი ენების ჩატვირთვა...",
     "loadError": "ბიბლიოთეკის ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
     "retryButton": "ხელახლა ცდა"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ეს თქვენი სასწავლო ბიბლიოთეკაა. დააჭირეთ წიგნს წასაკითხად. პლატინის წევრებს შეუძლიათ მოისმინონ, როგორ კითხულობს AI იესო წიგნებს მათ ენაზე.",
+    "enterLibrary": "ბიბლიოთეკაში შესვლა",
+    "readAloudShelfTitle": "ხმამაღლა კითხვა",
+    "readAloudShelfSubtitle": "AI იესოს შეუძლია ამ წიგნების ხმამაღლა კითხვა. პლატინის.",
+    "readerLoadError": "ვერ ჩაიტვირთა ეს წიგნი. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+    "speakerLockedLabel": "პლატინის",
+    "narrationLabel": "ხმამაღლა კითხვა",
+    "jesusVoiceDisclosure": "AI იესო კითხულობს მხოლოდ იმ წიგნებს, რომლებიც ჩამოთვლილია ხმამაღლა კითხვის კატალოგში. ეს არის ამ აპისთვის შექმნილი ხმა, რომელიც დაფუძნებულია წმინდა წერილზე — არა რეალური ადამიანის ჩანაწერი. ხელმისაწვდომობა დამოკიდებულია ენის მხარდაჭერაზე.",
+    "notAvailableLanguage": "ჯერ არ არის ხელმისაწვდომი ამ ენაზე",
+    "textOnlyLabel": "მხოლოდ ტექსტი",
+    "readAloudFilterLabel": "ხმამაღლა კითხვა",
+    "catalogSearchPlaceholder": "ბიბლიოთეკის ძებნა"
   }
 };
 

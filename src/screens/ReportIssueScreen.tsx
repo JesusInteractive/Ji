@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ImageBackground, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import Colors from '../theme/colors';
@@ -43,7 +43,8 @@ export default function ReportIssueScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
       <Text style={styles.title}>{t.reportIssue.title}</Text>
       <Text style={styles.helpText}>{t.reportIssue.helpText}</Text>
 
@@ -71,6 +72,7 @@ export default function ReportIssueScreen() {
         <Text style={styles.deviceInfoText}>{buildDeviceInfo()}</Text>
       </View>
     </ScrollView>
+    </ImageBackground>
   );
 }
 

@@ -20,8 +20,14 @@ export default function EntranceScreen({ navigation }: Props) {
   const [musicLevel, setMusicLevel] = useState<MusicLevel>('full');
 
   const handleEnter = () => {
+    // No navigate() call needed -- markEntranceSeen() flips
+    // onboardingComplete true (see AppContext.tsx), and RootNavigator
+    // re-renders with Main in the tree instead of Onboarding, same
+    // auto-advance mechanism LogoIntroRoute's own comment describes.
+    // Pricing is no longer a forced day-one step (see
+    // OnboardingStackParamList's own comment) -- the 5-day trial starts
+    // silently instead.
     markEntranceSeen();
-    navigation.replace('Pricing');
   };
 
   const cycleMusic = () => {

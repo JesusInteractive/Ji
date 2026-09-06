@@ -251,7 +251,11 @@ const srp: TranslationShape = {
     "generateButton": "Generiši",
     "regenerateButton": "Ponovo generiši",
     "generateErrorTitle": "Nije moguće generisati to",
-    "generateErrorFallback": "Proverite vezu i pokušajte ponovo."
+    "generateErrorFallback": "Proverite vezu i pokušajte ponovo.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nije moguće otvoriti taj link",
@@ -279,6 +283,20 @@ const srp: TranslationShape = {
     "loadingLanguages": "Učitavanje dostupnih jezika...",
     "loadError": "Nije moguće učitati biblioteku. Proverite vezu i pokušajte ponovo.",
     "retryButton": "Pokušaj ponovo"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ovo je vaša biblioteka za proučavanje. Dodirnite knjigu da je pročitate. Platinum članovi mogu čuti kako AI Isus čita knjige koje imamo na njihovom jeziku.",
+    "enterLibrary": "Uđite u biblioteku",
+    "readAloudShelfTitle": "Čitanje naglas",
+    "readAloudShelfSubtitle": "AI Isus može čitati ove knjige naglas. Platinum.",
+    "readerLoadError": "Nije moguće učitati ovu knjigu. Proverite vezu i pokušajte ponovo.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Naracija",
+    "jesusVoiceDisclosure": "AI Isus čita samo knjige navedene u Katalogu za čitanje naglas. Ovo je glas modelovan za ovu aplikaciju, zasnovan na Svetom pismu — nije snimak stvarne osobe. Dostupnost zavisi od podrške jezika.",
+    "notAvailableLanguage": "Još nije dostupno na ovom jeziku",
+    "textOnlyLabel": "Samo tekst",
+    "readAloudFilterLabel": "Čitanje naglas",
+    "catalogSearchPlaceholder": "Pretražite biblioteku"
   }
 };
 

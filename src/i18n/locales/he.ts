@@ -251,7 +251,11 @@ const he: TranslationShape = {
     "generateButton": "צור",
     "regenerateButton": "צור מחדש",
     "generateErrorTitle": "לא ניתן ליצור זאת",
-    "generateErrorFallback": "אנא בדוק את החיבור שלך ונסה שוב."
+    "generateErrorFallback": "אנא בדוק את החיבור שלך ונסה שוב.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "לא ניתן לפתוח קישור זה",
@@ -279,6 +283,20 @@ const he: TranslationShape = {
     "loadingLanguages": "טוען שפות זמינות...",
     "loadError": "לא ניתן לטעון את הספרייה. בדוק את החיבור שלך ונסה שוב.",
     "retryButton": "נסה שוב"
+  },
+  "studyLibrary": {
+    "entranceTitle": "זו ספריית הלימוד שלך. הקש על ספר כדי לקרוא. חברי פלטינום יכולים לשמוע את ישו הבינה המלאכותית קורא את הספרים שיש לנו בשפתם.",
+    "enterLibrary": "היכנס לספרייה",
+    "readAloudShelfTitle": "קריאה בקול",
+    "readAloudShelfSubtitle": "ישו הבינה המלאכותית יכול לקרוא את הספרים האלה בקול. פלטינום.",
+    "readerLoadError": "לא הצליח לטעון את הספר הזה. בדוק את החיבור שלך ונסה שוב.",
+    "speakerLockedLabel": "פלטינום",
+    "narrationLabel": "הקראה",
+    "jesusVoiceDisclosure": "ישו הבינה המלאכותית קורא רק את הספרים המופיעים בקטלוג הקריאה בקול. זוהי קול שפותח עבור אפליקציה זו, מבוסס על הכתובים — ולא הקלטה של אדם אמיתי. הזמינות תלויה בתמיכת השפה.",
+    "notAvailableLanguage": "עדיין לא זמין בשפה זו",
+    "textOnlyLabel": "טקסט בלבד",
+    "readAloudFilterLabel": "קריאה בקול",
+    "catalogSearchPlaceholder": "חפש בספרייה"
   }
 };
 

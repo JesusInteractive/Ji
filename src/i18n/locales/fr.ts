@@ -251,7 +251,11 @@ const fr: TranslationShape = {
     "generateButton": "Générer",
     "regenerateButton": "Régénérer",
     "generateErrorTitle": "Impossible de générer cela",
-    "generateErrorFallback": "Veuillez vérifier votre connexion et réessayer."
+    "generateErrorFallback": "Veuillez vérifier votre connexion et réessayer.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Impossible d'ouvrir ce lien",
@@ -279,6 +283,20 @@ const fr: TranslationShape = {
     "loadingLanguages": "Chargement des langues disponibles...",
     "loadError": "Impossible de charger la bibliothèque. Vérifiez votre connexion et réessayez.",
     "retryButton": "Réessayer"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Voici votre bibliothèque d'études. Appuyez sur un livre pour le lire. Les membres Platinum peuvent entendre l'IA Jésus lire les livres disponibles dans leur langue.",
+    "enterLibrary": "Entrer dans la bibliothèque",
+    "readAloudShelfTitle": "Lecture à voix haute",
+    "readAloudShelfSubtitle": "L'IA Jésus peut lire ces livres à voix haute. Platinum.",
+    "readerLoadError": "Impossible de charger ce livre. Vérifiez votre connexion et réessayez.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narration",
+    "jesusVoiceDisclosure": "L'IA Jésus lit uniquement les livres listés dans le Catalogue Lecture à voix haute. Il s'agit d'une voix modélisée pour cette application, ancrée dans les Écritures — et non d'un enregistrement d'une personne réelle. La disponibilité dépend du support linguistique.",
+    "notAvailableLanguage": "Pas encore disponible dans cette langue",
+    "textOnlyLabel": "Texte uniquement",
+    "readAloudFilterLabel": "Lecture à voix haute",
+    "catalogSearchPlaceholder": "Rechercher dans la bibliothèque"
   }
 };
 

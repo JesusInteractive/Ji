@@ -251,7 +251,11 @@ const pl: TranslationShape = {
     "generateButton": "Wygeneruj",
     "regenerateButton": "Wygeneruj ponownie",
     "generateErrorTitle": "Nie można wygenerować",
-    "generateErrorFallback": "Sprawdź połączenie i spróbuj ponownie."
+    "generateErrorFallback": "Sprawdź połączenie i spróbuj ponownie.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nie można otworzyć tego linku",
@@ -279,6 +283,20 @@ const pl: TranslationShape = {
     "loadingLanguages": "Ładowanie dostępnych języków...",
     "loadError": "Nie udało się załadować biblioteki. Sprawdź połączenie i spróbuj ponownie.",
     "retryButton": "Ponów"
+  },
+  "studyLibrary": {
+    "entranceTitle": "To jest Twoja biblioteka studiów. Stuknij książkę, aby ją przeczytać. Członkowie Platinum mogą usłyszeć, jak AI Jezus czyta na głos książki, które mamy w ich języku.",
+    "enterLibrary": "Wejdź do biblioteki",
+    "readAloudShelfTitle": "Czytanie na głos",
+    "readAloudShelfSubtitle": "AI Jezus może czytać te książki na głos. Platinum.",
+    "readerLoadError": "Nie można załadować tej książki. Sprawdź połączenie i spróbuj ponownie.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narracja",
+    "jesusVoiceDisclosure": "AI Jezus czyta tylko książki wymienione w Katalogu Czytania na Głos. To jest głos stworzony dla tej aplikacji, oparty na Piśmie Świętym — nie nagranie prawdziwej osoby. Dostępność zależy od wsparcia językowego.",
+    "notAvailableLanguage": "Jeszcze niedostępne w tym języku",
+    "textOnlyLabel": "Tylko tekst",
+    "readAloudFilterLabel": "Czytanie na głos",
+    "catalogSearchPlaceholder": "Szukaj w bibliotece"
   }
 };
 

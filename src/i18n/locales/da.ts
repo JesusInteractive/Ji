@@ -251,7 +251,11 @@ const da: TranslationShape = {
     "generateButton": "Generér",
     "regenerateButton": "Generér igen",
     "generateErrorTitle": "Kunne ikke generere det",
-    "generateErrorFallback": "Tjek din forbindelse, og prøv igen."
+    "generateErrorFallback": "Tjek din forbindelse, og prøv igen.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kunne ikke åbne det link",
@@ -279,6 +283,20 @@ const da: TranslationShape = {
     "loadingLanguages": "Indlæser tilgængelige sprog...",
     "loadError": "Kunne ikke indlæse biblioteket. Tjek din forbindelse og prøv igen.",
     "retryButton": "Prøv igen"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Dette er dit studiebibliotek. Tryk på en bog for at læse den. Platin-medlemmer kan høre AI Jesus læse bøgerne på deres sprog.",
+    "enterLibrary": "Gå til biblioteket",
+    "readAloudShelfTitle": "Læs højt",
+    "readAloudShelfSubtitle": "AI Jesus kan læse disse bøger højt. Platin.",
+    "readerLoadError": "Kunne ikke indlæse denne bog. Tjek din forbindelse og prøv igen.",
+    "speakerLockedLabel": "Platin",
+    "narrationLabel": "Oplæsning",
+    "jesusVoiceDisclosure": "AI Jesus læser kun bøgerne i Læs-højt-kataloget. Dette er en stemme, der er skabt til appen og baseret på Skriften – ikke en optagelse af en rigtig person. Tilgængelighed afhænger af sprogunderstøttelse.",
+    "notAvailableLanguage": "Ikke tilgængelig på dette sprog endnu",
+    "textOnlyLabel": "Kun tekst",
+    "readAloudFilterLabel": "Læs højt",
+    "catalogSearchPlaceholder": "Søg i biblioteket"
   }
 };
 

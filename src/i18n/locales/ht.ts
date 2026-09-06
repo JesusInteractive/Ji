@@ -251,7 +251,11 @@ const ht: TranslationShape = {
     "generateButton": "Jenere",
     "regenerateButton": "Jenere ankò",
     "generateErrorTitle": "Pa t 'kapab jenere sa a",
-    "generateErrorFallback": "Tanpri tcheke koneksyon ou epi eseye ankò."
+    "generateErrorFallback": "Tanpri tcheke koneksyon ou epi eseye ankò.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Pa t 'kapab louvri lyen sa a",
@@ -279,6 +283,20 @@ const ht: TranslationShape = {
     "loadingLanguages": "N ap chaje lang ki disponib yo...",
     "loadError": "Nou pa t kapab chaje bibliyotèk la. Verifye koneksyon ou epi eseye ankò.",
     "retryButton": "Eseye ankò"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Men bibliyotèk etid ou a. Tape sou yon liv pou li li. Manm Platinum yo ka tande AI Jezi li liv nou genyen yo nan lang yo a.",
+    "enterLibrary": "Antre nan bibliyotèk la",
+    "readAloudShelfTitle": "Li nan Vwa",
+    "readAloudShelfSubtitle": "AI Jezi ka li liv sa yo nan vwa. Platinum.",
+    "readerLoadError": "Pa t kapab chaje liv sa a. Tcheke koneksyon ou epi eseye ankò.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narasyon",
+    "jesusVoiceDisclosure": "AI Jezi li sèlman liv ki nan Katalòg Li nan Vwa a. Sa a se yon vwa ki fèt pou app sa a, ki baze sou Ekriti yo — pa yon anrejistreman yon moun reyèl. Disponibilite a depann de sipò lang lan.",
+    "notAvailableLanguage": "Pa disponib nan lang sa a ankò",
+    "textOnlyLabel": "Tèks sèlman",
+    "readAloudFilterLabel": "Li nan Vwa",
+    "catalogSearchPlaceholder": "Chèche nan bibliyotèk la"
   }
 };
 

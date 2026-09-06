@@ -144,8 +144,16 @@ function normalizeChapter(raw: any): BibleChapter {
   const verses: BibleVerse[] = chapterContent
     .filter((item: any) => (item.type ? item.type === 'verse' : true))
     .map((item: any) => {
+      // Prose books (e.g. Genesis) give plain strings in `content`;
+      // Hebrew poetry books (Psalms, Proverbs, Isaiah, Hosea, etc.) give
+      // `{ text, poem }` line objects instead -- extract `.text` from
+      // those rather than dropping them, or every verse in a poetic
+      // passage comes out empty and gets silently filtered out below.
       const text = Array.isArray(item.content)
-        ? item.content.filter((c: any) => typeof c === 'string').join(' ')
+        ? item.content
+            .map((c: any) => (typeof c === 'string' ? c : typeof c?.text === 'string' ? c.text : ''))
+            .filter(Boolean)
+            .join(' ')
         : item.text || item.content || '';
       return { number: item.number ?? item.verse, text: String(text).trim() };
     })

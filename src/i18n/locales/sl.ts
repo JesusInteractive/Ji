@@ -251,7 +251,11 @@ const sl: TranslationShape = {
     "generateButton": "Ustvari",
     "regenerateButton": "Ustvari znova",
     "generateErrorTitle": "Tega ni bilo mogoče ustvariti",
-    "generateErrorFallback": "Preverite povezavo in poskusite znova."
+    "generateErrorFallback": "Preverite povezavo in poskusite znova.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Te povezave ni bilo mogoče odpreti",
@@ -279,6 +283,20 @@ const sl: TranslationShape = {
     "loadingLanguages": "Nalaganje razpoložljivih jezikov...",
     "loadError": "Knjižnice ni bilo mogoče naložiti. Preverite povezavo in poskusite znova.",
     "retryButton": "Poskusi znova"
+  },
+  "studyLibrary": {
+    "entranceTitle": "To je vaša študijska knjižnica. Tapnite knjigo za branje. Člani Platinum lahko poslušajo, kako AI Jezus bere knjige v njihovem jeziku.",
+    "enterLibrary": "Vstopite v knjižnico",
+    "readAloudShelfTitle": "Branje na glas",
+    "readAloudShelfSubtitle": "AI Jezus lahko bere te knjige na glas. Platinum.",
+    "readerLoadError": "Knjige ni bilo mogoče naložiti. Preverite povezavo in poskusite znova.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Naracija",
+    "jesusVoiceDisclosure": "AI Jezus bere samo knjige, navedene v katalogu Branja na glas. To je glas, modeliran za to aplikacijo, utemeljen v Svetem pismu — ne posnetek resnične osebe. Razpoložljivost je odvisna od jezikovne podpore.",
+    "notAvailableLanguage": "Zaenkrat še ni na voljo v tem jeziku",
+    "textOnlyLabel": "Samo besedilo",
+    "readAloudFilterLabel": "Branje na glas",
+    "catalogSearchPlaceholder": "Išči v knjižnici"
   }
 };
 

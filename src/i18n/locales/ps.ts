@@ -251,7 +251,11 @@ const ps: TranslationShape = {
     "generateButton": "جوړول",
     "regenerateButton": "بیا جوړول",
     "generateErrorTitle": "هغه نشو جوړولی",
-    "generateErrorFallback": "مهرباني وکړئ خپل اتصال وګورئ او بیا هڅه وکړئ."
+    "generateErrorFallback": "مهرباني وکړئ خپل اتصال وګورئ او بیا هڅه وکړئ.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "هغه لینک نشو پرانيستلی",
@@ -279,6 +283,20 @@ const ps: TranslationShape = {
     "loadingLanguages": "شته ژبې بارېږي...",
     "loadError": "کتابتون نه شو بارولی. خپل اتصال وګورئ او بیا هڅه وکړئ.",
     "retryButton": "بیا هڅه"
+  },
+  "studyLibrary": {
+    "entranceTitle": "دا ستاسو د مطالعې کتابتون دی. د لوستلو لپاره یو کتاب ټپ کړئ. پلاټینم غړي کولی شي AI عیسی واوري چې هغه کتابونه په خپلې ژبې کې ولولي چې موږ لرو.",
+    "enterLibrary": "کتابتون ته ننوځئ",
+    "readAloudShelfTitle": "غږیز لوستل",
+    "readAloudShelfSubtitle": "AI عیسی دا کتابونه په زوره لوستلی شي. پلاټینم.",
+    "readerLoadError": "دا کتاب نه شو لود کړای. خپل اتصال وګورئ او بیا هڅه وکړئ.",
+    "speakerLockedLabel": "پلاټینم",
+    "narrationLabel": "غږیز لوستل",
+    "jesusVoiceDisclosure": "AI عیسی یوازې هغه کتابونه لولي چې په غږیز لوستل کتلاګ کې لیست شوي دي. دا د دې اپ لپاره ماډل شوي غږ دی، چې په مقدس کتاب کې بنسټ لري — د یو ریښتیني شخص ثبت نه دی. شتون د ژبې ملاتړ پورې اړه لري.",
+    "notAvailableLanguage": "تر اوسه په دې ژبه کې شتون نه لري",
+    "textOnlyLabel": "یوازې متن",
+    "readAloudFilterLabel": "غږیز لوستل",
+    "catalogSearchPlaceholder": "کتابتون وپلټئ"
   }
 };
 

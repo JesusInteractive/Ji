@@ -251,7 +251,11 @@ const ig: TranslationShape = {
     "generateButton": "Mepụta",
     "regenerateButton": "Mepụta ọzọ",
     "generateErrorTitle": "Enweghị ike imepụta nke ahụ",
-    "generateErrorFallback": "Biko lelee njikọ gị ma nwaa ọzọ."
+    "generateErrorFallback": "Biko lelee njikọ gị ma nwaa ọzọ.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Enweghị ike imeghe njikọ ahụ",
@@ -279,6 +283,20 @@ const ig: TranslationShape = {
     "loadingLanguages": "Na-ebupụta asụsụ dị...",
     "loadError": "Enweghị ike ibupụta ọba akwụkwọ. Lelee njikọ gị ma nwaa ọzọ.",
     "retryButton": "Nwaa ọzọ"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Nke a bụ ọbá akwụkwọ ọmụmụ gị. Pịa akwụkwọ iji gụọ. Ndị otu Platinum nwere ike ịnụ AI Jesus na-agụ akwụkwọ ndị anyị nwere n'asụsụ ha.",
+    "enterLibrary": "Banye n'ọbá akwụkwọ",
+    "readAloudShelfTitle": "Gụọ n'olu dara ụda",
+    "readAloudShelfSubtitle": "AI Jesus nwere ike ịgụ akwụkwọ ndị a n'olu dara ụda. Platinum.",
+    "readerLoadError": "Enweghị ike ibudata akwụkwọ a. Lelee njikọ gị ma nwaa ọzọ.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ịgụ akwụkwọ",
+    "jesusVoiceDisclosure": "AI Jesus na-agụ naanị akwụkwọ ndị e depụtara na Read-Aloud Catalog. Nke a bụ olu e mere maka ngwa a, gbadoro ụkwụ na Akwụkwọ Nsọ — ọ bụghị ndekọ nke onye n'ezie. Ịdị na ya na-adabere na nkwado asụsụ.",
+    "notAvailableLanguage": "Ọ dịbeghị na asụsụ a",
+    "textOnlyLabel": "Edemede naanị",
+    "readAloudFilterLabel": "Gụọ n'olu dara ụda",
+    "catalogSearchPlaceholder": "Chọọ n'ọbá akwụkwọ"
   }
 };
 

@@ -251,7 +251,11 @@ const to: TranslationShape = {
     "generateButton": "Fakatupu",
     "regenerateButton": "Toe fakatupu",
     "generateErrorTitle": "ʻE ʻikai lava ke fakatupu",
-    "generateErrorFallback": "Sio ki hoʻo ʻinitineti pea toe feinga."
+    "generateErrorFallback": "Sio ki hoʻo ʻinitineti pea toe feinga.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ʻE ʻikai lava ke avahi ʻa e fehū",
@@ -279,6 +283,20 @@ const to: TranslationShape = {
     "loadingLanguages": "ʻOku uta e ngaahi lea ʻoku ʻi ai...",
     "loadError": "ʻOku ʻikai lava ʻo uta e falelotu. Vakai ki hoʻo fakaʻuhinga mo toe feinga.",
     "retryButton": "Toe feinga"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ko e falalelei ako 'eni 'a 'oukou. Tap'i ha tohi ke lau. 'E lava 'e he kau Platinum ke fanongo ki he AI Jesus 'o lau 'a e ngaahi tohi 'i he lea 'enau.",
+    "enterLibrary": "Hu ki he falalelei",
+    "readAloudShelfTitle": "Lau Fakaongoongo",
+    "readAloudShelfSubtitle": "Ko e AI Jesus 'e lava 'o lau fakaongoongo 'a e ngaahi tohi ni. Platinum.",
+    "readerLoadError": "Na'e 'ikai lava 'o uta 'a e tohi ni. Vakai ho'o fehokotaki pea toe 'e.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Fakaongoongo",
+    "jesusVoiceDisclosure": "Ko e AI Jesus 'e lau pē 'a e ngaahi tohi 'oku 'i he Catalog Lau Fakaongoongo. Ko e le'o 'eni 'oku faka'ali'ali ki he app ni, 'o 'i he Tohi Tapu — 'ikai ko e rekoti 'o ha tangata mo'oni. 'Oku fepaki 'e he tokoni lea.",
+    "notAvailableLanguage": "'Ikai ke 'iai 'i he lea ni",
+    "textOnlyLabel": "Tohi pē",
+    "readAloudFilterLabel": "Lau Fakaongoongo",
+    "catalogSearchPlaceholder": "Fekumi 'i he falalelei"
   }
 };
 

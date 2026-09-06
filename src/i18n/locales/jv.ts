@@ -251,7 +251,11 @@ const jv: TranslationShape = {
     "generateButton": "Gawe",
     "regenerateButton": "Gawe maneh",
     "generateErrorTitle": "Ora bisa nggawe iku",
-    "generateErrorFallback": "Mangga priksa sambungan lan coba maneh."
+    "generateErrorFallback": "Mangga priksa sambungan lan coba maneh.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ora bisa mbukak pranala iku",
@@ -279,6 +283,20 @@ const jv: TranslationShape = {
     "loadingLanguages": "Ngamot basa sing kasedhiya...",
     "loadError": "Gagal ngamot perpustakaan. Priksa sambunganmu lan coba maneh.",
     "retryButton": "Coba maneh"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Iki perpustakaan sinau sampeyan. Ketuk buku kanggo maca. Anggota Platinum bisa ngrungokake AI Jesus maca buku-buku sing kita duwe ing basane.",
+    "enterLibrary": "Mlebu perpustakaan",
+    "readAloudShelfTitle": "Maca Nyuwara",
+    "readAloudShelfSubtitle": "AI Jesus bisa maca buku-buku iki kanthi swara. Platinum.",
+    "readerLoadError": "Ora bisa mbukak buku iki. Priksa sambungan lan coba maneh.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narasi",
+    "jesusVoiceDisclosure": "AI Jesus mung maca buku-buku sing kadhaptar ing Katalog Maca Nyuwara. Iki swara sing dimodelake kanggo app iki, adhedhasar Kitab Suci — dudu rekaman wong nyata. Kasedhiyan gumantung dhukungan basa.",
+    "notAvailableLanguage": "Durung kasedhiya ing basa iki",
+    "textOnlyLabel": "Mung teks",
+    "readAloudFilterLabel": "Maca Nyuwara",
+    "catalogSearchPlaceholder": "Goleki perpustakaan"
   }
 };
 

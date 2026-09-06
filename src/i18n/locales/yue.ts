@@ -251,7 +251,11 @@ const yue: TranslationShape = {
     "generateButton": "生成",
     "regenerateButton": "重新生成",
     "generateErrorTitle": "無法生成",
-    "generateErrorFallback": "請檢查你嘅網絡連接，然後再試一次。"
+    "generateErrorFallback": "請檢查你嘅網絡連接，然後再試一次。",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "無法開啟連結",
@@ -279,6 +283,20 @@ const yue: TranslationShape = {
     "loadingLanguages": "載入可用語言中...",
     "loadError": "無法載入圖書館。請檢查你嘅連線再試一次。",
     "retryButton": "重試"
+  },
+  "studyLibrary": {
+    "entranceTitle": "呢個係你嘅研經圖書館。撳一本書嚟讀。白金會員可以聽AI耶穌用佢哋嘅語言讀出我哋有嘅書。",
+    "enterLibrary": "進入圖書館",
+    "readAloudShelfTitle": "有聲朗讀",
+    "readAloudShelfSubtitle": "AI耶穌可以朗讀呢啲書。白金會員專屬。",
+    "readerLoadError": "無法載入呢本書。請檢查你嘅網絡連線，然後再試一次。",
+    "speakerLockedLabel": "白金",
+    "narrationLabel": "朗讀",
+    "jesusVoiceDisclosure": "AI耶穌只會讀出《有聲朗讀目錄》入面列出嘅書。呢個係為呢個App特製嘅聲音，建基於聖經——唔係真人嘅錄音。視乎語言支援情況而定。",
+    "notAvailableLanguage": "呢個語言暫時未有",
+    "textOnlyLabel": "純文字",
+    "readAloudFilterLabel": "有聲朗讀",
+    "catalogSearchPlaceholder": "搜尋圖書館"
   }
 };
 

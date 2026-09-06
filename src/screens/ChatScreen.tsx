@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Animated,
   Easing,
   FlatList,
+  ImageBackground,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -25,7 +26,7 @@ import {
   requestRecordingPermissionsAsync,
 } from 'expo-audio';
 import * as Localization from 'expo-localization';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import ChatBubble from '../components/ChatBubble';
@@ -34,6 +35,8 @@ import JesusAvatar, { type JesusAvatarHandle } from '../components/JesusAvatar';
 import MagnifyButton from '../components/MagnifyButton';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useApp } from '../context/AppContext';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
 import { useI18n } from '../i18n';
 import { getSafetyReply, buildJesusMessage, maybeBridgeReminder, PEACEFUL_FAREWELL_TEXT } from '../services/demoReplyEngine';
 import { sendMessageStreaming, type RecentMessage } from '../services/api';
@@ -55,8 +58,6 @@ export default function ChatScreen() {
     plan,
     messages,
     addMessage,
-    remainingQuestions,
-    setRemainingQuestions,
     addFavorite,
     ageAppropriateMode,
     clearMessages,
@@ -65,9 +66,22 @@ export default function ChatScreen() {
     setVoiceRepliesEnabled,
     displayName,
   } = useApp();
+  const { hasAccess } = useFeatureAccess();
   const [input, setInput] = useState('');
   const [sendError, setSendError] = useState<{ text: string } | null>(null);
   const [sending, setSending] = useState(false);
+  // The "Ask anything" tip: reappears every time this screen gains
+  // focus (leave the tab and come back -- e.g. via a Prayer Wall detour
+  // -- and it's back), then hides itself the moment the user actually
+  // asks something this visit. Not persisted anywhere -- see
+  // TipBanner.tsx's own comment for why this replaced its old
+  // once-ever-then-gone-forever AsyncStorage behavior.
+  const [showTip, setShowTip] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setShowTip(true);
+    }, [])
+  );
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   // Tracks whether Jesus's TTS reply is actively playing through the
@@ -101,6 +115,8 @@ export default function ChatScreen() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
   const avatarRef = useRef<JesusAvatarHandle>(null);
   const currentStopRef = useRef<(() => Promise<void>) | null>(null);
   // speakReply() awaits a network call (synthesizeSpeech) before it has
@@ -130,16 +146,6 @@ export default function ChatScreen() {
   const MAX_EMPTY_AUTO_RELISTENS = 2;
   const conversationIdRef = useRef(`conv-${Date.now()}`);
 
-  const limitReached = remainingQuestions <= 0;
-  // Chat is nested ChatStack -> MainTabs -> RootStack, so reaching the
-  // Pricing modal registered on RootStack (see RootNavigator.tsx) needs
-  // two getParent() hops, not one. Routes to the real in-app Pricing
-  // screen (which correctly purchases whichever tier the user picks)
-  // rather than RevenueCat's generic prebuilt paywall, which can't tell
-  // this screen which specific plan ends up purchased.
-  const openPaywall = () => {
-    navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing');
-  };
   // The FlatList's actual data source -- persisted `messages` plus, while
   // a reply is actively streaming in, one extra not-yet-persisted bubble
   // appended after them (see streamingReply's own comment). A fixed id
@@ -295,7 +301,7 @@ export default function ChatScreen() {
           // Conversation mode -- see lastInputWasVoiceRef's own comment.
           // Short delay so the mic doesn't snap on right as his voice
           // cuts off; reads as a natural conversational beat instead.
-          if (lastInputWasVoiceRef.current && !limitReached) {
+          if (lastInputWasVoiceRef.current) {
             setTimeout(() => {
               autoRelistenRef.current = true;
               startRecording();
@@ -364,12 +370,8 @@ export default function ChatScreen() {
   }
 
   const sendText = async (text: string, { chargeQuota }: { chargeQuota: boolean }) => {
+    setShowTip(false);
     if (chargeQuota) {
-      if (remainingQuestions <= 0) {
-        openPaywall();
-        return;
-      }
-      setRemainingQuestions((prev) => prev - 1);
       addMessage({
         id: `${Date.now()}-user`,
         author: 'user',
@@ -661,7 +663,22 @@ export default function ChatScreen() {
     });
   };
 
+  // Placed after every hook above (rules of hooks -- this can only be an
+  // early return, never a conditional hook call). Chat is nested
+  // ChatStack -> MainTabs -> RootStack, so reaching the Pricing modal
+  // needs two getParent() hops -- see PaywallLockScreen.tsx's own
+  // comment on why it takes onSubscribe as a prop instead of guessing.
+  if (!hasAccess) {
+    return (
+      <PaywallLockScreen
+        featureName="Ask Jesus"
+        onSubscribe={() => navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
+      />
+    );
+  }
+
   return (
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={{ flex: 1 }} resizeMode="cover">
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -745,8 +762,9 @@ export default function ChatScreen() {
       </View>
 
       <TipBanner
-        storageKey="ji_tip_chat_v1"
-        text="Ask anything -- a question, a worry, a prayer. And remember: I'm here to point you toward God, not to replace time with Him yourself."
+        visible={showTip}
+        text="Ask anything -- a question, a worry, a prayer."
+        onDismiss={() => setShowTip(false)}
       />
 
       {/* Secondary, de-emphasized history -- kept (not removed) so context
@@ -781,6 +799,7 @@ export default function ChatScreen() {
             setScrollOffset(contentOffset.y);
           }}
           scrollEventThrottle={16}
+          scrollEnabled={!scrollbarDragging}
         />
         <DraggableScrollbar
           contentHeight={contentHeight}
@@ -790,6 +809,8 @@ export default function ChatScreen() {
             listRef.current?.scrollToOffset({ offset, animated: false });
             setScrollOffset(offset);
           }}
+          onDragStart={() => setScrollbarDragging(true)}
+          onDragEnd={() => setScrollbarDragging(false)}
         />
         {showScrollToBottom && (
           <TouchableOpacity
@@ -802,23 +823,6 @@ export default function ChatScreen() {
         )}
       </View>
       <MagnifyButton style={{ bottom: 100 }} />
-
-      <Text style={styles.quotaText}>
-        {remainingQuestions === Infinity
-          ? 'Unlimited questions'
-          : plan === 'free'
-          ? `${Math.max(remainingQuestions, 0)} free questions left`
-          : `${Math.max(remainingQuestions, 0)} questions left today`}
-      </Text>
-
-      {limitReached && (
-        <View style={styles.limitBanner}>
-          <Text style={styles.limitText}>{plan === 'free' ? t.chat.limitReached : t.chat.dailyLimitReached}</Text>
-          <TouchableOpacity onPress={openPaywall} accessibilityRole="button" accessibilityLabel="See plans">
-            <Text style={styles.limitLink}>{plan === 'free' ? 'Choose a plan' : 'Upgrade'}</Text>
-          </TouchableOpacity>
-        </View>
-      )}
 
       {sendError && (
         <View style={styles.errorBanner}>
@@ -833,6 +837,12 @@ export default function ChatScreen() {
       )}
 
       <View style={styles.inputRow}>
+        <ImageBackground
+          source={require('../../assets/textures/parchment-white.jpg')}
+          style={styles.inputImageWrap}
+          imageStyle={styles.inputImage}
+          resizeMode="cover"
+        >
         <TextInput
           style={styles.input}
           placeholder={t.chat.inputPlaceholder}
@@ -858,13 +868,14 @@ export default function ChatScreen() {
             setInput(text);
           }}
           multiline
-          editable={!limitReached && !sending}
+          editable={!sending}
           accessibilityLabel={t.chat.inputPlaceholder}
         />
+        </ImageBackground>
         <TouchableOpacity
           style={[styles.micBtn, isRecording && styles.micBtnActive]}
           onPress={handleMicPress}
-          disabled={limitReached || sending || isTranscribing || jesusSpeaking}
+          disabled={sending || isTranscribing || jesusSpeaking}
           accessibilityRole="button"
           accessibilityLabel={
             jesusSpeaking
@@ -873,7 +884,7 @@ export default function ChatScreen() {
               ? 'Stop recording and send'
               : 'Record a voice message'
           }
-          accessibilityState={{ disabled: limitReached || sending || isTranscribing || jesusSpeaking }}
+          accessibilityState={{ disabled: sending || isTranscribing || jesusSpeaking }}
         >
           {isTranscribing ? (
             <ActivityIndicator size="small" color={Colors.royal} />
@@ -884,20 +895,21 @@ export default function ChatScreen() {
         <TouchableOpacity
           style={styles.sendBtn}
           onPress={handleSend}
-          disabled={limitReached || sending}
+          disabled={sending}
           accessibilityRole="button"
           accessibilityLabel="Send"
-          accessibilityState={{ disabled: limitReached || sending }}
+          accessibilityState={{ disabled: sending }}
         >
           <Ionicons name="send" size={18} color={Colors.white} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4F6FA' },
+  container: { flex: 1 },
   topBar: {
     paddingHorizontal: 16,
     paddingVertical: 10,
@@ -1013,9 +1025,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
   },
-  input: {
+  inputImageWrap: {
     flex: 1,
-    backgroundColor: '#F4F6FA',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  inputImage: {
+    borderRadius: 20,
+  },
+  input: {
+    backgroundColor: 'transparent',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,

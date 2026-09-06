@@ -8,6 +8,7 @@ import { useI18n } from '../i18n';
 import HomeScreen from '../screens/HomeScreen';
 import ChatStack, { type ChatStackParamList } from './ChatStack';
 import PrayerWallScreen from '../screens/PrayerWallScreen';
+import TestimonyStreamScreen from '../screens/TestimonyStreamScreen';
 import ScriptureSearchScreen from '../screens/ScriptureSearchScreen';
 import JournalScreen from '../screens/JournalScreen';
 import StudyToolsStack from './StudyToolsStack';
@@ -16,6 +17,7 @@ import DailyDevotionsScreen from '../screens/DailyDevotionsScreen';
 import SettingsStack, { type SettingsStackParamList } from './SettingsStack';
 import { withFadeIn } from './withFadeIn';
 import DedicationFooter from '../components/DedicationFooter';
+import RadioOverlay from '../components/RadioOverlay';
 
 // Wrapped once here rather than inline in the JSX below, so each stays a
 // stable component reference across renders (an inline wrap on every
@@ -24,6 +26,7 @@ import DedicationFooter from '../components/DedicationFooter';
 const FadedHome = withFadeIn(HomeScreen);
 const FadedChatStack = withFadeIn(ChatStack);
 const FadedPrayerWall = withFadeIn(PrayerWallScreen);
+const FadedTestimonyStream = withFadeIn(TestimonyStreamScreen);
 const FadedBible = withFadeIn(ScriptureSearchScreen);
 const FadedJournal = withFadeIn(JournalScreen);
 const FadedStudyToolsStack = withFadeIn(StudyToolsStack);
@@ -38,11 +41,17 @@ export type MainTabParamList = {
   // tab, same pattern as SettingsTab below.
   ChatTab: NavigatorScreenParams<ChatStackParamList> | undefined;
   PrayerWall: undefined;
+  // Pushed from PrayerWallScreen's header button, not its own tab-bar
+  // icon -- same hidden-tab pattern as Profile/DailyDevotions below.
+  TestimonyStream: undefined;
   // GlobalLibraryScreen (Study Tools > Bible Library) deep-links here
   // with a specific translation id when the user taps a Bible in their
   // language -- undefined for the normal tab-bar tap, which keeps
   // whatever translation was last selected (see ScriptureSearchScreen).
-  Bible: { translationId?: string } | undefined;
+  // initialQuery: HomeScreen's "Quick Scripture Search" bar deep-links
+  // here with typed text pre-filling the book-search filter, so someone
+  // can jump straight to a result instead of scrolling the book list.
+  Bible: { translationId?: string; initialQuery?: string } | undefined;
   Journal: undefined;
   StudyTools: undefined;
   Profile: undefined;
@@ -62,6 +71,10 @@ const ICONS: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
   // not a single raised hand) -- see tabBarIcon below. Kept here too
   // just so this Record stays total over every tab; never actually read.
   PrayerWall: 'hand-left',
+  // Hidden tab (tabBarButton: () => null below), so this icon is never
+  // actually rendered in the tab bar -- kept only so this Record stays
+  // total over every route.
+  TestimonyStream: 'sparkles',
   Bible: 'book',
   Journal: 'journal',
   StudyTools: 'library',
@@ -92,6 +105,16 @@ export default function MainTabs() {
       <Tab.Screen name="HomeTab" component={FadedHome} options={{ title: t.tabs.home }} />
       <Tab.Screen name="ChatTab" component={FadedChatStack} options={{ title: t.tabs.chat }} />
       <Tab.Screen name="PrayerWall" component={FadedPrayerWall} options={{ title: t.tabs.prayerWall }} />
+      <Tab.Screen
+        name="TestimonyStream"
+        component={FadedTestimonyStream}
+        options={{
+          title: 'Testimony Stream',
+          headerShown: true,
+          headerTintColor: Colors.royal,
+          tabBarButton: () => null,
+        }}
+      />
       <Tab.Screen name="Bible" component={FadedBible} options={{ title: t.tabs.bible }} />
       <Tab.Screen name="Journal" component={FadedJournal} options={{ title: t.tabs.journal }} />
       <Tab.Screen
@@ -126,6 +149,7 @@ export default function MainTabs() {
       <Tab.Screen name="SettingsTab" component={FadedSettingsStack} options={{ title: t.tabs.settings }} />
     </Tab.Navigator>
     <DedicationFooter />
+    <RadioOverlay />
     </View>
   );
 }

@@ -251,7 +251,11 @@ const gu: TranslationShape = {
     "generateButton": "જનરેટ કરો",
     "regenerateButton": "ફરીથી જનરેટ કરો",
     "generateErrorTitle": "તે જનરેટ કરી શકાયું નહીં",
-    "generateErrorFallback": "કૃપા કરીને તમારું જોડાણ તપાસો અને ફરી પ્રયાસ કરો."
+    "generateErrorFallback": "કૃપા કરીને તમારું જોડાણ તપાસો અને ફરી પ્રયાસ કરો.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "તે લિંક ખોલી શકાઈ નહીં",
@@ -279,6 +283,20 @@ const gu: TranslationShape = {
     "loadingLanguages": "ઉપલબ્ધ ભાષાઓ લોડ કરી રહ્યા છીએ...",
     "loadError": "લાઇબ્રેરી લોડ કરી શક્યા નહીં. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.",
     "retryButton": "ફરી પ્રયાસ કરો"
+  },
+  "studyLibrary": {
+    "entranceTitle": "આ તમારી અભ્યાસ લાઇબ્રેરી છે. વાંચવા માટે કોઈ પુસ્તક પર ટેપ કરો. પ્લેટિનમ સભ્યો AI જીસસને અમારી પાસેના પુસ્તકો તેમની ભાષામાં વાંચતા સાંભળી શકે છે.",
+    "enterLibrary": "લાઇબ્રેરીમાં પ્રવેશ કરો",
+    "readAloudShelfTitle": "મોટેથી વાંચો",
+    "readAloudShelfSubtitle": "AI જીસસ આ પુસ્તકો મોટેથી વાંચી શકે છે. પ્લેટિનમ.",
+    "readerLoadError": "આ પુસ્તક લોડ કરી શકાયું નહીં. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.",
+    "speakerLockedLabel": "પ્લેટિનમ",
+    "narrationLabel": "નરેશન",
+    "jesusVoiceDisclosure": "AI જીસસ ફક્ત રીડ-અલાઉડ કેટલોગમાં સૂચિબદ્ધ પુસ્તકો જ વાંચે છે. આ આ એપ માટે મોડેલ કરેલી વૉઇસ છે, જે શાસ્ત્ર પર આધારિત છે — વાસ્તવિક વ્યક્તિનું રેકોર્ડિંગ નથી. ઉપલબ્ધતા ભાષા સપોર્ટ પર આધારિત છે.",
+    "notAvailableLanguage": "આ ભાષામાં હજુ ઉપલબ્ધ નથી",
+    "textOnlyLabel": "માત્ર ટેક્સ્ટ",
+    "readAloudFilterLabel": "મોટેથી વાંચો",
+    "catalogSearchPlaceholder": "લાઇબ્રેરી શોધો"
   }
 };
 

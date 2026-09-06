@@ -251,7 +251,11 @@ const lv: TranslationShape = {
     "generateButton": "Ģenerēt",
     "regenerateButton": "Ģenerēt atkārtoti",
     "generateErrorTitle": "Nevarēja ģenerēt",
-    "generateErrorFallback": "Lūdzu, pārbaudiet savienojumu un mēģiniet vēlreiz."
+    "generateErrorFallback": "Lūdzu, pārbaudiet savienojumu un mēģiniet vēlreiz.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nevarēja atvērt saiti",
@@ -279,6 +283,20 @@ const lv: TranslationShape = {
     "loadingLanguages": "Ielādē pieejamās valodas...",
     "loadError": "Neizdevās ielādēt bibliotēku. Pārbaudiet savienojumu un mēģiniet vēlreiz.",
     "retryButton": "Mēģināt vēlreiz"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Šī ir jūsu mācību bibliotēka. Pieskarieties grāmatai, lai lasītu. Platīna dalībnieki var dzirdēt, kā AI Jēzus lasa grāmatas viņu valodā.",
+    "enterLibrary": "Ienākt bibliotēkā",
+    "readAloudShelfTitle": "Lasīt skaļi",
+    "readAloudShelfSubtitle": "AI Jēzus var lasīt šīs grāmatas skaļi. Platīna.",
+    "readerLoadError": "Nevarēja ielādēt šo grāmatu. Pārbaudiet savienojumu un mēģiniet vēlreiz.",
+    "speakerLockedLabel": "Platīna",
+    "narrationLabel": "Naratīvs",
+    "jesusVoiceDisclosure": "AI Jēzus lasa tikai grāmatas, kas norādītas Skaļās lasīšanas katalogā. Šī ir balss, modelēta šai lietotnei, balstīta Svētajos Rakstos — nav īstas personas ieraksts. Pieejamība atkarīga no valodas atbalsta.",
+    "notAvailableLanguage": "Vēl nav pieejams šajā valodā",
+    "textOnlyLabel": "Tikai teksts",
+    "readAloudFilterLabel": "Lasīt skaļi",
+    "catalogSearchPlaceholder": "Meklēt bibliotēkā"
   }
 };
 

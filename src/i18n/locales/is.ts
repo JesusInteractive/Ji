@@ -251,7 +251,11 @@ const is: TranslationShape = {
     "generateButton": "Búa til",
     "regenerateButton": "Búa til aftur",
     "generateErrorTitle": "Ekki tókst að búa til það",
-    "generateErrorFallback": "Vinsamlegast athugaðu tenginguna og reyndu aftur."
+    "generateErrorFallback": "Vinsamlegast athugaðu tenginguna og reyndu aftur.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ekki tókst að opna þennan hlekk",
@@ -279,6 +283,20 @@ const is: TranslationShape = {
     "loadingLanguages": "Hleð inn tiltækum tungumálum...",
     "loadError": "Ekki tókst að hlaða inn bókasafninu. Athugaðu tenginguna og reyndu aftur.",
     "retryButton": "Reyna aftur"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Þetta er námsbókasafn þitt. Ýttu á bók til að lesa. Platinum meðlimir geta heyrt AI Jesú lesa bækurnar sem við höfum á tungumáli þeirra.",
+    "enterLibrary": "Opna bókasafnið",
+    "readAloudShelfTitle": "Lesa upphátt",
+    "readAloudShelfSubtitle": "AI Jesú getur lesið þessar bækur upphátt. Platinum.",
+    "readerLoadError": "Ekki tókst að hlaða þessari bók. Athugaðu tenginguna og reyndu aftur.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Upplestur",
+    "jesusVoiceDisclosure": "AI Jesú les aðeins bækurnar sem taldar eru upp í Upplestrarskránni. Þetta er rödd sem mótuð er fyrir þetta forrit, byggð á Ritningunni — ekki upptaka af raunverulegri manneskju. Aðgengi fer eftir tungumálastuðningi.",
+    "notAvailableLanguage": "Ekki tiltækt á þessu tungumáli enn",
+    "textOnlyLabel": "Aðeins texti",
+    "readAloudFilterLabel": "Lesa upphátt",
+    "catalogSearchPlaceholder": "Leita í bókasafninu"
   }
 };
 

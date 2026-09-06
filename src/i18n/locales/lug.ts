@@ -251,7 +251,11 @@ const lug: TranslationShape = {
     "generateButton": "Kola",
     "regenerateButton": "Kola nate",
     "generateErrorTitle": "Tekisobose kukola ekyo",
-    "generateErrorFallback": "Kebera ensindikano yo era gezaako nate."
+    "generateErrorFallback": "Kebera ensindikano yo era gezaako nate.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Tekisobose okuggulawo link eno",
@@ -279,6 +283,20 @@ const lug: TranslationShape = {
     "loadingLanguages": "Tukutte nnimi eziriwo...",
     "loadError": "Tekisobose kutikka ttaano. Kebera ennyungu yo era gezaako nate.",
     "retryButton": "Gezaako nate"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Eno ye layibulali yo ey'okusoma. Koona ku kitabo okusoma. Ab'enkizo za Platinum basobola okuwulira AI Yesu ng'asoma ebitabo byaffe mu lulimi lwabwe.",
+    "enterLibrary": "Yingira mu layibulali",
+    "readAloudShelfTitle": "Okusomera",
+    "readAloudShelfSubtitle": "AI Yesu asobola okusoma ebitabo bino nga asomera. Platinum.",
+    "readerLoadError": "Tekisobose okutikka kitabo kino. Kebera omukutu gwo era gezaako nate.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Okusoma",
+    "jesusVoiceDisclosure": "AI Yesu asoma by'oka ebitabo ebirimu mu Katalogi y'Okusomera. Eno y'eddobozi erikoleddwa ku app eno, erisibibwa mu Byawandika — si kuteekateeka kya muntu wa ddala. Okubeerawo kunsinziira ku nnyanguyirizi y'olulimi.",
+    "notAvailableLanguage": "Tekiriyo mu lulimi luno kati",
+    "textOnlyLabel": "Ebigambo byokka",
+    "readAloudFilterLabel": "Okusomera",
+    "catalogSearchPlaceholder": "Noonya mu layibulali"
   }
 };
 

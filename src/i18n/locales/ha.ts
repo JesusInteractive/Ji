@@ -251,7 +251,11 @@ const ha: TranslationShape = {
     "generateButton": "Ƙirƙira",
     "regenerateButton": "Sake ƙirƙira",
     "generateErrorTitle": "Ba za a iya ƙirƙira wannan ba",
-    "generateErrorFallback": "Don Allah duba haɗin ku kuma sake gwadawa."
+    "generateErrorFallback": "Don Allah duba haɗin ku kuma sake gwadawa.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ba za a iya buɗe wannan hanyar haɗin ba",
@@ -279,6 +283,20 @@ const ha: TranslationShape = {
     "loadingLanguages": "Ana loda harsunan da ke akwai...",
     "loadError": "An kasa loda ɗakin karatu. Duba haɗin ku kuma gwada sake.",
     "retryButton": "Gwada sake"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Wannan ɗakin karatunka ne. Danna littafi don karanta. Membobin Platinum za su iya jin AI Jesus yana karanta littattafan da muke a harshensu.",
+    "enterLibrary": "Shiga ɗakin karatu",
+    "readAloudShelfTitle": "Karanta da Ƙara",
+    "readAloudShelfSubtitle": "AI Jesus zai iya karanta waɗannan littattafan da ƙara. Platinum.",
+    "readerLoadError": "Ba a iya ɗaukar wannan littafin ba. Bincika haɗin ku kuma gwada sake.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Karanta da murya",
+    "jesusVoiceDisclosure": "AI Jesus yana karanta kawai littattafan da aka jera a Katalogin Karanta da Ƙara. Wannan murya ce da aka ƙirƙira don wannan app, wadda ta dogara da Littafi Mai Tsarki — ba rikodin mutum na gaske ba. Samuwa ya dogara da tallafin harshe.",
+    "notAvailableLanguage": "Ba a samu a wannan harshe ba tukuna",
+    "textOnlyLabel": "Rubutu kawai",
+    "readAloudFilterLabel": "Karanta da Ƙara",
+    "catalogSearchPlaceholder": "Nemo a cikin ɗakin karatu"
   }
 };
 

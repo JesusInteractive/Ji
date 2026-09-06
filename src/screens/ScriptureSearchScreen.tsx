@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  ImageBackground,
+  Linking,
   Modal,
   StyleSheet,
   Text,
@@ -12,8 +14,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { MainTabParamList } from '../navigation/MainTabs';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import Colors from '../theme/colors';
+import { COMMON_QUESTIONS } from '../constants/commonQuestions';
 import {
   getBooks,
   getChapter,
@@ -24,9 +29,13 @@ import {
   type BibleTranslation,
 } from '../services/bibleApi';
 import { useApp } from '../context/AppContext';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
+import { logEvent } from '../services/analytics';
 import { useI18n, interpolate } from '../i18n';
 import MagnifyButton from '../components/MagnifyButton';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import { parseScriptureReference } from '../utils/parseScriptureReference';
 
 const DEFAULT_TRANSLATION_ID = 'BSB';
 
@@ -38,10 +47,11 @@ type Filter = 'all' | 'torah';
 // how to add a Sefaria-backed Talmud tab alongside this one.
 type Props = BottomTabScreenProps<MainTabParamList, 'Bible'>;
 
-export default function ScriptureSearchScreen({ route }: Props) {
+export default function ScriptureSearchScreen({ route, navigation }: Props) {
   const { addFavorite, textZoom } = useApp();
+  const { hasAccess } = useFeatureAccess();
   const { t } = useI18n();
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(route.params?.initialQuery ?? '');
   const [filter, setFilter] = useState<Filter>('all');
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,6 +66,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
   const [translations, setTranslations] = useState<BibleTranslation[]>([]);
   const [translation, setTranslation] = useState(route.params?.translationId ?? DEFAULT_TRANSLATION_ID);
   const [translationPickerOpen, setTranslationPickerOpen] = useState(false);
+  const [highlightVerseNum, setHighlightVerseNum] = useState<number | null>(null);
 
   // GlobalLibraryScreen deep-links here with a translation id -- this tab
   // stays mounted across navigations (React Navigation tabs don't
@@ -68,6 +79,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
     }
   }, [route.params?.translationId]);
 
+  const resolvedQueryRef = useRef<string | null>(null);
+
   // Same pattern again for the translation picker modal's list -- it's
   // short enough on most translation counts to not need this, but the
   // full list (74 entries, see StudyToolsScreen) is long enough inside
@@ -78,6 +91,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
   const [translationScrollOffset, setTranslationScrollOffset] = useState(0);
   const [translationContentHeight, setTranslationContentHeight] = useState(0);
   const [translationViewportHeight, setTranslationViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [translationScrollbarDragging, setTranslationScrollbarDragging] = useState(false);
 
   const verseListRef = useRef<FlatList>(null);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -89,6 +104,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
   const [verseScrollOffset, setVerseScrollOffset] = useState(0);
   const [verseContentHeight, setVerseContentHeight] = useState(0);
   const [verseViewportHeight, setVerseViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [verseScrollbarDragging, setVerseScrollbarDragging] = useState(false);
   const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
     if (newContentHeight && newViewportHeight) {
       setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
@@ -102,6 +119,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
   const [bookScrollOffset, setBookScrollOffset] = useState(0);
   const [bookContentHeight, setBookContentHeight] = useState(0);
   const [bookViewportHeight, setBookViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [bookScrollbarDragging, setBookScrollbarDragging] = useState(false);
   const recomputeBookListVisibility = (newContentHeight: number, newViewportHeight: number) => {
     if (newContentHeight && newViewportHeight) {
       setShowBookScrollToBottom(newContentHeight - newViewportHeight > 200);
@@ -149,6 +168,45 @@ export default function ScriptureSearchScreen({ route }: Props) {
     loadChapter(book, 1, translation);
   };
 
+  // HomeScreen's Quick Scripture Search deep-links here with typed text
+  // (e.g. "John 3:16"). Waits for `books` to finish loading (needed to
+  // resolve a book name), then either jumps straight into that
+  // book/chapter with the verse highlighted, or -- for anything that
+  // isn't a "book chapter[:verse]" shape -- falls back to the existing
+  // book-list filter. resolvedQueryRef stops the same typed value from
+  // re-resolving every time `books` reference changes (e.g. a
+  // translation switch) or after the user has since navigated on.
+  useEffect(() => {
+    const q = route.params?.initialQuery;
+    if (!q || books.length === 0 || resolvedQueryRef.current === q) return;
+    resolvedQueryRef.current = q;
+
+    const parsed = parseScriptureReference(q, books);
+    if (parsed) {
+      setSelectedBook(parsed.book);
+      setChapterNum(parsed.chapter);
+      setHighlightVerseNum(parsed.verse ?? null);
+      loadChapter(parsed.book, parsed.chapter, translation);
+    } else {
+      setQuery(q);
+    }
+  }, [books, route.params?.initialQuery, translation, loadChapter]);
+
+  useEffect(() => {
+    if (hasAccess) logEvent('feature_used', { feature: 'scriptureSearch' });
+  }, [hasAccess]);
+
+  // Placed after every hook above (rules of hooks) and before this
+  // screen's own conditional render branches below.
+  if (!hasAccess) {
+    return (
+      <PaywallLockScreen
+        featureName="Scripture Search"
+        onSubscribe={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
+      />
+    );
+  }
+
   const selectTranslation = (id: string) => {
     setTranslation(id);
     setTranslationPickerOpen(false);
@@ -191,6 +249,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
               onContentSizeChange={(_width, height) => setTranslationContentHeight(height)}
               onScroll={({ nativeEvent }) => setTranslationScrollOffset(nativeEvent.contentOffset.y)}
               scrollEventThrottle={16}
+              scrollEnabled={!translationScrollbarDragging}
             />
             <DraggableScrollbar
               contentHeight={translationContentHeight}
@@ -200,6 +259,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
                 translationListRef.current?.scrollToOffset({ offset, animated: false });
                 setTranslationScrollOffset(offset);
               }}
+              onDragStart={() => setTranslationScrollbarDragging(true)}
+              onDragEnd={() => setTranslationScrollbarDragging(false)}
             />
           </View>
         </View>
@@ -209,10 +270,11 @@ export default function ScriptureSearchScreen({ route }: Props) {
 
   if (selectedBook) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
         <View style={{ flex: 1, transform: [{ scale: textZoom }] }}>
         <View style={styles.backRow}>
-          <TouchableOpacity style={styles.backRowLeft} onPress={() => setSelectedBook(null)}>
+          <TouchableOpacity style={styles.backRowLeft} onPress={() => { setSelectedBook(null); setHighlightVerseNum(null); }}>
             <Ionicons name="arrow-back" size={22} color={Colors.gold} />
             <Text style={styles.backText}>{t.scriptureSearch.backToBooks}</Text>
           </TouchableOpacity>
@@ -225,7 +287,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
         <View style={styles.chapterHeader}>
           <TouchableOpacity
             disabled={chapterNum <= 1}
-            onPress={() => { const n = chapterNum - 1; setChapterNum(n); loadChapter(selectedBook, n, translation); }}
+            onPress={() => { const n = chapterNum - 1; setChapterNum(n); setHighlightVerseNum(null); loadChapter(selectedBook, n, translation); }}
           >
             <Ionicons name="chevron-back-circle" size={28} color={chapterNum <= 1 ? '#CBD5E0' : Colors.royal} />
           </TouchableOpacity>
@@ -235,7 +297,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
           </View>
           <TouchableOpacity
             disabled={selectedBook.chapters ? chapterNum >= selectedBook.chapters : false}
-            onPress={() => { const n = chapterNum + 1; setChapterNum(n); loadChapter(selectedBook, n, translation); }}
+            onPress={() => { const n = chapterNum + 1; setChapterNum(n); setHighlightVerseNum(null); loadChapter(selectedBook, n, translation); }}
           >
             <Ionicons
               name="chevron-forward-circle"
@@ -244,6 +306,27 @@ export default function ScriptureSearchScreen({ route }: Props) {
             />
           </TouchableOpacity>
         </View>
+
+        {chapter && chapter.verses.length > 0 && (
+          <TouchableOpacity
+            style={styles.translateChapterButton}
+            onPress={() =>
+              // Hands the whole chapter's text off to Gospel Translator
+              // (RootNavigator.tsx's own comment) so a pastor can read
+              // straight from what's already on screen instead of
+              // re-typing or re-speaking it from memory.
+              navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('GospelTranslator', {
+                initialText: chapter.verses.map((v) => `${v.number}. ${v.text}`).join(' '),
+                initialLabel: `${selectedBook.name} ${chapterNum}`,
+              })
+            }
+            accessibilityRole="button"
+            accessibilityLabel={`Read ${selectedBook.name} ${chapterNum} in Gospel Translator`}
+          >
+            <Ionicons name="language-outline" size={15} color={Colors.gold} />
+            <Text style={styles.translateChapterButtonText}>Read in Gospel Translator</Text>
+          </TouchableOpacity>
+        )}
 
         {chapterLoading ? (
           <ActivityIndicator style={{ marginTop: 40 }} color={Colors.royal} />
@@ -257,7 +340,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
               keyExtractor={(v) => String(v.number)}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.verseRow}
+                  style={[styles.verseRow, item.number === highlightVerseNum && styles.verseRowHighlight]}
                   onLongPress={() =>
                     addFavorite({
                       id: `${Date.now()}`,
@@ -288,6 +371,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
                 setVerseScrollOffset(contentOffset.y);
               }}
               scrollEventThrottle={16}
+              scrollEnabled={!verseScrollbarDragging}
             />
             <DraggableScrollbar
               contentHeight={verseContentHeight}
@@ -297,6 +381,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
                 verseListRef.current?.scrollToOffset({ offset, animated: false });
                 setVerseScrollOffset(offset);
               }}
+              onDragStart={() => setVerseScrollbarDragging(true)}
+              onDragEnd={() => setVerseScrollbarDragging(false)}
             />
             {showScrollToBottom && (
               <TouchableOpacity
@@ -312,12 +398,14 @@ export default function ScriptureSearchScreen({ route }: Props) {
         {translationModal}
         </View>
         <MagnifyButton style={{ bottom: 80 }} />
+      </ImageBackground>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
       <View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#718096" />
         <TextInput
@@ -341,6 +429,20 @@ export default function ScriptureSearchScreen({ route }: Props) {
         >
           <Text style={[styles.filterChipText, filter === 'torah' && styles.filterChipTextActive]}>{t.scriptureSearch.filterTorah}</Text>
         </TouchableOpacity>
+        {/* Opens Blue Letter Bible's own site in the device browser -- a
+            plain outbound link (same as ApprovedCharitiesScreen's charity
+            links), not embedded/reproduced content, for anyone who wants
+            to cross-reference translations or study tools beyond what
+            this app's own translation picker offers. */}
+        <TouchableOpacity
+          style={[styles.filterChip, styles.blueLetterBibleChip]}
+          onPress={() => Linking.openURL('https://www.blueletterbible.org/')}
+          accessibilityRole="button"
+          accessibilityLabel="Open Blue Letter Bible for alternative translations"
+        >
+          <Ionicons name="open-outline" size={12} color="#4A5568" />
+          <Text style={styles.filterChipText}>Blue Letter Bible</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.filterChip, styles.translationFilterChip]}
           onPress={() => setTranslationPickerOpen(true)}
@@ -349,6 +451,22 @@ export default function ScriptureSearchScreen({ route }: Props) {
           <Ionicons name="chevron-down" size={12} color="#4A5568" />
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        style={styles.commonQuestionsCard}
+        onPress={() =>
+          navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('AboutApp', COMMON_QUESTIONS)
+        }
+        accessibilityRole="button"
+        accessibilityLabel="Common Questions -- salvation, baptism, communion, and more"
+      >
+        <Ionicons name="help-circle-outline" size={16} color={Colors.gold} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.commonQuestionsTitle}>Common Questions</Text>
+          <Text style={styles.commonQuestionsSubtitle}>Salvation, baptism, communion, and more</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={16} color="#A0AEC0" />
+      </TouchableOpacity>
 
       {loading ? (
         <ActivityIndicator style={{ marginTop: 40 }} color={Colors.royal} />
@@ -393,6 +511,7 @@ export default function ScriptureSearchScreen({ route }: Props) {
               setBookScrollOffset(contentOffset.y);
             }}
             scrollEventThrottle={16}
+            scrollEnabled={!bookScrollbarDragging}
           />
           <DraggableScrollbar
             contentHeight={bookContentHeight}
@@ -402,6 +521,8 @@ export default function ScriptureSearchScreen({ route }: Props) {
               bookListRef.current?.scrollToOffset({ offset, animated: false });
               setBookScrollOffset(offset);
             }}
+            onDragStart={() => setBookScrollbarDragging(true)}
+            onDragEnd={() => setBookScrollbarDragging(false)}
           />
           {showBookScrollToBottom && (
             <TouchableOpacity
@@ -415,23 +536,39 @@ export default function ScriptureSearchScreen({ route }: Props) {
         </View>
       )}
       {translationModal}
+    </ImageBackground>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
+  safeArea: { flex: 1, borderWidth: 5, borderColor: Colors.royal },
+  container: { flex: 1 },
   searchBar: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', margin: 16,
     borderRadius: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E2E8F0', gap: 8,
   },
   searchInput: { flex: 1, height: 44, fontSize: 15, color: Colors.ink },
-  filterRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 8 },
+  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 16, marginBottom: 8 },
+  translateChapterButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    marginHorizontal: 16, marginBottom: 10, paddingVertical: 8, borderRadius: 8,
+    backgroundColor: Colors.royal,
+  },
+  translateChapterButtonText: { fontSize: 12.5, fontWeight: '700', color: Colors.gold },
+  commonQuestionsCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff',
+    marginHorizontal: 16, marginBottom: 12, borderRadius: 10, paddingHorizontal: 14,
+    paddingVertical: 12, borderWidth: 1, borderColor: '#E2E8F0',
+  },
+  commonQuestionsTitle: { fontSize: 14, fontWeight: '700', color: Colors.royal },
+  commonQuestionsSubtitle: { fontSize: 11.5, color: '#718096', marginTop: 1 },
   filterChip: { paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: '#E2E8F0' },
   filterChipActive: { backgroundColor: Colors.royal },
   filterChipText: { fontSize: 12.5, color: '#4A5568', fontWeight: '600' },
   filterChipTextActive: { color: '#fff' },
   translationFilterChip: { flexDirection: 'row', alignItems: 'center', gap: 4, marginLeft: 'auto' },
+  blueLetterBibleChip: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   list: { paddingHorizontal: 16, paddingBottom: 24 },
   centerBox: { alignItems: 'center', marginTop: 40 },
   error: { color: '#718096', fontSize: 14, textAlign: 'center', marginTop: 20 },
@@ -467,7 +604,8 @@ const styles = StyleSheet.create({
   chapterHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 8 },
   chapterTitleWrap: { alignItems: 'center', flex: 1 },
   bookTitle: { fontSize: 18, fontWeight: '800', color: Colors.royal },
-  verseRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 10, gap: 8 },
+  verseRow: { flexDirection: 'row', paddingHorizontal: 16, marginBottom: 10, gap: 8, borderRadius: 8, paddingVertical: 4 },
+  verseRowHighlight: { backgroundColor: 'rgba(201,162,39,0.18)' },
   verseNum: { fontSize: 11, fontWeight: '700', color: Colors.gold, width: 20, marginTop: 2 },
   verseText: { flex: 1, fontSize: 14.5, lineHeight: 21, color: Colors.ink },
   scrollToBottomBtn: {

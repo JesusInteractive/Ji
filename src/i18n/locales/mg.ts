@@ -251,7 +251,11 @@ const mg: TranslationShape = {
     "generateButton": "Mamorona",
     "regenerateButton": "Mamorona indray",
     "generateErrorTitle": "Tsy afaka namorona izany",
-    "generateErrorFallback": "Jereo ny fifandraisanao ary andramo indray."
+    "generateErrorFallback": "Jereo ny fifandraisanao ary andramo indray.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Tsy afaka nanokatra izany rohy izany",
@@ -279,6 +283,20 @@ const mg: TranslationShape = {
     "loadingLanguages": "Mampiditra ny fiteny misy...",
     "loadError": "Tsy nahalasa ny tranomboky. Jereo ny fifandraisanao ary andramo indray.",
     "retryButton": "Andramo indray"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ity no tranomboky fianaranao. Tsindrio ny boky iray raha te hamaky. Ny mpikambana Platinum afaka mihaino ny AI Jesosy mamaky ny boky misy anay amin'ny fiteniny.",
+    "enterLibrary": "Idiro ny tranomboky",
+    "readAloudShelfTitle": "Vakina amin'ny feo",
+    "readAloudShelfSubtitle": "Ny AI Jesosy afaka mamaky ireo boky ireo amin'ny feo. Platinum.",
+    "readerLoadError": "Tsy afaka nampiditra ity boky ity. Jereo ny fifandraisanao ary andramo indray.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Fandevonana feo",
+    "jesusVoiceDisclosure": "Ny AI Jesosy mamaky ny boky voatanisa ao amin'ny Katalaogin'ny Vakina Amin'ny Feo ihany. Ity feo ity dia natao ho an'ity app ity, mifototra amin'ny Soratra Masina — tsy rakitra feo avy amin'ny olona tena izy. Ny fisian'ny serivisy dia miankina amin'ny fanohanana ny fiteny.",
+    "notAvailableLanguage": "Tsy mbola misy amin'ity fiteny ity",
+    "textOnlyLabel": "Soratra ihany",
+    "readAloudFilterLabel": "Vakina amin'ny feo",
+    "catalogSearchPlaceholder": "Karohy ny tranomboky"
   }
 };
 

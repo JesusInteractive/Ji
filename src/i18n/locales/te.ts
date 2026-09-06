@@ -251,7 +251,11 @@ const te: TranslationShape = {
     "generateButton": "రూపొందించండి",
     "regenerateButton": "మళ్లీ రూపొందించండి",
     "generateErrorTitle": "దానిని రూపొందించలేకపోయాము",
-    "generateErrorFallback": "దయచేసి మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి."
+    "generateErrorFallback": "దయచేసి మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ఆ లింక్‌ను తెరవలేకపోయాము",
@@ -279,6 +283,20 @@ const te: TranslationShape = {
     "loadingLanguages": "అందుబాటులో ఉన్న భాషలను లోడ్ చేస్తోంది...",
     "loadError": "లైబ్రరీని లోడ్ చేయలేకపోయింది. మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
     "retryButton": "మళ్లీ ప్రయత్నించండి"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ఇది మీ అధ్యయన లైబ్రరీ. చదవడానికి ఒక పుస్తకంపై టాప్ చేయండి. ప్లాటినం సభ్యులు AI జీసస్ వారి భాషలో ఉన్న పుస్తకాలను చదవడం వినవచ్చు.",
+    "enterLibrary": "లైబ్రరీలోకి ప్రవేశించండి",
+    "readAloudShelfTitle": "బిగ్గరగా చదవండి",
+    "readAloudShelfSubtitle": "AI జీసస్ ఈ పుస్తకాలను బిగ్గరగా చదవగలరు. ప్లాటినం.",
+    "readerLoadError": "ఈ పుస్తకాన్ని లోడ్ చేయలేకపోయింది. మీ కనెక్షన్‌ని తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+    "speakerLockedLabel": "ప్లాటినం",
+    "narrationLabel": "నారేషన్",
+    "jesusVoiceDisclosure": "AI జీసస్ రీడ్-అలౌడ్ కేటలాగ్‌లో జాబితా చేయబడిన పుస్తకాలను మాత్రమే చదువుతారు. ఇది ఈ యాప్ కోసం రూపొందించిన వాయిస్, లేఖనాల్లో ఆధారితం — నిజమైన వ్యక్తి రికార్డింగ్ కాదు. లభ్యత భాషా మద్దతుపై ఆధారపడి ఉంటుంది.",
+    "notAvailableLanguage": "ఈ భాషలో ఇంకా అందుబాటులో లేదు",
+    "textOnlyLabel": "టెక్స్ట్ మాత్రమే",
+    "readAloudFilterLabel": "బిగ్గరగా చదవండి",
+    "catalogSearchPlaceholder": "లైబ్రరీలో శోధించండి"
   }
 };
 

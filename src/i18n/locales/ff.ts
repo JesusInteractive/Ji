@@ -251,7 +251,11 @@ const ff: TranslationShape = {
     "generateButton": "Waɗ",
     "regenerateButton": "Waɗ kadi",
     "generateErrorTitle": "Min waawaa waɗde ɗum",
-    "generateErrorFallback": "Ɓanngin jokkondiral, fuɗɗito."
+    "generateErrorFallback": "Ɓanngin jokkondiral, fuɗɗito.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Min waawaa udditde jokkondiral",
@@ -279,6 +283,20 @@ const ff: TranslationShape = {
     "loadingLanguages": "Nana loowoo ɗemɗe goodɗe...",
     "loadError": "Hoto loowa defte ɗee. Ƴeew jokkondiral maa kadi fuɗɗito.",
     "retryButton": "Fuɗɗito"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ko ɗum defterdu janngirde ma. Huɓɓu deftere ngam janngude. Jooɗaniiɓe Platinum ɓe mbaawi heɗaade AI Jesus ina jannga defte ɗe amen e ɗemngal mum.",
+    "enterLibrary": "Na yah defterdu",
+    "readAloudShelfTitle": "Janngin e Daande",
+    "readAloudShelfSubtitle": "AI Jesus ina waawi jannginde defte ɗee e daande. Platinum.",
+    "readerLoadError": "Hotoo deftere ndee. Ƴeew jokkondiral maa kadi puɗɗito.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Janngingol",
+    "jesusVoiceDisclosure": "AI Jesus jannginta tan defte ɗe limtaa e Doggol Jannginirɗe. Ɗum ko daande waɗaaɗe ngam app oo, ɗum waɗi e binndi ɗii — wonaa nanngitol neɗɗo goonga. Heɓaare ndee ina waɗi e ballondiral ɗemngal.",
+    "notAvailableLanguage": "Wonaa heɓaa e ɗemngal ngal tawo",
+    "textOnlyLabel": "Binndi tan",
+    "readAloudFilterLabel": "Janngin e Daande",
+    "catalogSearchPlaceholder": "Yiɗɗu defterdu"
   }
 };
 

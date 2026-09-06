@@ -251,7 +251,11 @@ const id: TranslationShape = {
     "generateButton": "Hasilkan",
     "regenerateButton": "Hasilkan Ulang",
     "generateErrorTitle": "Tidak dapat menghasilkan itu",
-    "generateErrorFallback": "Periksa koneksi Anda dan coba lagi."
+    "generateErrorFallback": "Periksa koneksi Anda dan coba lagi.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Tidak dapat membuka tautan itu",
@@ -279,6 +283,20 @@ const id: TranslationShape = {
     "loadingLanguages": "Memuat bahasa yang tersedia...",
     "loadError": "Tidak dapat memuat perpustakaan. Periksa koneksi Anda dan coba lagi.",
     "retryButton": "Coba Lagi"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ini adalah perpustakaan studi Anda. Ketuk buku untuk membaca. Anggota Platinum dapat mendengar AI Jesus membacakan buku-buku kami dalam bahasa mereka.",
+    "enterLibrary": "Masuk ke perpustakaan",
+    "readAloudShelfTitle": "Bacakan",
+    "readAloudShelfSubtitle": "AI Jesus dapat membacakan buku-buku ini dengan suara. Platinum.",
+    "readerLoadError": "Tidak dapat memuat buku ini. Periksa koneksi Anda dan coba lagi.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narasi",
+    "jesusVoiceDisclosure": "AI Jesus hanya membacakan buku-buku yang tercantum dalam Katalog Bacakan. Ini adalah suara yang dimodelkan untuk aplikasi ini, berdasarkan Kitab Suci — bukan rekaman orang sungguhan. Ketersediaan tergantung pada dukungan bahasa.",
+    "notAvailableLanguage": "Belum tersedia dalam bahasa ini",
+    "textOnlyLabel": "Hanya teks",
+    "readAloudFilterLabel": "Bacakan",
+    "catalogSearchPlaceholder": "Cari di perpustakaan"
   }
 };
 

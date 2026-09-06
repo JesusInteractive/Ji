@@ -251,7 +251,11 @@ const ms: TranslationShape = {
     "generateButton": "Hasilkan",
     "regenerateButton": "Hasilkan Semula",
     "generateErrorTitle": "Tidak dapat menghasilkan itu",
-    "generateErrorFallback": "Sila semak sambungan anda dan cuba lagi."
+    "generateErrorFallback": "Sila semak sambungan anda dan cuba lagi.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Tidak dapat membuka pautan itu",
@@ -279,6 +283,20 @@ const ms: TranslationShape = {
     "loadingLanguages": "Memuatkan bahasa yang tersedia...",
     "loadError": "Tidak dapat memuatkan perpustakaan. Semak sambungan anda dan cuba lagi.",
     "retryButton": "Cuba semula"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ini adalah perpustakaan kajian anda. Ketuk buku untuk membacanya. Ahli Platinum boleh mendengar AI Jesus membacakan buku-buku yang kami ada dalam bahasa mereka.",
+    "enterLibrary": "Masuk ke perpustakaan",
+    "readAloudShelfTitle": "Baca Nyaring",
+    "readAloudShelfSubtitle": "AI Jesus boleh membacakan buku-buku ini dengan nyaring. Platinum.",
+    "readerLoadError": "Tidak dapat memuatkan buku ini. Semak sambungan anda dan cuba lagi.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narasi",
+    "jesusVoiceDisclosure": "AI Jesus hanya membaca buku-buku yang disenaraikan dalam Katalog Baca Nyaring. Ini adalah suara yang dimodelkan untuk aplikasi ini, berasaskan Kitab Suci — bukan rakaman orang sebenar. Ketersediaan bergantung pada sokongan bahasa.",
+    "notAvailableLanguage": "Belum tersedia dalam bahasa ini lagi",
+    "textOnlyLabel": "Teks sahaja",
+    "readAloudFilterLabel": "Baca Nyaring",
+    "catalogSearchPlaceholder": "Cari perpustakaan"
   }
 };
 

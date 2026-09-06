@@ -251,7 +251,11 @@ const am: TranslationShape = {
     "generateButton": "አመንጭ",
     "regenerateButton": "እንደገና አመንጭ",
     "generateErrorTitle": "ያንን ማመንጨት አልተቻለም",
-    "generateErrorFallback": "ግንኙነትዎን ያረጋግጡ እና እንደገና ይሞክሩ።"
+    "generateErrorFallback": "ግንኙነትዎን ያረጋግጡ እና እንደገና ይሞክሩ።",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ያንን ሊንክ መክፈት አልተቻለም",
@@ -279,6 +283,20 @@ const am: TranslationShape = {
     "loadingLanguages": "ያሉ ቋንቋዎችን በመጫን ላይ...",
     "loadError": "ቤተ መጽሐፍቱን መጫን አልተቻለም። ግንኙነትዎን ያረጋግጡ እና እንደገና ይሞክሩ።",
     "retryButton": "እንደገና ሞክር"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ይህ የጥናት ቤተ መጻሕፍትዎ ነው። መጽሐፍ ለማንበብ ይንኩት። ፕላቲነም አባላት በቋንቋቸው ያሉትን መጽሐፎች AI ኢየሱስ ሲያነብ መስማት ይችላሉ።",
+    "enterLibrary": "ቤተ መጻሕፍት ይግቡ",
+    "readAloudShelfTitle": "በድምጽ ማንበብ",
+    "readAloudShelfSubtitle": "AI ኢየሱስ እነዚህን መጽሐፎች በድምጽ ማንበብ ይችላል። ፕላቲነም።",
+    "readerLoadError": "ይህን መጽሐፍ መጫን አልተቻለም። ግንኙነትዎን ያረጋግጡ እና እንደገና ይሞክሩ።",
+    "speakerLockedLabel": "ፕላቲነም",
+    "narrationLabel": "ትረካ",
+    "jesusVoiceDisclosure": "AI ኢየሱስ በተነበቡ ካታሎግ ውስጥ የተዘረዘሩትን መጽሐፎች ብቻ ያነባል። ይህ ለዚህ መተግበሪያ የተዘጋጀ ድምጽ ነው፣ በመጽሐፍ ቅዱስ ላይ የተመሰረተ — የእውነተኛ ሰው ቀረጻ አይደለም። መገኘቱ በቋንቋ ድጋፍ ላይ የተመሰረተ ነው።",
+    "notAvailableLanguage": "እስካሁን በዚህ ቋንቋ አይገኝም",
+    "textOnlyLabel": "ጽሑፍ ብቻ",
+    "readAloudFilterLabel": "በድምጽ ማንበብ",
+    "catalogSearchPlaceholder": "ቤተ መጻሕፍትን ፈልግ"
   }
 };
 

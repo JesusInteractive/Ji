@@ -39,6 +39,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const { ElevenLabsClient } = require('@elevenlabs/elevenlabs-js');
 const { Resend } = require('resend');
+const twilio = require('twilio');
 const { sql, ensureSchema, hasDatabase } = require('./db');
 const { bulkInsertTriviaQuestions, TESTAMENTS: TRIVIA_TESTAMENT_VALUES, DIFFICULTIES: TRIVIA_DIFFICULTY_VALUES, CORRECT_OPTIONS: TRIVIA_CORRECT_OPTION_VALUES } = require('./lib/triviaInsert');
 
@@ -107,6 +108,18 @@ const SUPPORT_REPORT_TO_EMAIL = process.env.SUPPORT_REPORT_TO_EMAIL || 'support@
 // not the root domain, so this never collides with Neo Mail's own MX
 // records handling actual inbound mail to @jesusinteractive.com.
 const SUPPORT_REPORT_FROM_EMAIL = process.env.SUPPORT_REPORT_FROM_EMAIL || 'Jesus Interactive <reports@send.jesusinteractive.com>';
+// Emergency Panic Button (Profile screen) SMS -- account is created and
+// funded, but the phone number purchase is pending Twilio Trust Hub
+// approval; TWILIO_FROM_NUMBER stays unset until that clears, at which
+// point twilioClient below starts actually sending (see its own comment
+// for how an unset/incomplete config degrades instead of 500ing).
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_FROM_NUMBER = process.env.TWILIO_FROM_NUMBER;
+// State Department's main public line -- the guaranteed fallback when a
+// country isn't in emergency_directory yet, or a row's embassy_phone is
+// still null (see POST /v1/emergency/alert below).
+const STATE_DEPT_FALLBACK_PHONE = '+1-202-501-4444';
 // Signs/verifies short-lived session JWTs (see /v1/auth/session and
 // requireAuth below). Server-only -- never sent to or read by the client,
 // unlike the old BACKEND_SECRET this replaces. If BACKEND_SECRET was ever
@@ -153,6 +166,7 @@ function isDeveloperRequest(req) {
 
 const elevenlabs = ELEVENLABS_API_KEY ? new ElevenLabsClient({ apiKey: ELEVENLABS_API_KEY }) : null;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+const twilioClient = TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN) : null;
 
 // Keep-warm target for an external scheduled pinger (UptimeRobot,
 // cron-job.org, etc. -- Vercel's own Cron Jobs are capped at once/day on
@@ -271,7 +285,7 @@ const USER_AGREEMENT = {
 // page). Source: user-provided rewrite, dated September 2, 2026.
 const PRIVACY_POLICY = {
   title: 'Privacy Policy',
-  lastUpdated: 'September 2, 2026',
+  lastUpdated: 'September 5, 2026',
   intro:
     'This policy describes how Jesus Interactive (the "App"), operated by Alizabeth James, an individual doing business as Jesus Interactive, handles information. It is written to match the product as it actually works today, including the corrections raised in a pre-launch security review -- not a generic template.\n\nThere is no email/password login, no member profile, and no profile-preference account. Use is tied to a device ID created on your device. That ID is sent with requests so we can show your testimonies, reactions, reports, and plan history -- and so we can delete those server-side rows when you ask.\n\nThis is a description of current practices, not legal advice. By using the App you agree to the collection and use of information as described below; if you do not agree, do not use the App.\n\nOur promise, in plain language:\n- We do not sell your information.\n- We do not run a traditional account system.\n- If you publish on the testimony wall, that content is public to other users and visible to moderators.\n- Words you type into AI or voice features are sent to those vendors so the feature can run. Do not treat those chats as a sealed confessional.\n- "Delete my data" sends your device ID and cascade-deletes the device-linked rows in our live database. Older on-screen copy that said there was no server-side copy was wrong and has been corrected.',
   sections: [
@@ -281,7 +295,7 @@ const PRIVACY_POLICY = {
     },
     {
       heading: '2. Information We Collect',
-      body: 'Device identifier: When you save something on our servers (a post, reaction, report, plan-history item, export, or delete request), the App sends a device ID. We use it to attach your content and history to the same device, show you your own posts and plan history, and cascade-delete your live database rows if you use Delete my data. We do not ask for your name, email, or password to use the App. If you type a name or contact detail into a testimony, report, or chat, that text is stored or processed as content you chose to submit.\n\nContent you submit: testimony/wall posts (because you published them); reactions (because you reacted to a post); reports (because you flagged content for review); plan history (because you used the plan feature); AI/voice prompts and outputs needed to run those features; and delete/export requests. Do not put secrets, other people\'s private data, medical or financial details, or anything you would not want stored, moderated, or sent to an AI vendor.\n\nTechnical and security logs: Vercel records normal request logs. We also write "[audit]" lines in function logs for denied attempts to reach admin routes, successful moderation actions, and data-deletion events. Those logs can include time, route, outcome, and the device ID on the request. They are for security and abuse response, not a public profile.\n\nWhat we do NOT collect as an "account": Jesus Interactive does not create email/password accounts, usernames you sign in with, profile pages or profile-preference records, or a billing profile. Generic policy language about "your account," "your password," or "profile preferences" does not apply here.',
+      body: 'Device identifier: When you save something on our servers (a post, reaction, report, plan-history item, export, or delete request), the App sends a device ID. We use it to attach your content and history to the same device, show you your own posts and plan history, and cascade-delete your live database rows if you use Delete my data. We do not ask for your name, email, or password to use the App. If you type a name or contact detail into a testimony, report, or chat, that text is stored or processed as content you chose to submit.\n\nContent you submit: testimony/wall posts (because you published them); reactions (because you reacted to a post); reports (because you flagged content for review); plan history (because you used the plan feature); AI/voice prompts and outputs needed to run those features; and delete/export requests. Do not put secrets, other people\'s private data, medical or financial details, or anything you would not want stored, moderated, or sent to an AI vendor.\n\nEmergency contact information: If you set up the Emergency SOS button (Profile), the name and phone number of your family and ministry contacts are stored only on your device, not in our database. They are sent to us only at the moment you tap the SOS button, along with a one-time GPS location snapshot, so we can send an alert SMS on your behalf (see Section 5 and Section 9).\n\nTechnical and security logs: Vercel records normal request logs. We also write "[audit]" lines in function logs for denied attempts to reach admin routes, successful moderation actions, and data-deletion events. Those logs can include time, route, outcome, and the device ID on the request. They are for security and abuse response, not a public profile.\n\nWhat we do NOT collect as an "account": Jesus Interactive does not create email/password accounts, usernames you sign in with, profile pages or profile-preference records, or a billing profile. Generic policy language about "your account," "your password," or "profile preferences" does not apply here.',
     },
     {
       heading: '3. How We Use Information',
@@ -293,7 +307,7 @@ const PRIVACY_POLICY = {
     },
     {
       heading: '5. Processors',
-      body: 'These providers process data so the App can run: Vercel (hosting, routes, function/audit logs); Neon (PostgreSQL database); Anthropic (AI features you invoke); xAI (AI features you invoke); ElevenLabs (voice/speech features you invoke); and Resend (email delivery, if/when the App sends mail).\n\nIf you use an AI or voice feature, the text or audio for that request goes to that vendor. Do not paste information you are unwilling to send there.\n\nOperator API keys are not stored in the public client. If a key ever needs rotating, that is done only in the vendor consoles (Anthropic, xAI, ElevenLabs, Neon, Resend, Vercel) by the operator -- never from inside the public App.',
+      body: 'These providers process data so the App can run: Vercel (hosting, routes, function/audit logs); Neon (PostgreSQL database); Anthropic (AI features you invoke); xAI (AI features you invoke); ElevenLabs (voice/speech features you invoke); Resend (email delivery, if/when the App sends mail); and Twilio (SMS delivery, only if you tap the Emergency SOS button -- your emergency contacts\' phone numbers and the alert text, including your location snapshot, are sent to Twilio solely to deliver that message).\n\nIf you use an AI or voice feature, the text or audio for that request goes to that vendor. Do not paste information you are unwilling to send there.\n\nOperator API keys are not stored in the public client. If a key ever needs rotating, that is done only in the vendor consoles (Anthropic, xAI, ElevenLabs, Neon, Resend, Vercel) by the operator -- never from inside the public App.',
     },
     {
       heading: '6. Moderation and Admin Access',
@@ -309,7 +323,7 @@ const PRIVACY_POLICY = {
     },
     {
       heading: '9. Retention',
-      body: 'Live database rows last until you delete them, or we remove them for moderation, abuse, or shutdown reasons. Hosting and audit logs follow the provider\'s retention window unless kept for an active security incident. Backups expire on Neon\'s schedule.',
+      body: 'Live database rows last until you delete them, or we remove them for moderation, abuse, or shutdown reasons. Hosting and audit logs follow the provider\'s retention window unless kept for an active security incident. Backups expire on Neon\'s schedule.\n\nIf you use the Emergency SOS button, we keep a minimal log of each alert sent -- a device ID, timestamp, and location coordinates only. We do not store your emergency contacts\' names or phone numbers in this log.',
     },
     {
       heading: '10. International Processing',
@@ -617,6 +631,16 @@ const radioConfigLimiter = rateLimit({
 const analyticsEventLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: Number(process.env.ANALYTICS_EVENT_RATE_LIMIT) || 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, slow down.' },
+  skip: isDeveloperRequest,
+});
+// Deliberately generous -- this must never be the thing that blocks a
+// real emergency (e.g. someone retrying after a failed send).
+const emergencyLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.EMERGENCY_ALERT_RATE_LIMIT) || 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, slow down.' },
@@ -3158,6 +3182,125 @@ app.post('/v1/webhooks/revenuecat', requireDatabase, async (req, res) => {
     }
   }
   res.status(200).json({ ok: true });
+});
+
+// Simple E.164-ish check -- no phone-validation library exists in this
+// backend (confirmed); a permissive regex matches how every other field
+// here is validated (manual, no schema library).
+const EMERGENCY_PHONE_REGEX = /^\+?[1-9]\d{6,14}$/;
+
+function normalizeEmergencyContact(contact) {
+  if (!contact || typeof contact !== 'object') return null;
+  const name = typeof contact.name === 'string' ? contact.name.trim() : '';
+  const phone = typeof contact.phone === 'string' ? contact.phone.replace(/[\s()-]/g, '') : '';
+  if (!name || name.length > 100 || !EMERGENCY_PHONE_REGEX.test(phone)) return null;
+  return { name, phone };
+}
+
+// POST /v1/emergency/alert: Emergency Panic Button (Profile screen) --
+// sends one SMS to each of the user's two saved contacts via Twilio,
+// carrying a one-shot location snapshot (never collected in the
+// background), the local emergency number, and the nearest US Embassy
+// phone number for wherever the user currently is (keyed by the
+// ISO country code the client resolved on-device via reverse geocoding).
+// Unlike this backend's usual "swallow vendor errors, always 200"
+// convention (see /v1/support/report's Resend call) this deliberately
+// surfaces each contact's real send status to the client -- a silently
+// failed emergency alert is a safety problem, not a background nicety.
+app.post('/v1/emergency/alert', emergencyLimiter, requireAuth, requireDatabase, async (req, res) => {
+  const { deviceId, familyContact, ministryContact, latitude, longitude, countryCode } = req.body || {};
+  if (!deviceId || typeof deviceId !== 'string' || deviceId.length > 200) {
+    return res.status(400).json({ error: 'deviceId is required' });
+  }
+  const family = normalizeEmergencyContact(familyContact);
+  const ministry = normalizeEmergencyContact(ministryContact);
+  if (!family || !ministry) {
+    return res.status(400).json({ error: 'familyContact and ministryContact each need a name and a valid phone number' });
+  }
+  const lat = typeof latitude === 'number' && Number.isFinite(latitude) && latitude >= -90 && latitude <= 90 ? latitude : null;
+  const lon = typeof longitude === 'number' && Number.isFinite(longitude) && longitude >= -180 && longitude <= 180 ? longitude : null;
+  const country = typeof countryCode === 'string' && countryCode.length > 0 && countryCode.length <= 10
+    ? countryCode.toUpperCase()
+    : null;
+
+  try {
+    let emergencyNumber = null;
+    let embassyPhone = STATE_DEPT_FALLBACK_PHONE;
+    if (country) {
+      const rows = await sql`SELECT emergency_number, embassy_phone FROM emergency_directory WHERE country_code = ${country}`;
+      if (rows.length > 0) {
+        emergencyNumber = rows[0].emergency_number ?? null;
+        embassyPhone = rows[0].embassy_phone ?? STATE_DEPT_FALLBACK_PHONE;
+      }
+    }
+    const locationText = lat !== null && lon !== null ? `${lat.toFixed(5)}, ${lon.toFixed(5)}` : 'unavailable';
+    const localNumberText = emergencyNumber ?? 'unavailable';
+    const baseMessage = `EMERGENCY — needs help. Location: ${locationText}. Time: ${new Date().toISOString()}. Local emergency number: ${localNumberText}. US Embassy: ${embassyPhone}.`;
+    const ministryMessage = `Ministry alert — ${baseMessage}`;
+
+    // Log first, send second (same idiom as /v1/support/report's Resend
+    // call) -- the event is durably recorded even if Twilio itself fails.
+    const inserted = await sql`
+      INSERT INTO emergency_alerts (device_id, latitude, longitude, country_code, family_sms_status, ministry_sms_status)
+      VALUES (${deviceId}, ${lat}, ${lon}, ${country}, 'pending', 'pending')
+      RETURNING id
+    `;
+    const alertId = inserted[0].id;
+
+    const sendOne = async (to, body) => {
+      if (!twilioClient || !TWILIO_FROM_NUMBER) return 'not_configured';
+      try {
+        await twilioClient.messages.create({ to, from: TWILIO_FROM_NUMBER, body });
+        return 'ok';
+      } catch (err) {
+        console.error('[emergency/alert] Twilio send failed:', err);
+        return 'failed';
+      }
+    };
+
+    const [familyStatus, ministryStatus] = await Promise.all([
+      sendOne(family.phone, baseMessage),
+      sendOne(ministry.phone, ministryMessage),
+    ]);
+
+    await sql`UPDATE emergency_alerts SET family_sms_status = ${familyStatus}, ministry_sms_status = ${ministryStatus} WHERE id = ${alertId}`;
+    console.warn(`[audit] emergency alert sent: device ${deviceId} (family=${familyStatus}, ministry=${ministryStatus})`);
+
+    res.status(200).json({ familyStatus, ministryStatus });
+  } catch (err) {
+    console.error('[emergency/alert] failed:', err);
+    res.status(500).json({ error: 'Could not send emergency alert.' });
+  }
+});
+
+// POST /v1/admin/emergency-directory: upserts one country's row -- the
+// "monthly refresh against the State Department directory" mechanism,
+// same editable-without-an-app-release shape as /v1/admin/radio/config.
+app.post('/v1/admin/emergency-directory', requireAuth, requireDeveloper, requireDatabase, async (req, res) => {
+  const { countryCode, countryName, emergencyNumber, embassyPhone } = req.body || {};
+  if (!countryCode || typeof countryCode !== 'string' || countryCode.length > 10) {
+    return res.status(400).json({ error: 'countryCode is required' });
+  }
+  if (!countryName || typeof countryName !== 'string' || countryName.length > 200) {
+    return res.status(400).json({ error: 'countryName is required' });
+  }
+  try {
+    const rows = await sql`
+      INSERT INTO emergency_directory (country_code, country_name, emergency_number, embassy_phone, updated_at)
+      VALUES (${countryCode.toUpperCase()}, ${countryName}, ${emergencyNumber ?? null}, ${embassyPhone ?? null}, now())
+      ON CONFLICT (country_code) DO UPDATE SET
+        country_name = ${countryName},
+        emergency_number = COALESCE(${emergencyNumber ?? null}, emergency_directory.emergency_number),
+        embassy_phone = COALESCE(${embassyPhone ?? null}, emergency_directory.embassy_phone),
+        updated_at = now()
+      RETURNING country_code, country_name, emergency_number, embassy_phone, updated_at
+    `;
+    console.warn(`[audit] admin updated emergency_directory ${countryCode.toUpperCase()} (by ${req.ip})`);
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error('[admin/emergency-directory] failed:', err);
+    res.status(500).json({ error: 'Could not update emergency directory.' });
+  }
 });
 
 // Vercel's Node.js runtime imports this file as a module and calls the

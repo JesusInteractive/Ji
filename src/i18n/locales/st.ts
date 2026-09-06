@@ -251,7 +251,11 @@ const st: TranslationShape = {
     "generateButton": "Hlaha",
     "regenerateButton": "Hlaha hape",
     "generateErrorTitle": "Ha ea ka ea hlahisa seo",
-    "generateErrorFallback": "Ka kopo hlahloba khokahano ea hau 'me u leke hape."
+    "generateErrorFallback": "Ka kopo hlahloba khokahano ea hau 'me u leke hape.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ha ea ka ea bula sehokela seo",
@@ -279,6 +283,20 @@ const st: TranslationShape = {
     "loadingLanguages": "Ho kenya lipuo tse fumanehang...",
     "loadError": "Ha e ea khona ho kenya laeborari. Lekola khokahano ea hao 'me u leke hape.",
     "retryButton": "Leka hape"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ena ke laeborari ea hao ea ho ithuta. Tlanya buka ho e bala. Litho tsa Platinum li ka utloa AI Jesu a bala libuka tseo re nang le tsona ka puo ea tsona.",
+    "enterLibrary": "Kena laeboraring",
+    "readAloudShelfTitle": "Bala ka lentsoe",
+    "readAloudShelfSubtitle": "AI Jesu a ka bala libuka tse ka lentsoe. Platinum.",
+    "readerLoadError": "Ha e ea khona ho kenya buka ena. Sheba khokahano ea hao 'me u leke hape.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Phetelo ka lentsoe",
+    "jesusVoiceDisclosure": "AI Jesu o bala feela libuka tse thathamisitsoeng ho Kataloge ea Ho Bala ka Lentsoe. Ena ke lentsoe le entsoeng bakeng sa app ena, le thehiloe ho Mangolo — eseng rekoto ea motho oa sebele. Ho fumaneha ho itšetlehile ka tšehetso ea puo.",
+    "notAvailableLanguage": "Ha e so fumanehe ka puo ena",
+    "textOnlyLabel": "Mongolo feela",
+    "readAloudFilterLabel": "Bala ka lentsoe",
+    "catalogSearchPlaceholder": "Batla laeboraring"
   }
 };
 

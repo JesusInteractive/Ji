@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { I18nProvider } from './i18n';
 import { AppProvider } from './context/AppContext';
+import { LiveRadioPlaybackProvider } from './context/LiveRadioPlaybackContext';
 import RootNavigator from './navigation/RootNavigator';
 
 export default function AppRoot() {
@@ -13,10 +14,12 @@ export default function AppRoot() {
       <SafeAreaProvider>
         <I18nProvider>
           <AppProvider>
-            <StatusBar style="light" />
-            <NavigationContainer>
-              <RootNavigator />
-            </NavigationContainer>
+            <LiveRadioPlaybackProvider>
+              <StatusBar style="light" />
+              <NavigationContainer>
+                <RootNavigator />
+              </NavigationContainer>
+            </LiveRadioPlaybackProvider>
           </AppProvider>
         </I18nProvider>
       </SafeAreaProvider>

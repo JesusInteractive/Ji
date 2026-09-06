@@ -199,6 +199,45 @@ function ensureSchema() {
         CREATE INDEX IF NOT EXISTS analytics_events_name_created_idx
           ON analytics_events (event_name, created_at)
       `;
+
+      // Emergency Panic Button (Profile screen) -- one row per alert
+      // actually sent. Per the feature's own logging spec, this stores
+      // only user id/timestamp/location, never the contacts' names or
+      // phone numbers (those are supplied fresh by the client on every
+      // send, not persisted server-side).
+      await sql`
+        CREATE TABLE IF NOT EXISTS emergency_alerts (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          device_id TEXT NOT NULL,
+          latitude DOUBLE PRECISION,
+          longitude DOUBLE PRECISION,
+          country_code TEXT,
+          family_sms_status TEXT NOT NULL,
+          ministry_sms_status TEXT NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        )
+      `;
+      await sql`
+        CREATE INDEX IF NOT EXISTS emergency_alerts_device_created_idx
+          ON emergency_alerts (device_id, created_at)
+      `;
+
+      // Country -> local emergency number + nearest US Embassy phone
+      // number, keyed by ISO country code -- admin-editable via
+      // POST /v1/admin/emergency-directory (same "editable without an
+      // app release" pattern as radio_config/trivia_questions), so the
+      // monthly State Department refresh never needs a redeploy. A
+      // missing row (or a row with a null emergency_number/embassy_phone)
+      // falls back to the State Department's main line at read time.
+      await sql`
+        CREATE TABLE IF NOT EXISTS emergency_directory (
+          country_code TEXT PRIMARY KEY,
+          country_name TEXT NOT NULL,
+          emergency_number TEXT,
+          embassy_phone TEXT,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+        )
+      `;
       return true;
     })();
   }

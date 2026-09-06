@@ -251,7 +251,11 @@ const ku: TranslationShape = {
     "generateButton": "Çêbike",
     "regenerateButton": "Dîsa çêbike",
     "generateErrorTitle": "Nekarî wê çêbike",
-    "generateErrorFallback": "Ji kerema xwe re girêdana xwe kontrol bike û dîsa biceribîne."
+    "generateErrorFallback": "Ji kerema xwe re girêdana xwe kontrol bike û dîsa biceribîne.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nekarî wê girêdanê veke",
@@ -279,6 +283,20 @@ const ku: TranslationShape = {
     "loadingLanguages": "Zimanên berdest têne barkirin...",
     "loadError": "Pirtûkxane nehat barkirin. Girêdana xwe kontrol bike û dîsa biceribîne.",
     "retryButton": "Dîsa biceribîne"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ئەمە کتێبخانەی خوێندنەوەی تۆیە. کرتە لەسەر کتێبێک بکە بۆ خوێندنەوە. ئەندامانی پلاتینیۆم دەتوانن AI عیسا بە زمانی خۆیان کتێبەکان بخوێننەوە.",
+    "enterLibrary": "بچۆرە کتێبخانەوە",
+    "readAloudShelfTitle": "خوێندنەوە بە دەنگ",
+    "readAloudShelfSubtitle": "AI عیسا دەتوانێت ئەم کتێبانە بە دەنگ بخوێنێتەوە. پلاتینیۆم.",
+    "readerLoadError": "نەتوانرا ئەم کتێبە بار بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدە.",
+    "speakerLockedLabel": "پلاتینیۆم",
+    "narrationLabel": "گێڕانەوە",
+    "jesusVoiceDisclosure": "AI عیسا تەنها ئەو کتێبانە دەخوێنێتەوە کە لە کەتالۆگی خوێندنەوە بە دەنگدا هاتوون. ئەمە دەنگێکی مۆدێلکراوە بۆ ئەم ئەپە، لەسەر بنەمای نووسراوە — تۆمارکردنی کەسێکی ڕاستەقینە نییە. بەردەستبوون پشت بە پشتگیری زمان دەبەستێت.",
+    "notAvailableLanguage": "هێشتا بەم زمانە بەردەست نییە",
+    "textOnlyLabel": "تەنها دەق",
+    "readAloudFilterLabel": "خوێندنەوە بە دەنگ",
+    "catalogSearchPlaceholder": "کتێبخانە بگەڕێ"
   }
 };
 

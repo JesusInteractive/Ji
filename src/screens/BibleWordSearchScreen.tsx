@@ -1,11 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, InteractionManager, PanResponder, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
+import DraggableScrollbar from '../components/DraggableScrollbar';
+import { logEvent } from '../services/analytics';
 import { useI18n, interpolate } from '../i18n';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import {
   DIRECTIONS,
   GRID_SIZE,
@@ -86,7 +92,8 @@ function pathMatchesWord(path: Cell[], word: PlacedWord): boolean {
 }
 
 export default function BibleWordSearchScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { hasAccess } = useFeatureAccess();
   const { t } = useI18n();
   const { completedWordSearchPuzzles, addCompletedWordSearchPuzzle } = useApp();
   const [puzzle, setPuzzle] = useState<WordSearchPuzzle>(() => getPuzzleForDate());
@@ -98,6 +105,17 @@ export default function BibleWordSearchScreen() {
   const gridSize = useRef(0);
   const gridContainerRef = useRef<View>(null);
   const startCellRef = useRef<Cell | null>(null);
+
+  // Word list scrolling -- same ScrollView + DraggableScrollbar pattern
+  // as PricingScreen.tsx/DailyDevotionsScreen.tsx. Without this, the
+  // word chips were a plain flex-wrap View with no way to reach
+  // whichever ones overflowed past the visible area (e.g. the last word
+  // in a 16-word list on a shorter device).
+  const wordListScrollRef = useRef<ScrollView>(null);
+  const [wordListScrollOffset, setWordListScrollOffset] = useState(0);
+  const [wordListContentHeight, setWordListContentHeight] = useState(0);
+  const [wordListViewportHeight, setWordListViewportHeight] = useState(0);
+  const [wordListScrollbarDragging, setWordListScrollbarDragging] = useState(false);
 
   const isComplete = foundWords.size >= puzzle.words.length;
   const alreadyCompletedBefore = completedWordSearchPuzzles.includes(puzzle.seed);
@@ -183,6 +201,17 @@ export default function BibleWordSearchScreen() {
       onStartShouldSetPanResponder: () => foundWordsRef.current.size < puzzleRef.current.words.length,
       onMoveShouldSetPanResponder: () => foundWordsRef.current.size < puzzleRef.current.words.length,
       onPanResponderGrant: (evt) => {
+        // Re-measure at the start of every drag, not just once via
+        // transitionEnd (see measureGrid's own comment) -- that one-time
+        // fix only works if the transition-end event fires at exactly
+        // the right moment; if it's ever early, late, or skipped, every
+        // touch for the rest of the session stays offset from a stale
+        // origin with no way to recover. Measuring here too means each
+        // new drag is self-correcting: onPanResponderMove's very next
+        // events (a real drag has many, well after this async
+        // measurement resolves) pick up the corrected origin almost
+        // immediately even if this exact touch-down used a stale one.
+        measureGrid();
         const cell = cellFromTouch(evt.nativeEvent.pageX, evt.nativeEvent.pageY);
         if (!cell) return;
         startCellRef.current = cell;
@@ -234,6 +263,16 @@ export default function BibleWordSearchScreen() {
     })
   ).current;
 
+  useEffect(() => {
+    if (hasAccess) logEvent('feature_used', { feature: 'wordSearch' });
+  }, [hasAccess]);
+
+  // Placed after every hook above (rules of hooks). A root-level modal
+  // registered directly on RootStack -- zero getParent() hops needed.
+  if (!hasAccess) {
+    return <PaywallLockScreen featureName="Bible Word Search" onSubscribe={() => navigation.navigate('Pricing')} />;
+  }
+
   const handleNextPuzzle = () => {
     setPuzzle(getNextPuzzle(puzzle.seed));
     setFoundWords(new Set());
@@ -247,17 +286,32 @@ export default function BibleWordSearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
       <View style={styles.progressRow}>
         <Text style={styles.progressText}>
           {interpolate(t.wordSearch.progressLabel, { count: foundWords.size, total: puzzle.words.length })}
         </Text>
-        {alreadyCompletedBefore && (
-          <View style={styles.completedBadge}>
-            <Ionicons name="checkmark-circle" size={14} color={Colors.gold} />
-            <Text style={styles.completedBadgeText}>{t.wordSearch.completedBadge}</Text>
-          </View>
-        )}
+        <View style={styles.progressRowRight}>
+          {alreadyCompletedBefore && (
+            <View style={styles.completedBadge}>
+              <Ionicons name="checkmark-circle" size={14} color={Colors.gold} />
+              <Text style={styles.completedBadgeText}>{t.wordSearch.completedBadge}</Text>
+            </View>
+          )}
+          {/* Always available, not just on the completion screen -- someone
+              wanting to play through many puzzles in one sitting shouldn't
+              have to fully finish (or abandon mid-way and have no way back
+              to a fresh one) each one first. */}
+          <TouchableOpacity
+            style={styles.newPuzzleBtn}
+            onPress={handleRefresh}
+            accessibilityRole="button"
+            accessibilityLabel="New puzzle"
+          >
+            <Ionicons name="shuffle" size={16} color={Colors.royal} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View
@@ -298,7 +352,15 @@ export default function BibleWordSearchScreen() {
       </View>
 
       <View style={styles.wordListWrapper}>
-        <View style={styles.wordList}>
+        <ScrollView
+          ref={wordListScrollRef}
+          contentContainerStyle={styles.wordList}
+          onLayout={({ nativeEvent }) => setWordListViewportHeight(nativeEvent.layout.height)}
+          onContentSizeChange={(_width, height) => setWordListContentHeight(height)}
+          onScroll={({ nativeEvent }) => setWordListScrollOffset(nativeEvent.contentOffset.y)}
+          scrollEventThrottle={16}
+          scrollEnabled={!wordListScrollbarDragging}
+        >
           {puzzle.words
             .slice()
             .sort((a, b) => a.word.localeCompare(b.word))
@@ -310,7 +372,18 @@ export default function BibleWordSearchScreen() {
                 </View>
               );
             })}
-        </View>
+        </ScrollView>
+        <DraggableScrollbar
+          contentHeight={wordListContentHeight}
+          viewportHeight={wordListViewportHeight}
+          scrollOffset={wordListScrollOffset}
+          onScrollTo={(offset) => {
+            wordListScrollRef.current?.scrollTo({ y: offset, animated: false });
+            setWordListScrollOffset(offset);
+          }}
+          onDragStart={() => setWordListScrollbarDragging(true)}
+          onDragEnd={() => setWordListScrollbarDragging(false)}
+        />
       </View>
 
       {isComplete && (
@@ -332,18 +405,21 @@ export default function BibleWordSearchScreen() {
           </View>
         </View>
       )}
+    </ImageBackground>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: Colors.ivory,
-    paddingHorizontal: 12,
-    paddingTop: 12,
     borderWidth: 5,
     borderColor: Colors.royal,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingTop: 12,
   },
   progressRow: {
     flexDirection: 'row',
@@ -360,10 +436,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.royal,
   },
+  progressRowRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   completedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  newPuzzleBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   completedBadgeText: {
     fontSize: 11,

@@ -251,7 +251,11 @@ const ky: TranslationShape = {
     "generateButton": "Түзүү",
     "regenerateButton": "Кайра түзүү",
     "generateErrorTitle": "Түзүү мүмкүн болбоду",
-    "generateErrorFallback": "Байланышыңызды текшерип, кайталап көрүңүз."
+    "generateErrorFallback": "Байланышыңызды текшерип, кайталап көрүңүз.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Бул шилтемени ачуу мүмкүн болбоду",
@@ -279,6 +283,20 @@ const ky: TranslationShape = {
     "loadingLanguages": "Жеткиликтүү тилдер жүктөлүүдө...",
     "loadError": "Китепкананы жүктөө мүмкүн болгон жок. Байланышыңызды текшерип, кайра аракет кылыңыз.",
     "retryButton": "Кайра аракет кылуу"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Бул сиздин изилдөө китепканаңыз. Китепти окуу үчүн басыңыз. Платинум мүчөлөр AI Иса китептерди өз тилдеринде окуганын уга алышат.",
+    "enterLibrary": "Китепканага кирүү",
+    "readAloudShelfTitle": "Үн менен окуу",
+    "readAloudShelfSubtitle": "AI Иса бул китептерди үн менен окуй алат. Платинум.",
+    "readerLoadError": "Бул китепти жүктөө мүмкүн болгон жок. Байланышыңызды текшерип, кайра аракет кылыңыз.",
+    "speakerLockedLabel": "Платинум",
+    "narrationLabel": "Үн менен окуу",
+    "jesusVoiceDisclosure": "AI Иса Үн менен окуу каталогуна киргизилген китептерди гана окуйт. Бул колдонмо үчүн атайын моделделген үн, Ыйык Жазууга негизделген — чыныгы адамдын жаздырылган үнү эмес. Жеткиликтүүлүк тил колдоосуна жараша болот.",
+    "notAvailableLanguage": "Бул тилде азырынча жеткиликтүү эмес",
+    "textOnlyLabel": "Текст гана",
+    "readAloudFilterLabel": "Үн менен окуу",
+    "catalogSearchPlaceholder": "Китепкананы издөө"
   }
 };
 

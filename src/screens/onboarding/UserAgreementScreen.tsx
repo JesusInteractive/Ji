@@ -24,6 +24,8 @@ export default function UserAgreementScreen({ navigation }: Props) {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
 
   const handleContinue = () => {
     if (!checked) {
@@ -45,6 +47,7 @@ export default function UserAgreementScreen({ navigation }: Props) {
           onContentSizeChange={(_width, height) => setContentHeight(height)}
           onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
           scrollEventThrottle={16}
+          scrollEnabled={!scrollbarDragging}
         >
           <Text style={styles.title}>{USER_AGREEMENT.title}</Text>
           <Text style={styles.body}>{USER_AGREEMENT.intro}</Text>
@@ -64,6 +67,8 @@ export default function UserAgreementScreen({ navigation }: Props) {
             scrollRef.current?.scrollTo({ y: offset, animated: false });
             setScrollOffset(offset);
           }}
+          onDragStart={() => setScrollbarDragging(true)}
+          onDragEnd={() => setScrollbarDragging(false)}
         />
       </View>
 

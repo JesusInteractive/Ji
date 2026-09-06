@@ -251,7 +251,11 @@ const ru: TranslationShape = {
     "generateButton": "Создать",
     "regenerateButton": "Создать заново",
     "generateErrorTitle": "Не удалось создать",
-    "generateErrorFallback": "Проверьте подключение и попробуйте снова."
+    "generateErrorFallback": "Проверьте подключение и попробуйте снова.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Не удалось открыть ссылку",
@@ -279,6 +283,20 @@ const ru: TranslationShape = {
     "loadingLanguages": "Загрузка доступных языков...",
     "loadError": "Не удалось загрузить библиотеку. Проверьте подключение и попробуйте снова.",
     "retryButton": "Повторить"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Это ваша библиотека для изучения. Нажмите на книгу, чтобы читать. Участники Platinum могут слушать, как ИИ Иисус читает книги на их языке.",
+    "enterLibrary": "Войти в библиотеку",
+    "readAloudShelfTitle": "Читать вслух",
+    "readAloudShelfSubtitle": "ИИ Иисус может читать эти книги вслух. Platinum.",
+    "readerLoadError": "Не удалось загрузить эту книгу. Проверьте подключение и попробуйте снова.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Озвучивание",
+    "jesusVoiceDisclosure": "ИИ Иисус читает только книги, перечисленные в каталоге «Чтение вслух». Это голос, созданный для этого приложения, основанный на Писании — не запись реального человека. Доступность зависит от поддержки языка.",
+    "notAvailableLanguage": "Пока недоступно на этом языке",
+    "textOnlyLabel": "Только текст",
+    "readAloudFilterLabel": "Читать вслух",
+    "catalogSearchPlaceholder": "Поиск по библиотеке"
   }
 };
 

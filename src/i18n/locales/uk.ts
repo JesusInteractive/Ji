@@ -251,7 +251,11 @@ const uk: TranslationShape = {
     "generateButton": "Створити",
     "regenerateButton": "Створити знову",
     "generateErrorTitle": "Не вдалося створити",
-    "generateErrorFallback": "Перевірте з’єднання та спробуйте ще раз."
+    "generateErrorFallback": "Перевірте з’єднання та спробуйте ще раз.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Не вдалося відкрити посилання",
@@ -279,6 +283,20 @@ const uk: TranslationShape = {
     "loadingLanguages": "Завантаження доступних мов...",
     "loadError": "Не вдалося завантажити бібліотеку. Перевірте з’єднання та спробуйте ще раз.",
     "retryButton": "Спробувати ще раз"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Це ваша бібліотека для вивчення. Торкніться книги, щоб прочитати. Учасники Platinum можуть почути, як Ісус ШІ читає книги нашою мовою.",
+    "enterLibrary": "Увійти до бібліотеки",
+    "readAloudShelfTitle": "Читати вголос",
+    "readAloudShelfSubtitle": "Ісус ШІ може читати ці книги вголос. Platinum.",
+    "readerLoadError": "Не вдалося завантажити цю книгу. Перевірте з’єднання та спробуйте ще раз.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Озвучення",
+    "jesusVoiceDisclosure": "Ісус ШІ читає лише книги, перелічені в Каталозі для читання вголос. Це голос, створений для цієї програми, заснований на Святому Письмі — не запис реальної людини. Доступність залежить від мовної підтримки.",
+    "notAvailableLanguage": "Ще не доступно цією мовою",
+    "textOnlyLabel": "Тільки текст",
+    "readAloudFilterLabel": "Читати вголос",
+    "catalogSearchPlaceholder": "Пошук у бібліотеці"
   }
 };
 

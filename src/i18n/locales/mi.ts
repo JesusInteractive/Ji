@@ -251,7 +251,11 @@ const mi: TranslationShape = {
     "generateButton": "Hanga",
     "regenerateButton": "Hanga anō",
     "generateErrorTitle": "Kāore i taea te hanga i tērā",
-    "generateErrorFallback": "Tēnā tirohia tō hononga ā ngana anō."
+    "generateErrorFallback": "Tēnā tirohia tō hononga ā ngana anō.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kāore i taea te whakatūwhera i tērā hononga",
@@ -279,6 +283,20 @@ const mi: TranslationShape = {
     "loadingLanguages": "E utaina ana ngā reo e wātea ana...",
     "loadError": "Kāore i taea te uta i te whare pukapuka. Tirohia tō hononga me te ngana anō.",
     "retryButton": "Ngana anō"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ko tō whare pukapuka ako tēnei. Pāhia tētahi pukapuka kia pānui. Ka taea e ngā mema Platinum te whakarongo ki a AI Jesus e pānui ana i ngā pukapuka kei a mātou i tō reo.",
+    "enterLibrary": "Tomokia te whare pukapuka",
+    "readAloudShelfTitle": "Pānui ā-waha",
+    "readAloudShelfSubtitle": "Ka taea e AI Jesus te pānui ā-waha i ēnei pukapuka. Platinum.",
+    "readerLoadError": "Kāore i taea te uta i tēnei pukapuka. Tirohia tō hononga me te whakamātau anō.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Kōrero",
+    "jesusVoiceDisclosure": "Ka pānui a AI Jesus i ngā pukapuka anake kei te Rārangi Pānui ā-waha. He reo i whakatauiratia mō tēnei taupānga tēnei, i ahu mai i te Paipera — ehara i te hopunga o tētahi tangata tūturu. Ka whakawhirinaki te wātea ki te tautoko reo.",
+    "notAvailableLanguage": "Kāore anō kia wātea i tēnei reo",
+    "textOnlyLabel": "Kuputuhi anake",
+    "readAloudFilterLabel": "Pānui ā-waha",
+    "catalogSearchPlaceholder": "Rapua te whare pukapuka"
   }
 };
 

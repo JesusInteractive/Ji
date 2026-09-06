@@ -251,7 +251,11 @@ const twi: TranslationShape = {
     "generateButton": "Yɛ",
     "regenerateButton": "Yɛ bio",
     "generateErrorTitle": "Entumi anyɛ saa",
-    "generateErrorFallback": "Hwɛ wo connection na san bɔ mmɔden."
+    "generateErrorFallback": "Hwɛ wo connection na san bɔ mmɔden.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Entumi anbue link no",
@@ -279,6 +283,20 @@ const twi: TranslationShape = {
     "loadingLanguages": "Rebɔ kasa a ɛwɔ hɔ no...",
     "loadError": "Yɛantumi ammɔ nwoma fie no. Hwɛ wo nkitahodie na sɔ bio.",
     "retryButton": "Sɔ bio"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Eyi ne wo adesua akorae. Mia nwoma bi kɔ mu sɛ wopɛ sɛ wukenkan. Platinum nkurɔfo betumi ate AI Jesus kenkan nwoma a yɛwɔ wɔn kasa mu.",
+    "enterLibrary": "Kɔ akorae mu",
+    "readAloudShelfTitle": "Kenkan a Wɔte",
+    "readAloudShelfSubtitle": "AI Jesus betumi akenkan nwoma yi a wɔte. Platinum.",
+    "readerLoadError": "Entumi anload nwoma yi. Hwɛ wo nkitaho na sɔ hwɛ bio.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ankasɛm",
+    "jesusVoiceDisclosure": "AI Jesus kenkan nwoma a ɛwɔ Read-Aloud Catalog no nko. Eyi yɛ nne a wɔde yɛ app yi, a ɛfiri Kyerɛwsɛm mu — ɛnyɛ onipa bi a wɔatwɛn no nne. Ɛwɔ hɔ sɛ kasa no ho hia.",
+    "notAvailableLanguage": "Enni kasa yi mu nso",
+    "textOnlyLabel": "Nkyerɛwee nko",
+    "readAloudFilterLabel": "Kenkan a Wɔte",
+    "catalogSearchPlaceholder": "Hwehwɛ akorae mu"
   }
 };
 

@@ -9,29 +9,30 @@ import { PLANS, MONETIZATION_EXPLAINER } from '../../constants/pricing';
 import { useI18n } from '../../i18n';
 import { useApp } from '../../context/AppContext';
 import { purchasePlan } from '../../services/purchases';
+import { logEvent } from '../../services/analytics';
 import type { PlanId } from '../../types';
 
-// Registered in BOTH OnboardingStackParamList (first-run plan choice)
-// and RootStackParamList (reachable later -- see RootNavigator.tsx's own
-// comment) as the same component and route name, so this only needs a
-// structural navigation type rather than picking one stack's params.
+// Registered on RootStackParamList only now -- Pricing is no longer a
+// forced day-one onboarding step (see RootNavigator.tsx's
+// OnboardingStackParamList comment), so this is always a modal pushed on
+// top of an already-running app (from Settings/Profile's "Plan" row, or
+// from PaywallLockScreen once the 5-day trial ends), never part of the
+// onboarding stack itself.
 type Props = { navigation: { goBack: () => void } };
 
 export default function PricingScreen({ navigation }: Props) {
   const { t } = useI18n();
-  const { selectPlan, hasSelectedPlan } = useApp();
-  const [selected, setSelected] = useState<PlanId>('free');
+  const { selectPlan } = useApp();
+  // 'basic' -- the cheapest real tier -- rather than 'free', since 'free'
+  // is no longer a selectable card here (see the PLANS.filter below).
+  const [selected, setSelected] = useState<PlanId>('basic');
   const [error, setError] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
 
-  // During first-run onboarding there's nothing to go back TO yet --
-  // RootNavigator swaps Onboarding for Main once onboardingComplete
-  // flips true (see its own comment), so this screen just needs to call
-  // selectPlan() and let that happen. Reached later (upgrade path), it's
-  // a modal pushed on top of the already-running app, so it needs to
-  // dismiss itself once a plan choice actually lands.
+  // Always a modal pushed on top of the running app now (see this
+  // component's own comment above) -- always has something to go back to.
   const finish = () => {
-    if (hasSelectedPlan) navigation.goBack();
+    navigation.goBack();
   };
 
   const scrollRef = useRef<ScrollView>(null);
@@ -39,25 +40,23 @@ export default function PricingScreen({ navigation }: Props) {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
   const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
     if (newContentHeight && newViewportHeight) {
       setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
     }
   };
 
-  // Free just records a local choice -- nothing to purchase. Basic, Pro,
-  // and Platinum are now all single monthly products (Platinum's old
-  // extra yearly/lifetime durations are gone), so all three buy through
-  // the same purchasePlan() call. REVENUECAT_PRODUCT_IDS still needs
-  // real product ids from App Store Connect / Play Console before any of
-  // this can charge anyone -- see services/purchases.ts.
+  // Basic, Pro, and Platinum are all single monthly products (Platinum's
+  // old extra yearly/lifetime durations are gone), so all three buy
+  // through the same purchasePlan() call -- 'free' is never a possible
+  // `selected` value anymore (filtered out of the picker below).
+  // REVENUECAT_PRODUCT_IDS still needs real product ids from App Store
+  // Connect / Play Console before any of this can charge anyone -- see
+  // services/purchases.ts.
   const handleContinue = async () => {
-    if (selected === 'free') {
-      selectPlan('free');
-      finish();
-      return;
-    }
-
+    logEvent('subscribe_tapped', { plan: selected });
     setPurchasing(true);
     const result = await purchasePlan(selected);
     setPurchasing(false);
@@ -66,6 +65,7 @@ export default function PricingScreen({ navigation }: Props) {
       Alert.alert('Something went wrong', result.error ?? 'Could not complete the purchase. Please try again.');
       return;
     }
+    logEvent('subscribe_success', { plan: selected });
     selectPlan(selected);
     // During onboarding, RootNavigator swaps Onboarding for Main
     // automatically once onboardingComplete flips true in AppContext --
@@ -95,12 +95,19 @@ export default function PricingScreen({ navigation }: Props) {
           setScrollOffset(contentOffset.y);
         }}
         scrollEventThrottle={16}
+        scrollEnabled={!scrollbarDragging}
       >
         <Text style={styles.title}>{t.pricing.title}</Text>
         <Text style={styles.subtitle}>{t.pricing.subtitle}</Text>
         <Text style={styles.explainer}>{MONETIZATION_EXPLAINER.free} {MONETIZATION_EXPLAINER.paid}</Text>
 
-        {PLANS.map((p) => (
+        {/* 'free' is deliberately excluded -- it's not a real choice
+            anymore (see pricing.ts's own comment on that PLANS entry),
+            just a fallback value for "current plan" displays elsewhere.
+            Every visit to this screen means the 5-day trial already
+            ended (or the user came here voluntarily from Settings), so
+            only real paid tiers are offered. */}
+        {PLANS.filter((p) => p.id !== 'free').map((p) => (
           <PlanCard key={p.id} plan={p} selected={selected === p.id} onSelect={setSelected} />
         ))}
 
@@ -117,6 +124,8 @@ export default function PricingScreen({ navigation }: Props) {
           scrollRef.current?.scrollTo({ y: offset, animated: false });
           setScrollOffset(offset);
         }}
+        onDragStart={() => setScrollbarDragging(true)}
+        onDragEnd={() => setScrollbarDragging(false)}
       />
       {showScrollToBottom && (
         <TouchableOpacity

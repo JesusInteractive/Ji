@@ -251,7 +251,11 @@ const gn: TranslationShape = {
     "generateButton": "Eñembohéra",
     "regenerateButton": "Eñembohéra jey",
     "generateErrorTitle": "Ndaikatúi eñembohéra",
-    "generateErrorFallback": "Ehecha ne mba'e'ỹva ha eñandúramo."
+    "generateErrorFallback": "Ehecha ne mba'e'ỹva ha eñandúramo.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ndaikatúi eñembohéra",
@@ -279,6 +283,20 @@ const gn: TranslationShape = {
     "loadingLanguages": "Oñe'ẽkuaáva oñembohéra hína...",
     "loadError": "Ndaikatúi oñembohéra. Eiporavo nde mba'e'ỹre ha eha'ãjey.",
     "retryButton": "Eha'ãjey"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ko'ápe oĩ ne mbo'eha'ãrenda. Eiporavo peteĩ aranduka emongu'e hag̃ua. Platinum mba'ẽrikuéra oñe'ẽkuaáta AI Jesús ndive aranduka oĩva iñe'ẽme.",
+    "enterLibrary": "Eike arandukarendápe",
+    "readAloudShelfTitle": "Ñe'ẽmbyky",
+    "readAloudShelfSubtitle": "AI Jesús oñe'ẽkuaáta aranduka ko'ápe. Platinum.",
+    "readerLoadError": "Ndaikatúi emongu'e ko aranduka. Ehecha ne mba'e'oka ha eha'ãjey.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ñe'ẽpyhy",
+    "jesusVoiceDisclosure": "AI Jesús oñe'ẽkuaáta aranduka oĩva Read-Aloud Catalog-pe. Ko'ápe oĩ peteĩ ñe'ẽ oñemodelva ko app-pe, oñepyrũva Aranduka'ígui — ndaha'éi oñe'ẽva peteĩ yvypóra. Oĩva'érõ oñe'ẽkuaáta iñe'ẽme.",
+    "notAvailableLanguage": "Ndaipóri ko'ápe ko ñe'ẽme gueteri",
+    "textOnlyLabel": "Ñe'ẽndy oñe'ẽ'ỹva",
+    "readAloudFilterLabel": "Ñe'ẽmbyky",
+    "catalogSearchPlaceholder": "Eheka arandukarendápe"
   }
 };
 

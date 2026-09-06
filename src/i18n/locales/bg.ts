@@ -251,7 +251,11 @@ const bg: TranslationShape = {
     "generateButton": "Генерирай",
     "regenerateButton": "Генерирай отново",
     "generateErrorTitle": "Не можа да се генерира",
-    "generateErrorFallback": "Моля, провери връзката си и опитай отново."
+    "generateErrorFallback": "Моля, провери връзката си и опитай отново.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Тази връзка не можа да се отвори",
@@ -279,6 +283,20 @@ const bg: TranslationShape = {
     "loadingLanguages": "Зареждане на наличните езици...",
     "loadError": "Не можахме да заредим библиотеката. Проверете връзката си и опитайте отново.",
     "retryButton": "Опитай отново"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Това е вашата библиотека за изучаване. Докоснете книга, за да я прочетете. Членовете с Платинум могат да чуят как ИИ Исус чете книгите, които имаме на техния език.",
+    "enterLibrary": "Влезте в библиотеката",
+    "readAloudShelfTitle": "Четене на глас",
+    "readAloudShelfSubtitle": "ИИ Исус може да чете тези книги на глас. Платинум.",
+    "readerLoadError": "Не можа да зареди тази книга. Проверете връзката си и опитайте отново.",
+    "speakerLockedLabel": "Платинум",
+    "narrationLabel": "Разказ",
+    "jesusVoiceDisclosure": "ИИ Исус чете само книгите, изброени в каталога за четене на глас. Това е глас, моделиран за това приложение, основан на Писанието — не е запис на реален човек. Наличността зависи от езиковата поддръжка.",
+    "notAvailableLanguage": "Все още не е налично на този език",
+    "textOnlyLabel": "Само текст",
+    "readAloudFilterLabel": "Четене на глас",
+    "catalogSearchPlaceholder": "Търсене в библиотеката"
   }
 };
 

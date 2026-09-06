@@ -251,7 +251,11 @@ const tk: TranslationShape = {
     "generateButton": "Döret",
     "regenerateButton": "Gaýtadan döret",
     "generateErrorTitle": "Ony döredip bolmady",
-    "generateErrorFallback": "Baglanyşygyňyzy barlaň we gaýtadan synanyşyň."
+    "generateErrorFallback": "Baglanyşygyňyzy barlaň we gaýtadan synanyşyň.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Şol baglanyşygy açyp bolmady",
@@ -279,6 +283,20 @@ const tk: TranslationShape = {
     "loadingLanguages": "Elýeterli diller ýüklenýär...",
     "loadError": "Kitaphanany ýükläp bolmady. Baglanyşygyňyzy barlaň we ýene synap görüň.",
     "retryButton": "Ýene syna"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Bu siziň öwreniş kitaphanaňyz. Kitaby okamak üçin basyň. Platinum agzalar AI Isa-nyň öz dillerinde bar bolan kitaplary okap berenini eşidip bilerler.",
+    "enterLibrary": "Kitaphana gir",
+    "readAloudShelfTitle": "Sesli oka",
+    "readAloudShelfSubtitle": "AI Isa bu kitaplary sesli okap biler. Platinum.",
+    "readerLoadError": "Bu kitaby ýükläp bolmady. Baglanyşygyňyzy barlaň we ýene synanyşyň.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Sesli okalma",
+    "jesusVoiceDisclosure": "AI Isa diňe Sesli Oka Katalogynynda görkezilen kitaplary okap biler. Bu bu programma üçin döredilen sesdir, Mukaddes Ýazgylara esaslanýar — hakyky adamyň ýazgysy däl. Elýeterlilik dil goldawyna bagly.",
+    "notAvailableLanguage": "Bu dilde entek elýeterli däl",
+    "textOnlyLabel": "Diňe tekst",
+    "readAloudFilterLabel": "Sesli oka",
+    "catalogSearchPlaceholder": "Kitaphanany gözle"
   }
 };
 

@@ -11,7 +11,23 @@ interface Props {
   // rather than taking a ref directly, since the two components' scroll
   // APIs don't share a common shape.
   onScrollTo: (offset: number) => void;
+  // Fired the instant the thumb is grabbed/released -- every screen using
+  // this wires these to its own ScrollView/FlatList's scrollEnabled prop
+  // (false while dragging). Responder-negotiation flags alone
+  // (onShouldBlockNativeResponder etc.) turned out not to reliably stop
+  // the native ScrollView underneath from ALSO recognizing the same
+  // touch as its own scroll gesture -- explicitly disabling it for the
+  // duration of the drag is the only fix that's actually deterministic
+  // rather than racing two gesture recognizers against each other.
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
   style?: StyleProp<ViewStyle>;
+  // Every other screen using this puts it on a light/cream background,
+  // where the default navy thumb reads fine. HomeScreen's background is
+  // navy too (Colors.royal) -- the same color at 0.5 opacity on itself
+  // is effectively invisible, not just hard to see. Overridable per
+  // screen rather than guessing a color that works everywhere.
+  thumbColor?: string;
 }
 
 const THUMB_MIN_HEIGHT = 32;
@@ -38,7 +54,10 @@ export default function DraggableScrollbar({
   viewportHeight,
   scrollOffset,
   onScrollTo,
+  onDragStart,
+  onDragEnd,
   style,
+  thumbColor,
 }: Props) {
   const maxScroll = Math.max(contentHeight - viewportHeight, 0);
   const canScroll = maxScroll > 0 && viewportHeight > 0;
@@ -55,11 +74,15 @@ export default function DraggableScrollbar({
   const trackRangeRef = useRef(trackRange);
   const canScrollRef = useRef(canScroll);
   const onScrollToRef = useRef(onScrollTo);
+  const onDragStartRef = useRef(onDragStart);
+  const onDragEndRef = useRef(onDragEnd);
   scrollOffsetRef.current = scrollOffset;
   maxScrollRef.current = maxScroll;
   trackRangeRef.current = trackRange;
   canScrollRef.current = canScroll;
   onScrollToRef.current = onScrollTo;
+  onDragStartRef.current = onDragStart;
+  onDragEndRef.current = onDragEnd;
 
   // Raw touch-move events can fire faster than the screen can actually
   // redraw, especially on a FlatList (Scripture's book list and chapter
@@ -86,8 +109,25 @@ export default function DraggableScrollbar({
     PanResponder.create({
       onStartShouldSetPanResponder: () => canScrollRef.current,
       onMoveShouldSetPanResponder: () => canScrollRef.current,
+      // Grabbing the thumb also left the ScrollView sitting underneath it
+      // (a sibling, not a parent -- see this component's own top-of-file
+      // comment) free to recognize the same touch as its own native
+      // scroll gesture, so the drag fought between "move the thumb" and
+      // "scroll the content" at once -- reading as the whole page
+      // dragging along with the thumb. Tried onShouldBlockNativeResponder/
+      // onPanResponderTerminationRequest (the documented RN/iOS API for
+      // exactly this) first, but the native ScrollView still won the
+      // race in practice, ending up on the opposite failure instead: the
+      // thumb stopped responding at all. onDragStart/onDragEnd below,
+      // which every screen wires to its own ScrollView's scrollEnabled
+      // prop, is what actually fixes it deterministically -- there's
+      // nothing left to race once the native scroll is flatly disabled
+      // for the duration of the drag.
+      onShouldBlockNativeResponder: () => true,
+      onPanResponderTerminationRequest: () => false,
       onPanResponderGrant: () => {
         dragStartOffsetRef.current = scrollOffsetRef.current;
+        onDragStartRef.current?.();
       },
       onPanResponderMove: (_evt, gestureState) => {
         pendingDyRef.current = gestureState.dy;
@@ -99,12 +139,14 @@ export default function DraggableScrollbar({
           cancelAnimationFrame(rafIdRef.current);
           flushPendingMove();
         }
+        onDragEndRef.current?.();
       },
       onPanResponderTerminate: () => {
         if (rafIdRef.current !== null) {
           cancelAnimationFrame(rafIdRef.current);
           rafIdRef.current = null;
         }
+        onDragEndRef.current?.();
       },
     })
   );
@@ -113,7 +155,17 @@ export default function DraggableScrollbar({
 
   return (
     <View style={[styles.track, { height: viewportHeight }, style]} pointerEvents="box-none">
-      <View {...panResponderRef.current.panHandlers} style={[styles.thumb, { height: thumbHeight, top: thumbTop }]} />
+      <View
+        {...panResponderRef.current.panHandlers}
+        // The thumb is only 5px wide visually (styles.thumb) -- deliberately
+        // thin so it doesn't look like a fat scrollbar, but that's a hard
+        // target to actually land a finger on. hitSlop extends the actual
+        // touch-responder area well past the visible bar without changing
+        // how it looks, the same way a small icon button gets a bigger tap
+        // target elsewhere in this app.
+        hitSlop={{ top: 10, bottom: 10, left: 16, right: 16 }}
+        style={[styles.thumb, { height: thumbHeight, top: thumbTop }, thumbColor ? { backgroundColor: thumbColor } : null]}
+      />
     </View>
   );
 }

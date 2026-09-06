@@ -1,0 +1,1496 @@
+[
+  {
+    "countryCode": "AD",
+    "countryName": "Andorra",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AE",
+    "countryName": "United Arab Emirates",
+    "emergencyNumber": "999",
+    "embassyPhone": "+971-2-414-2200"
+  },
+  {
+    "countryCode": "AF",
+    "countryName": "Afghanistan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AG",
+    "countryName": "Antigua & Barbuda",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AI",
+    "countryName": "Anguilla",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AL",
+    "countryName": "Albania",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AM",
+    "countryName": "Armenia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AO",
+    "countryName": "Angola",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AQ",
+    "countryName": "Antarctica",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AR",
+    "countryName": "Argentina",
+    "emergencyNumber": "911",
+    "embassyPhone": "+54-11-5777-4533"
+  },
+  {
+    "countryCode": "AS",
+    "countryName": "American Samoa",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AT",
+    "countryName": "Austria",
+    "emergencyNumber": "112",
+    "embassyPhone": "+43-1-31339-0"
+  },
+  {
+    "countryCode": "AU",
+    "countryName": "Australia",
+    "emergencyNumber": "000",
+    "embassyPhone": "+61-2-6214-5600"
+  },
+  {
+    "countryCode": "AW",
+    "countryName": "Aruba",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AX",
+    "countryName": "\u00c5land Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "AZ",
+    "countryName": "Azerbaijan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BA",
+    "countryName": "Bosnia & Herzegovina",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BB",
+    "countryName": "Barbados",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BD",
+    "countryName": "Bangladesh",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BE",
+    "countryName": "Belgium",
+    "emergencyNumber": "112",
+    "embassyPhone": "+32-2-811-4000"
+  },
+  {
+    "countryCode": "BF",
+    "countryName": "Burkina Faso",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BG",
+    "countryName": "Bulgaria",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BH",
+    "countryName": "Bahrain",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BI",
+    "countryName": "Burundi",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BJ",
+    "countryName": "Benin",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BL",
+    "countryName": "St. Barth\u00e9lemy",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BM",
+    "countryName": "Bermuda",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BN",
+    "countryName": "Brunei",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BO",
+    "countryName": "Bolivia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BQ",
+    "countryName": "Caribbean Netherlands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BR",
+    "countryName": "Brazil",
+    "emergencyNumber": "190",
+    "embassyPhone": "+55-61-3312-7000"
+  },
+  {
+    "countryCode": "BS",
+    "countryName": "Bahamas",
+    "emergencyNumber": "911",
+    "embassyPhone": "+1-242-461-5025"
+  },
+  {
+    "countryCode": "BT",
+    "countryName": "Bhutan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BV",
+    "countryName": "Bouvet Island",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BW",
+    "countryName": "Botswana",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BY",
+    "countryName": "Belarus",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "BZ",
+    "countryName": "Belize",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CA",
+    "countryName": "Canada",
+    "emergencyNumber": "911",
+    "embassyPhone": "+1-613-688-5335"
+  },
+  {
+    "countryCode": "CC",
+    "countryName": "Cocos (Keeling) Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CD",
+    "countryName": "Congo - Kinshasa",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CF",
+    "countryName": "Central African Republic",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CG",
+    "countryName": "Congo - Brazzaville",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CH",
+    "countryName": "Switzerland",
+    "emergencyNumber": "112",
+    "embassyPhone": "+41-31-357-7011"
+  },
+  {
+    "countryCode": "CI",
+    "countryName": "C\u00f4te d\u2019Ivoire",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CK",
+    "countryName": "Cook Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CL",
+    "countryName": "Chile",
+    "emergencyNumber": "133",
+    "embassyPhone": "+56-2-2330-3000"
+  },
+  {
+    "countryCode": "CM",
+    "countryName": "Cameroon",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CN",
+    "countryName": "China",
+    "emergencyNumber": "110",
+    "embassyPhone": "+86-10-8531-4000"
+  },
+  {
+    "countryCode": "CO",
+    "countryName": "Colombia",
+    "emergencyNumber": "123",
+    "embassyPhone": "+57-601-275-2000"
+  },
+  {
+    "countryCode": "CR",
+    "countryName": "Costa Rica",
+    "emergencyNumber": "911",
+    "embassyPhone": "+506-2519-2000"
+  },
+  {
+    "countryCode": "CU",
+    "countryName": "Cuba",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CV",
+    "countryName": "Cape Verde",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CW",
+    "countryName": "Cura\u00e7ao",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CX",
+    "countryName": "Christmas Island",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CY",
+    "countryName": "Cyprus",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "CZ",
+    "countryName": "Czechia",
+    "emergencyNumber": "112",
+    "embassyPhone": "+420-257-022-000"
+  },
+  {
+    "countryCode": "DE",
+    "countryName": "Germany",
+    "emergencyNumber": "112",
+    "embassyPhone": "+49-30-8305-0"
+  },
+  {
+    "countryCode": "DJ",
+    "countryName": "Djibouti",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "DK",
+    "countryName": "Denmark",
+    "emergencyNumber": "112",
+    "embassyPhone": "+45-33-41-71-00"
+  },
+  {
+    "countryCode": "DM",
+    "countryName": "Dominica",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "DO",
+    "countryName": "Dominican Republic",
+    "emergencyNumber": "911",
+    "embassyPhone": "+1-809-567-7775"
+  },
+  {
+    "countryCode": "DZ",
+    "countryName": "Algeria",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "EC",
+    "countryName": "Ecuador",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "EE",
+    "countryName": "Estonia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "EG",
+    "countryName": "Egypt",
+    "emergencyNumber": "122",
+    "embassyPhone": "+20-2-2797-3300"
+  },
+  {
+    "countryCode": "EH",
+    "countryName": "Western Sahara",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ER",
+    "countryName": "Eritrea",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ES",
+    "countryName": "Spain",
+    "emergencyNumber": "112",
+    "embassyPhone": "+34-91-587-2200"
+  },
+  {
+    "countryCode": "ET",
+    "countryName": "Ethiopia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "FI",
+    "countryName": "Finland",
+    "emergencyNumber": "112",
+    "embassyPhone": "+358-9-616-250"
+  },
+  {
+    "countryCode": "FJ",
+    "countryName": "Fiji",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "FK",
+    "countryName": "Falkland Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "FM",
+    "countryName": "Micronesia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "FO",
+    "countryName": "Faroe Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "FR",
+    "countryName": "France",
+    "emergencyNumber": "112",
+    "embassyPhone": "+33-1-43-12-22-22"
+  },
+  {
+    "countryCode": "GA",
+    "countryName": "Gabon",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GB",
+    "countryName": "United Kingdom",
+    "emergencyNumber": "999",
+    "embassyPhone": "+44-20-7499-9000"
+  },
+  {
+    "countryCode": "GD",
+    "countryName": "Grenada",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GE",
+    "countryName": "Georgia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GF",
+    "countryName": "French Guiana",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GG",
+    "countryName": "Guernsey",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GH",
+    "countryName": "Ghana",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GI",
+    "countryName": "Gibraltar",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GL",
+    "countryName": "Greenland",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GM",
+    "countryName": "Gambia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GN",
+    "countryName": "Guinea",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GP",
+    "countryName": "Guadeloupe",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GQ",
+    "countryName": "Equatorial Guinea",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GR",
+    "countryName": "Greece",
+    "emergencyNumber": "112",
+    "embassyPhone": "+30-210-721-2951"
+  },
+  {
+    "countryCode": "GS",
+    "countryName": "South Georgia & South Sandwich Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GT",
+    "countryName": "Guatemala",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GU",
+    "countryName": "Guam",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GW",
+    "countryName": "Guinea-Bissau",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "GY",
+    "countryName": "Guyana",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "HK",
+    "countryName": "Hong Kong SAR China",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "HM",
+    "countryName": "Heard & McDonald Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "HN",
+    "countryName": "Honduras",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "HR",
+    "countryName": "Croatia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "HT",
+    "countryName": "Haiti",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "HU",
+    "countryName": "Hungary",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ID",
+    "countryName": "Indonesia",
+    "emergencyNumber": "112",
+    "embassyPhone": "+62-21-3435-9000"
+  },
+  {
+    "countryCode": "IE",
+    "countryName": "Ireland",
+    "emergencyNumber": "112",
+    "embassyPhone": "+353-1-668-8777"
+  },
+  {
+    "countryCode": "IL",
+    "countryName": "Israel",
+    "emergencyNumber": "100",
+    "embassyPhone": "+972-2-630-4000"
+  },
+  {
+    "countryCode": "IM",
+    "countryName": "Isle of Man",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "IN",
+    "countryName": "India",
+    "emergencyNumber": "112",
+    "embassyPhone": "+91-11-2419-8000"
+  },
+  {
+    "countryCode": "IO",
+    "countryName": "British Indian Ocean Territory",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "IQ",
+    "countryName": "Iraq",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "IR",
+    "countryName": "Iran",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "IS",
+    "countryName": "Iceland",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "IT",
+    "countryName": "Italy",
+    "emergencyNumber": "112",
+    "embassyPhone": "+39-06-46741"
+  },
+  {
+    "countryCode": "JE",
+    "countryName": "Jersey",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "JM",
+    "countryName": "Jamaica",
+    "emergencyNumber": "119",
+    "embassyPhone": "+1-876-702-6000"
+  },
+  {
+    "countryCode": "JO",
+    "countryName": "Jordan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "JP",
+    "countryName": "Japan",
+    "emergencyNumber": "110",
+    "embassyPhone": "+81-3-3224-5000"
+  },
+  {
+    "countryCode": "KE",
+    "countryName": "Kenya",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KG",
+    "countryName": "Kyrgyzstan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KH",
+    "countryName": "Cambodia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KI",
+    "countryName": "Kiribati",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KM",
+    "countryName": "Comoros",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KN",
+    "countryName": "St. Kitts & Nevis",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KP",
+    "countryName": "North Korea",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KR",
+    "countryName": "South Korea",
+    "emergencyNumber": "112",
+    "embassyPhone": "+82-2-397-4114"
+  },
+  {
+    "countryCode": "KW",
+    "countryName": "Kuwait",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KY",
+    "countryName": "Cayman Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "KZ",
+    "countryName": "Kazakhstan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LA",
+    "countryName": "Laos",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LB",
+    "countryName": "Lebanon",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LC",
+    "countryName": "St. Lucia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LI",
+    "countryName": "Liechtenstein",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LK",
+    "countryName": "Sri Lanka",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LR",
+    "countryName": "Liberia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LS",
+    "countryName": "Lesotho",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LT",
+    "countryName": "Lithuania",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LU",
+    "countryName": "Luxembourg",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LV",
+    "countryName": "Latvia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "LY",
+    "countryName": "Libya",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MA",
+    "countryName": "Morocco",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MC",
+    "countryName": "Monaco",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MD",
+    "countryName": "Moldova",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ME",
+    "countryName": "Montenegro",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MF",
+    "countryName": "St. Martin",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MG",
+    "countryName": "Madagascar",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MH",
+    "countryName": "Marshall Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MK",
+    "countryName": "North Macedonia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ML",
+    "countryName": "Mali",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MM",
+    "countryName": "Myanmar (Burma)",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MN",
+    "countryName": "Mongolia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MO",
+    "countryName": "Macao SAR China",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MP",
+    "countryName": "Northern Mariana Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MQ",
+    "countryName": "Martinique",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MR",
+    "countryName": "Mauritania",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MS",
+    "countryName": "Montserrat",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MT",
+    "countryName": "Malta",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MU",
+    "countryName": "Mauritius",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MV",
+    "countryName": "Maldives",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MW",
+    "countryName": "Malawi",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "MX",
+    "countryName": "Mexico",
+    "emergencyNumber": "911",
+    "embassyPhone": "+52-55-2579-2000"
+  },
+  {
+    "countryCode": "MY",
+    "countryName": "Malaysia",
+    "emergencyNumber": "999",
+    "embassyPhone": "+60-3-2168-5000"
+  },
+  {
+    "countryCode": "MZ",
+    "countryName": "Mozambique",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NA",
+    "countryName": "Namibia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NC",
+    "countryName": "New Caledonia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NE",
+    "countryName": "Niger",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NF",
+    "countryName": "Norfolk Island",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NG",
+    "countryName": "Nigeria",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NI",
+    "countryName": "Nicaragua",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NL",
+    "countryName": "Netherlands",
+    "emergencyNumber": "112",
+    "embassyPhone": "+31-70-310-2209"
+  },
+  {
+    "countryCode": "NO",
+    "countryName": "Norway",
+    "emergencyNumber": "112",
+    "embassyPhone": "+47-21-30-85-40"
+  },
+  {
+    "countryCode": "NP",
+    "countryName": "Nepal",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NR",
+    "countryName": "Nauru",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NU",
+    "countryName": "Niue",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "NZ",
+    "countryName": "New Zealand",
+    "emergencyNumber": "111",
+    "embassyPhone": "+64-4-462-6000"
+  },
+  {
+    "countryCode": "OM",
+    "countryName": "Oman",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PA",
+    "countryName": "Panama",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PE",
+    "countryName": "Peru",
+    "emergencyNumber": "105",
+    "embassyPhone": "+51-1-618-2000"
+  },
+  {
+    "countryCode": "PF",
+    "countryName": "French Polynesia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PG",
+    "countryName": "Papua New Guinea",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PH",
+    "countryName": "Philippines",
+    "emergencyNumber": "911",
+    "embassyPhone": "+63-2-5301-2000"
+  },
+  {
+    "countryCode": "PK",
+    "countryName": "Pakistan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PL",
+    "countryName": "Poland",
+    "emergencyNumber": "112",
+    "embassyPhone": "+48-22-504-2000"
+  },
+  {
+    "countryCode": "PM",
+    "countryName": "St. Pierre & Miquelon",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PN",
+    "countryName": "Pitcairn Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PR",
+    "countryName": "Puerto Rico",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PS",
+    "countryName": "Palestinian Territories",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PT",
+    "countryName": "Portugal",
+    "emergencyNumber": "112",
+    "embassyPhone": "+351-21-727-3300"
+  },
+  {
+    "countryCode": "PW",
+    "countryName": "Palau",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "PY",
+    "countryName": "Paraguay",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "QA",
+    "countryName": "Qatar",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "RE",
+    "countryName": "R\u00e9union",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "RO",
+    "countryName": "Romania",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "RS",
+    "countryName": "Serbia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "RU",
+    "countryName": "Russia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "RW",
+    "countryName": "Rwanda",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SA",
+    "countryName": "Saudi Arabia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SB",
+    "countryName": "Solomon Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SC",
+    "countryName": "Seychelles",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SD",
+    "countryName": "Sudan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SE",
+    "countryName": "Sweden",
+    "emergencyNumber": "112",
+    "embassyPhone": "+46-8-783-5300"
+  },
+  {
+    "countryCode": "SG",
+    "countryName": "Singapore",
+    "emergencyNumber": "999",
+    "embassyPhone": "+65-6476-9100"
+  },
+  {
+    "countryCode": "SH",
+    "countryName": "St. Helena",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SI",
+    "countryName": "Slovenia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SJ",
+    "countryName": "Svalbard & Jan Mayen",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SK",
+    "countryName": "Slovakia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SL",
+    "countryName": "Sierra Leone",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SM",
+    "countryName": "San Marino",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SN",
+    "countryName": "Senegal",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SO",
+    "countryName": "Somalia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SR",
+    "countryName": "Suriname",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SS",
+    "countryName": "South Sudan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ST",
+    "countryName": "S\u00e3o Tom\u00e9 & Pr\u00edncipe",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SV",
+    "countryName": "El Salvador",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SX",
+    "countryName": "Sint Maarten",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SY",
+    "countryName": "Syria",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "SZ",
+    "countryName": "Eswatini",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TC",
+    "countryName": "Turks & Caicos Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TD",
+    "countryName": "Chad",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TF",
+    "countryName": "French Southern Territories",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TG",
+    "countryName": "Togo",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TH",
+    "countryName": "Thailand",
+    "emergencyNumber": "191",
+    "embassyPhone": "+66-2-205-4000"
+  },
+  {
+    "countryCode": "TJ",
+    "countryName": "Tajikistan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TK",
+    "countryName": "Tokelau",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TL",
+    "countryName": "Timor-Leste",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TM",
+    "countryName": "Turkmenistan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TN",
+    "countryName": "Tunisia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TO",
+    "countryName": "Tonga",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TR",
+    "countryName": "T\u00fcrkiye",
+    "emergencyNumber": "112",
+    "embassyPhone": "+90-312-294-0000"
+  },
+  {
+    "countryCode": "TT",
+    "countryName": "Trinidad & Tobago",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TV",
+    "countryName": "Tuvalu",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TW",
+    "countryName": "Taiwan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "TZ",
+    "countryName": "Tanzania",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "UA",
+    "countryName": "Ukraine",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "UG",
+    "countryName": "Uganda",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "UM",
+    "countryName": "U.S. Outlying Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "US",
+    "countryName": "United States",
+    "emergencyNumber": "911",
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "UY",
+    "countryName": "Uruguay",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "UZ",
+    "countryName": "Uzbekistan",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "VA",
+    "countryName": "Vatican City",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "VC",
+    "countryName": "St. Vincent & Grenadines",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "VE",
+    "countryName": "Venezuela",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "VG",
+    "countryName": "British Virgin Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "VI",
+    "countryName": "U.S. Virgin Islands",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "VN",
+    "countryName": "Vietnam",
+    "emergencyNumber": "113",
+    "embassyPhone": "+84-24-3850-5000"
+  },
+  {
+    "countryCode": "VU",
+    "countryName": "Vanuatu",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "WF",
+    "countryName": "Wallis & Futuna",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "WS",
+    "countryName": "Samoa",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "YE",
+    "countryName": "Yemen",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "YT",
+    "countryName": "Mayotte",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ZA",
+    "countryName": "South Africa",
+    "emergencyNumber": "10111",
+    "embassyPhone": "+27-12-431-4000"
+  },
+  {
+    "countryCode": "ZM",
+    "countryName": "Zambia",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  },
+  {
+    "countryCode": "ZW",
+    "countryName": "Zimbabwe",
+    "emergencyNumber": null,
+    "embassyPhone": null
+  }
+]

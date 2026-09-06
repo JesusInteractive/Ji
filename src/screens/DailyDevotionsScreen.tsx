@@ -1,10 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { getDevotion, type Devotion } from '../services/devotions';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
 import { useI18n } from '../i18n';
+import type { MainTabParamList } from '../navigation/MainTabs';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 // Real translation is BSB by default, matching ScriptureSearchScreen.tsx's
 // own default -- keeps the passage text consistent with what Scripture
@@ -13,6 +20,8 @@ const DEFAULT_TRANSLATION_ID = 'BSB';
 
 export default function DailyDevotionsScreen() {
   const { language } = useI18n();
+  const { hasAccess } = useFeatureAccess();
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const [devotion, setDevotion] = useState<Devotion | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +35,8 @@ export default function DailyDevotionsScreen() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
   const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
     if (newContentHeight && newViewportHeight) {
       setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
@@ -48,6 +59,18 @@ export default function DailyDevotionsScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Placed after every hook above (rules of hooks), before this
+  // screen's own loading/error early returns. A direct MainTabs tab
+  // screen -- one getParent() hop reaches RootStack's Pricing route.
+  if (!hasAccess) {
+    return (
+      <PaywallLockScreen
+        featureName="Daily Devotions"
+        onSubscribe={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -73,9 +96,10 @@ export default function DailyDevotionsScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
     <ScrollView
       ref={scrollRef}
-      style={styles.container}
+      style={{ flex: 1 }}
       contentContainerStyle={styles.content}
       onLayout={({ nativeEvent }) => {
         setViewportHeight(nativeEvent.layout.height);
@@ -92,6 +116,7 @@ export default function DailyDevotionsScreen() {
         setScrollOffset(contentOffset.y);
       }}
       scrollEventThrottle={16}
+      scrollEnabled={!scrollbarDragging}
     >
       <View style={styles.badge}>
         <Ionicons name="sunny" size={16} color={Colors.gold} />
@@ -135,6 +160,8 @@ export default function DailyDevotionsScreen() {
         scrollRef.current?.scrollTo({ y: offset, animated: false });
         setScrollOffset(offset);
       }}
+      onDragStart={() => setScrollbarDragging(true)}
+      onDragEnd={() => setScrollbarDragging(false)}
     />
     {showScrollToBottom && (
       <TouchableOpacity
@@ -145,6 +172,7 @@ export default function DailyDevotionsScreen() {
         <Ionicons name="arrow-down" size={20} color={Colors.white} />
       </TouchableOpacity>
     )}
+    </ImageBackground>
     </View>
   );
 }

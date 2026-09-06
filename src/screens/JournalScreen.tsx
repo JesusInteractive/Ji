@@ -1,11 +1,18 @@
 import React, { useRef, useState } from 'react';
-import { Alert, FlatList, Modal, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, ImageBackground, Modal, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useI18n } from '../i18n';
+import type { MainTabParamList } from '../navigation/MainTabs';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 // Journaling of conversations (spec section 7). Entries are stored
 // locally today (AppContext -> AsyncStorage); a real build should also
@@ -30,6 +37,8 @@ type Folder = 'entries' | 'jesus';
 // separate, parallel save mechanism.
 export default function JournalScreen() {
   const { journalEntries, addJournalEntry, removeJournalEntry, favorites, removeFavorite } = useApp();
+  const { hasAccess } = useFeatureAccess();
+  const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const { t } = useI18n();
   const [folder, setFolder] = useState<Folder>('entries');
   const [modalVisible, setModalVisible] = useState(false);
@@ -43,11 +52,15 @@ export default function JournalScreen() {
   const [entriesScrollOffset, setEntriesScrollOffset] = useState(0);
   const [entriesContentHeight, setEntriesContentHeight] = useState(0);
   const [entriesViewportHeight, setEntriesViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [entriesScrollbarDragging, setEntriesScrollbarDragging] = useState(false);
 
   const jesusListRef = useRef<FlatList>(null);
   const [jesusScrollOffset, setJesusScrollOffset] = useState(0);
   const [jesusContentHeight, setJesusContentHeight] = useState(0);
   const [jesusViewportHeight, setJesusViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [jesusScrollbarDragging, setJesusScrollbarDragging] = useState(false);
 
   const handleSave = () => {
     if (!title.trim() && !body.trim()) return;
@@ -81,9 +94,25 @@ export default function JournalScreen() {
     }
   };
 
+  // Placed after every hook above (rules of hooks). A direct MainTabs
+  // tab screen -- one getParent() hop reaches RootStack's Pricing route.
+  if (!hasAccess) {
+    return (
+      <PaywallLockScreen
+        featureName="Journal"
+        onSubscribe={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
+      />
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
       <View style={styles.header}>
+        <View style={styles.penRow}>
+          <MaterialCommunityIcons name="feather" size={22} color="#B8933E" style={styles.penIconTilted} />
+          <MaterialCommunityIcons name="bottle-tonic-outline" size={26} color="#B8933E" />
+        </View>
         <View style={styles.titleBar}>
           <Text style={styles.title}>{t.journal.title}</Text>
         </View>
@@ -130,6 +159,7 @@ export default function JournalScreen() {
             onContentSizeChange={(_width, height) => setEntriesContentHeight(height)}
             onScroll={({ nativeEvent }) => setEntriesScrollOffset(nativeEvent.contentOffset.y)}
             scrollEventThrottle={16}
+            scrollEnabled={!entriesScrollbarDragging}
           />
           <DraggableScrollbar
             contentHeight={entriesContentHeight}
@@ -139,6 +169,8 @@ export default function JournalScreen() {
               entriesListRef.current?.scrollToOffset({ offset, animated: false });
               setEntriesScrollOffset(offset);
             }}
+            onDragStart={() => setEntriesScrollbarDragging(true)}
+            onDragEnd={() => setEntriesScrollbarDragging(false)}
           />
         </View>
       ) : (
@@ -171,6 +203,7 @@ export default function JournalScreen() {
             onContentSizeChange={(_width, height) => setJesusContentHeight(height)}
             onScroll={({ nativeEvent }) => setJesusScrollOffset(nativeEvent.contentOffset.y)}
             scrollEventThrottle={16}
+            scrollEnabled={!jesusScrollbarDragging}
           />
           <DraggableScrollbar
             contentHeight={jesusContentHeight}
@@ -180,12 +213,14 @@ export default function JournalScreen() {
               jesusListRef.current?.scrollToOffset({ offset, animated: false });
               setJesusScrollOffset(offset);
             }}
+            onDragStart={() => setJesusScrollbarDragging(true)}
+            onDragEnd={() => setJesusScrollbarDragging(false)}
           />
         </View>
       )}
 
       <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modal}>
+        <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.modal} resizeMode="cover">
           <TextInput style={styles.titleInput} placeholder={t.journal.titlePlaceholder} value={title} onChangeText={setTitle} />
           <View style={styles.bodyWrap}>
             <View style={styles.lines} pointerEvents="none">
@@ -210,25 +245,30 @@ export default function JournalScreen() {
               <Text style={styles.saveText}>{t.journal.save}</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ImageBackground>
       </Modal>
+    </ImageBackground>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
+  safeArea: { flex: 1, borderWidth: 5, borderColor: Colors.royal },
+  container: { flex: 1 },
   // "+" is absolutely positioned (addBtnFloating below) rather than a
-  // flex sibling, so centering this row's content isn't thrown off by
-  // its width -- the title bar centers on the true page width, not just
-  // the space left over after the button.
-  header: { alignItems: 'center', justifyContent: 'center', padding: 16, paddingBottom: 12, position: 'relative' },
+  // flex sibling, so it floats above the full-width title bar instead
+  // of pushing it off-center.
+  header: { alignItems: 'center', paddingTop: 16, paddingBottom: 12, position: 'relative' },
   addBtnFloating: { position: 'absolute', right: 16, top: 16 },
+  penRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  // The feather sits slightly angled, as if just set down after writing.
+  penIconTilted: { transform: [{ rotate: '-30deg' }] },
+  // Full-bleed, edge to edge -- was a small centered pill before.
   titleBar: {
     backgroundColor: '#B8933E',
-    borderRadius: 18,
-    paddingVertical: 8,
-    paddingHorizontal: 18,
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 12,
   },
   title: { fontSize: 22, fontWeight: '800', color: Colors.white },
   addBtn: { backgroundColor: Colors.royal, width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },

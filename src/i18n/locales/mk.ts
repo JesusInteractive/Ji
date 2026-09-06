@@ -251,7 +251,11 @@ const mk: TranslationShape = {
     "generateButton": "Генерирај",
     "regenerateButton": "Генерирај повторно",
     "generateErrorTitle": "Не можевме да го генерираме тоа",
-    "generateErrorFallback": "Проверете ја вашата врска и обидете се повторно."
+    "generateErrorFallback": "Проверете ја вашата врска и обидете се повторно.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Не можевме да ја отвориме таа врска",
@@ -279,6 +283,20 @@ const mk: TranslationShape = {
     "loadingLanguages": "Вчитување на достапни јазици...",
     "loadError": "Не можевме да ја вчитаме библиотеката. Проверете ја вашата врска и обидете се повторно.",
     "retryButton": "Обиди се повторно"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ова е вашата библиотека за проучување. Допрете книга за да читате. Членовите со Платинум можат да слушаат како ИИ Исус ги чита книгите што ги имаме на нивниот јазик.",
+    "enterLibrary": "Влезете во библиотеката",
+    "readAloudShelfTitle": "Читај на глас",
+    "readAloudShelfSubtitle": "ИИ Исус може да ги чита овие книги на глас. Платинум.",
+    "readerLoadError": "Не може да се вчита оваа книга. Проверете ја врската и обидете се повторно.",
+    "speakerLockedLabel": "Платинум",
+    "narrationLabel": "Нарација",
+    "jesusVoiceDisclosure": "ИИ Исус чита само книги наведени во Каталогот за читање на глас. Ова е глас моделиран за оваа апликација, заснован на Светото писмо — не е снимка на вистинска личност. Достапноста зависи од поддршката за јазикот.",
+    "notAvailableLanguage": "Сè уште не е достапно на овој јазик",
+    "textOnlyLabel": "Само текст",
+    "readAloudFilterLabel": "Читај на глас",
+    "catalogSearchPlaceholder": "Пребарајте ја библиотеката"
   }
 };
 

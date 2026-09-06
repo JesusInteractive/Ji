@@ -251,7 +251,11 @@ const si: TranslationShape = {
     "generateButton": "ජනනය කරන්න",
     "regenerateButton": "නැවත ජනනය කරන්න",
     "generateErrorTitle": "එය ජනනය කිරීමට නොහැකි විය",
-    "generateErrorFallback": "කරුණාකර ඔබේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න."
+    "generateErrorFallback": "කරුණාකර ඔබේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "එම සබැඳිය විවෘත කිරීමට නොහැකි විය",
@@ -279,6 +283,20 @@ const si: TranslationShape = {
     "loadingLanguages": "උපලබ්ධ භාෂා පූරණය වෙමින්...",
     "loadError": "පුස්තකාලය පූරණය කළ නොහැකි විය. ඔබේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
     "retryButton": "නැවත උත්සාහ කරන්න"
+  },
+  "studyLibrary": {
+    "entranceTitle": "මෙය ඔබේ අධ්‍යයන පුස්තකාලයයි. කියවීමට පොතක් තට්ටු කරන්න. ප්ලැටිනම් සාමාජිකයින්ට AI ජේසුස් වහන්සේ ඔවුන්ගේ භාෂාවෙන් පොත් කියවන ආකාරය අසා දැකීමට හැකිය.",
+    "enterLibrary": "පුස්තකාලයට ඇතුළු වන්න",
+    "readAloudShelfTitle": "කථනයෙන් කියවන්න",
+    "readAloudShelfSubtitle": "AI ජේසුස් වහන්සේට මෙම පොත් උච්චාරණය කර කියවීමට හැකිය. ප්ලැටිනම්.",
+    "readerLoadError": "මෙම පොත පූරණය කළ නොහැකි විය. ඔබේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
+    "speakerLockedLabel": "ප්ලැටිනම්",
+    "narrationLabel": "කථනය",
+    "jesusVoiceDisclosure": "AI ජේසුස් වහන්සේ කියවීම් නාමාවලියේ ලැයිස්තුගත කර ඇති පොත් පමණක් කියවයි. මෙය මෙම යෙදුම සඳහා ආකෘතිකරණය කරන ලද හඬකි, ශුද්ධ ලියවිල්ල මත පදනම් වූ — සැබෑ පුද්ගලයෙකුගේ පටිගත කිරීමක් නොවේ. ලබා ගත හැකි බව භාෂා සහාය මත රඳා පවතී.",
+    "notAvailableLanguage": "මෙම භාෂාවෙන් තවම ලබා ගත නොහැක",
+    "textOnlyLabel": "පෙළ පමණි",
+    "readAloudFilterLabel": "කථනයෙන් කියවන්න",
+    "catalogSearchPlaceholder": "පුස්තකාලය සොයන්න"
   }
 };
 

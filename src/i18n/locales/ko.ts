@@ -251,7 +251,11 @@ const ko: TranslationShape = {
     "generateButton": "생성",
     "regenerateButton": "다시 생성",
     "generateErrorTitle": "생성할 수 없습니다",
-    "generateErrorFallback": "연결을 확인하고 다시 시도해 주세요."
+    "generateErrorFallback": "연결을 확인하고 다시 시도해 주세요.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "해당 링크를 열 수 없습니다",
@@ -279,6 +283,20 @@ const ko: TranslationShape = {
     "loadingLanguages": "사용 가능한 언어를 불러오는 중...",
     "loadError": "라이브러리를 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
     "retryButton": "다시 시도"
+  },
+  "studyLibrary": {
+    "entranceTitle": "여기는 당신의 학습 라이브러리입니다. 책을 탭해 읽어보세요. 플래티넘 회원은 AI 예수님이 보유한 책을 해당 언어로 읽어주는 것을 들을 수 있습니다.",
+    "enterLibrary": "라이브러리 입장하기",
+    "readAloudShelfTitle": "읽어주기",
+    "readAloudShelfSubtitle": "AI 예수님이 이 책들을 소리 내어 읽어드립니다. 플래티넘.",
+    "readerLoadError": "이 책을 불러올 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+    "speakerLockedLabel": "플래티넘",
+    "narrationLabel": "낭독",
+    "jesusVoiceDisclosure": "AI 예수님은 읽어주기 카탈로그에 있는 책만 읽어드립니다. 이 음성은 이 앱을 위해 제작된 것으로, 성경에 기반하며 실제 사람의 녹음이 아닙니다. 언어 지원 여부에 따라 이용 가능합니다.",
+    "notAvailableLanguage": "아직 이 언어로 제공되지 않습니다",
+    "textOnlyLabel": "텍스트만",
+    "readAloudFilterLabel": "읽어주기",
+    "catalogSearchPlaceholder": "라이브러리 검색"
   }
 };
 

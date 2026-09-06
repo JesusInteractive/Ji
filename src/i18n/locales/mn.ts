@@ -251,7 +251,11 @@ const mn: TranslationShape = {
     "generateButton": "Үүсгэх",
     "regenerateButton": "Дахин үүсгэх",
     "generateErrorTitle": "Үүсгэж чадсангүй",
-    "generateErrorFallback": "Холболтоо шалгаад дахин оролдоно уу."
+    "generateErrorFallback": "Холболтоо шалгаад дахин оролдоно уу.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Тэр холбоосыг нээж чадсангүй",
@@ -279,6 +283,20 @@ const mn: TranslationShape = {
     "loadingLanguages": "Боломжтой хэлнүүдийг ачаалж байна...",
     "loadError": "Номын санг ачаалж чадсангүй. Холболтоо шалгаад дахин оролдоно уу.",
     "retryButton": "Дахин оролдох"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Энэ бол таны судалгааны номын сан. Ном уншихын тулд товшино уу. Платинум гишүүд AI Есүсээс хэл дээрх номуудыг чангаар уншиж сонсох боломжтой.",
+    "enterLibrary": "Номын сан руу орох",
+    "readAloudShelfTitle": "Чангаар унших",
+    "readAloudShelfSubtitle": "AI Есүс эдгээр номуудыг чангаар уншиж өгнө. Платинум.",
+    "readerLoadError": "Энэ номыг ачаалж чадсангүй. Холболтоо шалгаад дахин оролдоно уу.",
+    "speakerLockedLabel": "Платинум",
+    "narrationLabel": "Уншлага",
+    "jesusVoiceDisclosure": "AI Есүс зөвхөн Чангаар унших каталогид жагсаасан номуудыг уншина. Энэ бол энэ апп-д зориулж загварчилсан дуу хоолой бөгөөд Бичээс дээр үндэслэсэн — жинхэнэ хүний бичлэг биш. Боломжтой байдал нь хэлний дэмжлэгээс хамаарна.",
+    "notAvailableLanguage": "Энэ хэл дээр одоогоор боломжгүй",
+    "textOnlyLabel": "Зөвхөн текст",
+    "readAloudFilterLabel": "Чангаар унших",
+    "catalogSearchPlaceholder": "Номын сангаас хайх"
   }
 };
 

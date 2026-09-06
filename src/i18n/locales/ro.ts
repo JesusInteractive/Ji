@@ -251,7 +251,11 @@ const ro: TranslationShape = {
     "generateButton": "Generează",
     "regenerateButton": "Regenerează",
     "generateErrorTitle": "Nu am putut genera asta",
-    "generateErrorFallback": "Te rugăm să verifici conexiunea și să încerci din nou."
+    "generateErrorFallback": "Te rugăm să verifici conexiunea și să încerci din nou.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nu am putut deschide linkul",
@@ -279,6 +283,20 @@ const ro: TranslationShape = {
     "loadingLanguages": "Se încarcă limbile disponibile...",
     "loadError": "Nu s-a putut încărca biblioteca. Verifică conexiunea și încearcă din nou.",
     "retryButton": "Reîncearcă"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Aceasta este biblioteca ta de studiu. Atinge o carte pentru a o citi. Membrii Platinum pot auzi cum AI Jesus citește cărțile disponibile în limba lor.",
+    "enterLibrary": "Intră în bibliotecă",
+    "readAloudShelfTitle": "Citire cu voce tare",
+    "readAloudShelfSubtitle": "AI Jesus poate citi aceste cărți cu voce tare. Platinum.",
+    "readerLoadError": "Nu s-a putut încărca această carte. Verifică-ți conexiunea și încearcă din nou.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narare",
+    "jesusVoiceDisclosure": "AI Jesus citește doar cărțile listate în Catalogul de Citire cu Voce Tare. Aceasta este o voce modelată pentru această aplicație, bazată pe Scriptură — nu o înregistrare a unei persoane reale. Disponibilitatea depinde de suportul lingvistic.",
+    "notAvailableLanguage": "Nu este disponibil încă în această limbă",
+    "textOnlyLabel": "Doar text",
+    "readAloudFilterLabel": "Citire cu voce tare",
+    "catalogSearchPlaceholder": "Caută în bibliotecă"
   }
 };
 

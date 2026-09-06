@@ -251,7 +251,11 @@ const lo: TranslationShape = {
     "generateButton": "ສ້າງ",
     "regenerateButton": "ສ້າງໃໝ່",
     "generateErrorTitle": "ບໍ່ສາມາດສ້າງນັ້ນໄດ້",
-    "generateErrorFallback": "ກາລຸນາກວດສອບການເຊື່ອມຕໍ່ ແລະ ລອງໃໝ່."
+    "generateErrorFallback": "ກາລຸນາກວດສອບການເຊື່ອມຕໍ່ ແລະ ລອງໃໝ່.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ບໍ່ສາມາດເປີດລິ້ງນັ້ນໄດ້",
@@ -279,6 +283,20 @@ const lo: TranslationShape = {
     "loadingLanguages": "ກຳລັງໂຫຼດພາສາທີ່ມີ...",
     "loadError": "ບໍ່ສາມາດໂຫຼດຫໍສະໝຸດໄດ້. ກວດສອບການເຊື່ອມຕໍ່ ແລະ ລອງໃໝ່.",
     "retryButton": "ລອງໃໝ່"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ນີ້ແມ່ນຫໍສະໝຸດການສຶກສາຂອງທ່ານ. ແຕະປຶ້ມເພື່ອອ່ານ. ສະມາຊິກ Platinum ສາມາດຟັງ AI Jesus ອ່ານປຶ້ມທີ່ພວກເຮົາມີໃນພາສາຂອງເຂົາເຈົ້າ.",
+    "enterLibrary": "ເຂົ້າໄປໃນຫໍສະໝຸດ",
+    "readAloudShelfTitle": "ອ່ານອອກສຽງ",
+    "readAloudShelfSubtitle": "AI Jesus ສາມາດອ່ານປຶ້ມເຫຼົ່ານີ້ອອກສຽງໄດ້. Platinum.",
+    "readerLoadError": "ບໍ່ສາມາດໂຫຼດປຶ້ມນີ້ໄດ້. ກວດສອບການເຊື່ອມຕໍ່ຂອງທ່ານ ແລ້ວລອງໃໝ່ອີກ.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "ການບັນຍາຍ",
+    "jesusVoiceDisclosure": "AI Jesus ອ່ານພຽງແຕ່ປຶ້ມທີ່ລະບຸໄວ້ໃນ Read-Aloud Catalog ເທົ່ານັ້ນ. ນີ້ແມ່ນສຽງທີ່ຖືກອອກແບບສຳລັບແອັບນີ້ ໂດຍອີງໃສ່ພຣະຄຳພີ — ບໍ່ແມ່ນການບັນທຶກສຽງຂອງບຸກຄົນຈິງ. ການມີໃຫ້ໃຊ້ຂຶ້ນຢູ່ກັບການສະໜັບສະໜູນພາສາ.",
+    "notAvailableLanguage": "ຍັງບໍ່ມີໃຫ້ໃຊ້ໃນພາສານີ້ເທື່ອ",
+    "textOnlyLabel": "ພຽງແຕ່ຂໍ້ຄວາມ",
+    "readAloudFilterLabel": "ອ່ານອອກສຽງ",
+    "catalogSearchPlaceholder": "ຊອກຫາໃນຫໍສະໝຸດ"
   }
 };
 

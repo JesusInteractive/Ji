@@ -251,7 +251,11 @@ const et: TranslationShape = {
     "generateButton": "Loo",
     "regenerateButton": "Loo uuesti",
     "generateErrorTitle": "Seda ei õnnestunud luua",
-    "generateErrorFallback": "Palun kontrolli ühendust ja proovi uuesti."
+    "generateErrorFallback": "Palun kontrolli ühendust ja proovi uuesti.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Seda linki ei õnnestunud avada",
@@ -279,6 +283,20 @@ const et: TranslationShape = {
     "loadingLanguages": "Saadaolevate keelte laadimine...",
     "loadError": "Raamatukogu laadimine ebaõnnestus. Kontrolli ühendust ja proovi uuesti.",
     "retryButton": "Proovi uuesti"
+  },
+  "studyLibrary": {
+    "entranceTitle": "See on sinu õpikogu. Puuduta raamatut, et seda lugeda. Platinumi liikmed saavad kuulata, kuidas AI Jeesus loeb raamatuid nende keeles.",
+    "enterLibrary": "Sisene raamatukogusse",
+    "readAloudShelfTitle": "Valjusti lugemine",
+    "readAloudShelfSubtitle": "AI Jeesus saab neid raamatuid valjusti lugeda. Platinum.",
+    "readerLoadError": "Raamatu laadimine ebaõnnestus. Kontrolli ühendust ja proovi uuesti.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ettelugemine",
+    "jesusVoiceDisclosure": "AI Jeesus loeb ainult raamatuid, mis on loetletud Valjusti Lugemise Kataloogis. See on selle rakenduse jaoks modelleeritud hääl, mis põhineb Pühakirjal — mitte päris inimese salvestis. Saadavus sõltub keele toest.",
+    "notAvailableLanguage": "Selles keeles veel pole saadaval",
+    "textOnlyLabel": "Ainult tekst",
+    "readAloudFilterLabel": "Valjusti lugemine",
+    "catalogSearchPlaceholder": "Otsi raamatukogust"
   }
 };
 

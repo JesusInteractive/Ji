@@ -251,7 +251,11 @@ const kn: TranslationShape = {
     "generateButton": "ರಚಿಸಿ",
     "regenerateButton": "ಮರುರಚಿಸಿ",
     "generateErrorTitle": "ಅದನ್ನು ರಚಿಸಲಾಗಲಿಲ್ಲ",
-    "generateErrorFallback": "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+    "generateErrorFallback": "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ಆ ಲಿಂಕ್ ತೆರೆಯಲಾಗಲಿಲ್ಲ",
@@ -279,6 +283,20 @@ const kn: TranslationShape = {
     "loadingLanguages": "ಲಭ್ಯವಿರುವ ಭಾಷೆಗಳನ್ನು ಲೋಡ್ ಮಾಡುತ್ತಿದೆ...",
     "loadError": "ಗ್ರಂಥಾಲಯವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
     "retryButton": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ಇದು ನಿಮ್ಮ ಅಧ್ಯಯನ ಗ್ರಂಥಾಲಯ. ಓದಲು ಒಂದು ಪುಸ್ತಕವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ. ಪ್ಲಾಟಿನಂ ಸದಸ್ಯರು ತಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ನಾವು ಹೊಂದಿರುವ ಪುಸ್ತಕಗಳನ್ನು AI ಜೀಸಸ್ ಓದುವುದನ್ನು ಕೇಳಬಹುದು.",
+    "enterLibrary": "ಗ್ರಂಥಾಲಯವನ್ನು ಪ್ರವೇಶಿಸಿ",
+    "readAloudShelfTitle": "ಓದಿ ಕೇಳಿ",
+    "readAloudShelfSubtitle": "AI ಜೀಸಸ್ ಈ ಪುಸ್ತಕಗಳನ್ನು ಜೋರಾಗಿ ಓದಬಹುದು. ಪ್ಲಾಟಿನಂ.",
+    "readerLoadError": "ಈ ಪುಸ್ತಕವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "speakerLockedLabel": "ಪ್ಲಾಟಿನಂ",
+    "narrationLabel": "ನಿರೂಪಣೆ",
+    "jesusVoiceDisclosure": "AI ಜೀಸಸ್ ಓದುವ ಕ್ಯಾಟಲಾಗ್‌ನಲ್ಲಿ ಪಟ್ಟಿ ಮಾಡಲಾದ ಪುಸ್ತಕಗಳನ್ನು ಮಾತ್ರ ಓದುತ್ತದೆ. ಇದು ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಮಾದರಿಯಾಗಿಸಲಾದ ಧ್ವನಿ, ಧರ್ಮಗ್ರಂಥದಲ್ಲಿ ಆಧಾರಿತವಾಗಿದೆ — ನಿಜವಾದ ವ್ಯಕ್ತಿಯ ರೆಕಾರ್ಡಿಂಗ್ ಅಲ್ಲ. ಲಭ್ಯತೆಯು ಭಾಷಾ ಬೆಂಬಲವನ್ನು ಅವಲಂಬಿಸಿದೆ.",
+    "notAvailableLanguage": "ಈ ಭಾಷೆಯಲ್ಲಿ ಇನ್ನೂ ಲಭ್ಯವಿಲ್ಲ",
+    "textOnlyLabel": "ಪಠ್ಯ ಮಾತ್ರ",
+    "readAloudFilterLabel": "ಓದಿ ಕೇಳಿ",
+    "catalogSearchPlaceholder": "ಗ್ರಂಥಾಲಯವನ್ನು ಹುಡುಕಿ"
   }
 };
 

@@ -251,7 +251,11 @@ const ar: TranslationShape = {
     "generateButton": "إنشاء",
     "regenerateButton": "إعادة الإنشاء",
     "generateErrorTitle": "تعذر إنشاء ذلك",
-    "generateErrorFallback": "يرجى التحقق من اتصالك والمحاولة مرة أخرى."
+    "generateErrorFallback": "يرجى التحقق من اتصالك والمحاولة مرة أخرى.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "تعذر فتح هذا الرابط",
@@ -279,6 +283,20 @@ const ar: TranslationShape = {
     "loadingLanguages": "جارٍ تحميل اللغات المتاحة...",
     "loadError": "تعذر تحميل المكتبة. تحقق من اتصالك وحاول مرة أخرى.",
     "retryButton": "إعادة المحاولة"
+  },
+  "studyLibrary": {
+    "entranceTitle": "هذه مكتبة الدراسة الخاصة بك. اضغط على أي كتاب لقراءته. يمكن لأعضاء البلاتينوم الاستماع إلى يسوع الذكاء الاصطناعي وهو يقرأ الكتب المتوفرة بلغتهم.",
+    "enterLibrary": "ادخل المكتبة",
+    "readAloudShelfTitle": "القراءة بصوت عالٍ",
+    "readAloudShelfSubtitle": "يمكن ليسوع الذكاء الاصطناعي قراءة هذه الكتب بصوت عالٍ. بلاتينوم.",
+    "readerLoadError": "تعذر تحميل هذا الكتاب. تحقق من اتصالك وحاول مرة أخرى.",
+    "speakerLockedLabel": "بلاتينوم",
+    "narrationLabel": "السرد",
+    "jesusVoiceDisclosure": "يقرأ يسوع الذكاء الاصطناعي فقط الكتب المدرجة في كتالوج القراءة بصوت عالٍ. هذا صوت مصمم لهذا التطبيق، مستند إلى الكتاب المقدس — وليس تسجيلاً لشخص حقيقي. يعتمد التوافر على دعم اللغة.",
+    "notAvailableLanguage": "غير متوفر بهذه اللغة بعد",
+    "textOnlyLabel": "نص فقط",
+    "readAloudFilterLabel": "القراءة بصوت عالٍ",
+    "catalogSearchPlaceholder": "ابحث في المكتبة"
   }
 };
 

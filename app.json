@@ -14,8 +14,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jesusinteractive.app",
+      "buildNumber": "8",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Used only when you tap the microphone button to send a voice message in chat. Audio is transcribed to text and discarded; nothing is stored without your consent.",
+        "NSLocationWhenInUseUsageDescription": "Used only when you tap the Emergency SOS button, to include your location in the alert sent to your contacts. Never collected in the background or continuously.",
+        "NSMotionUsageDescription": "This app does not use motion or fitness data. This permission is requested only because a location library this app uses references motion APIs to improve accuracy; motion data is never read or stored.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -31,7 +34,9 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
       ]
     },
     "web": {
@@ -64,6 +69,12 @@
         "expo-image-picker",
         {
           "photosPermission": "Used only if you choose to upload a profile photo. Stored on this device only, never uploaded anywhere."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Used only when you tap the Emergency SOS button, to include your location in the alert sent to your contacts. Never collected in the background or continuously."
         }
       ],
       "expo-sharing"

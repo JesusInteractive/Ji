@@ -251,7 +251,11 @@ const ti: TranslationShape = {
     "generateButton": "ኣውጽእ",
     "regenerateButton": "እንደገና ኣውጽእ",
     "generateErrorTitle": "እዚ ክትኣውጽእ ኣይተኻእለን",
-    "generateErrorFallback": "ኮኔክሽንካ ኣረጋግጽን እንደገና ሞክርን።"
+    "generateErrorFallback": "ኮኔክሽንካ ኣረጋግጽን እንደገና ሞክርን።",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "እዚ ሊንክ ክትከፍት ኣይተኻእለን",
@@ -279,6 +283,20 @@ const ti: TranslationShape = {
     "loadingLanguages": "ዝጥቀሙ ቋንቋታት ይጽዕኑ...",
     "loadError": "ቤተ መጻሕፍቲ ክጽዕን ኣይተኻእለን። ርክብካ ኣረጋግጽን እንደገና ሞክርን።",
     "retryButton": "እንደገና ሞክር"
+  },
+  "studyLibrary": {
+    "entranceTitle": "እዚ ናትካ መጽንሒ ቤተ መጻሕፍቲ እዩ። መጽሓፍ ንምንባብ ጠውቕ። ፕላቲኒየም ኣባላት እቶም መጽሓፍቲ ብቋንቋኦም ብኣይ ጀሱስ ክሰምዑ ይኽእሉ።",
+    "enterLibrary": "ቤተ መጻሕፍቲ እተው",
+    "readAloudShelfTitle": "ብድምጺ ኣንብብ",
+    "readAloudShelfSubtitle": "ኣይ ጀሱስ እዞም መጽሓፍቲ ብድምጺ ክኣንብቦም ይኽእል። ፕላቲኒየም።",
+    "readerLoadError": "እዛ መጽሓፍ ክትጽዓን ኣይተኻእለትን። ርክብካ ኣረጋግጽን እንደገና ሞክር።",
+    "speakerLockedLabel": "ፕላቲኒየም",
+    "narrationLabel": "ትርኢት",
+    "jesusVoiceDisclosure": "ኣይ ጀሱስ እቶም ብካታሎግ ብድምጺ ዝተዘርዘሩ መጽሓፍቲ ጥራይ እዩ ዝኣንብቦም። እዚ ድምጺ ንእዛ ኣፕ ተበጺሑ እዩ፣ ብመጽሓፍ ቅዱስ ዝተመርኮሰ — ምትላዕ ሰብ ኣይኮነን። ኣቀራረብ ብቋንቋ ይመርኮር።",
+    "notAvailableLanguage": "ኣብዚ ቋንቋ ገና ኣይተቐረበን",
+    "textOnlyLabel": "ጽሑፍ ጥራይ",
+    "readAloudFilterLabel": "ብድምጺ ኣንብብ",
+    "catalogSearchPlaceholder": "ቤተ መጻሕፍቲ ድለይ"
   }
 };
 

@@ -251,7 +251,11 @@ const km: TranslationShape = {
     "generateButton": "បង្កើត",
     "regenerateButton": "បង្កើតឡើងវិញ",
     "generateErrorTitle": "មិនអាចបង្កើតវាបានទេ",
-    "generateErrorFallback": "សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយសាកល្បងម្តងទៀត។"
+    "generateErrorFallback": "សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយសាកល្បងម្តងទៀត។",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "មិនអាចបើកតំណនោះបានទេ",
@@ -279,6 +283,20 @@ const km: TranslationShape = {
     "loadingLanguages": "កំពុងផ្ទុកភាសាដែលមាន...",
     "loadError": "មិនអាចផ្ទុកបណ្ណាល័យបានទេ។ សូមពិនិត្យការភ្ជាប់របស់អ្នក ហើយសាកល្បងម្តងទៀត។",
     "retryButton": "សាកល្បងម្តងទៀត"
+  },
+  "studyLibrary": {
+    "entranceTitle": "នេះគឺជាបណ្ណាល័យសិក្សារបស់អ្នក។ ចុចលើសៀវភៅមួយដើម្បីអាន។ សមាជិក Platinum អាចស្តាប់ AI Jesus អានសៀវភៅដែលយើងមានជាភាសារបស់ពួកគេ។",
+    "enterLibrary": "ចូលទៅក្នុងបណ្ណាល័យ",
+    "readAloudShelfTitle": "អានឮៗ",
+    "readAloudShelfSubtitle": "AI Jesus អាចអានសៀវភៅទាំងនេះឮៗ។ Platinum។",
+    "readerLoadError": "មិនអាចផ្ទុកសៀវភៅនេះបានទេ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "ការនិទាន",
+    "jesusVoiceDisclosure": "AI Jesus អានតែសៀវភៅដែលមានរាយក្នុងកាតាឡុកអានឮៗប៉ុណ្ណោះ។ នេះជាសំឡេងដែលបង្កើតសម្រាប់កម្មវិធីនេះ ដោយផ្អែកលើគម្ពីរ — មិនមែនជាការថតសំឡេងរបស់មនុស្សពិតទេ។ ភាពអាចរកបានអាស្រ័យលើការគាំទ្រភាសា។",
+    "notAvailableLanguage": "មិនទាន់មានជាភាសានេះនៅឡើយទេ",
+    "textOnlyLabel": "អត្ថបទតែប៉ុណ្ណោះ",
+    "readAloudFilterLabel": "អានឮៗ",
+    "catalogSearchPlaceholder": "ស្វែងរកបណ្ណាល័យ"
   }
 };
 

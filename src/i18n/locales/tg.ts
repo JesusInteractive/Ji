@@ -251,7 +251,11 @@ const tg: TranslationShape = {
     "generateButton": "Тавлид кардан",
     "regenerateButton": "Аз нав тавлид кардан",
     "generateErrorTitle": "Он тавлид нашуд",
-    "generateErrorFallback": "Лутфан пайвастшавии худро санҷед ва боз кӯшиш кунед."
+    "generateErrorFallback": "Лутфан пайвастшавии худро санҷед ва боз кӯшиш кунед.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Он пайванд кушода нашуд",
@@ -279,6 +283,20 @@ const tg: TranslationShape = {
     "loadingLanguages": "Бор кардани забонҳои дастрас...",
     "loadError": "Китобхона бор карда нашуд. Пайвастшавии худро санҷед ва боз кӯшиш кунед.",
     "retryButton": "Боз кӯшиш кардан"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ин китобхонаи таҳсилии шумост. Барои хондан китоберо зер кунед. Аъзоёни Platinum метавонанд Исо-и AI-ро бишнаванд, ки китобҳои дастрасро ба забони онҳо мехонад.",
+    "enterLibrary": "Вориди китобхона шавед",
+    "readAloudShelfTitle": "Хондан бо овоз",
+    "readAloudShelfSubtitle": "Исо-и AI метавонад ин китобҳоро бо овоз бихонад. Platinum.",
+    "readerLoadError": "Китоб бор карда нашуд. Пайвасти худро санҷед ва аз нав кӯшиш кунед.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Хондан бо овоз",
+    "jesusVoiceDisclosure": "Исо-и AI танҳо китобҳои дар феҳристи Хондан бо овоз номбаршударо мехонад. Ин овозе аст, ки барои ин барнома модел карда шудааст, дар асоси Китоби Муқаддас — на сабти шахси воқеӣ. Дастрасӣ ба дастгирии забон вобаста аст.",
+    "notAvailableLanguage": "Ҳанӯз дар ин забон дастрас нест",
+    "textOnlyLabel": "Танҳо матн",
+    "readAloudFilterLabel": "Хондан бо овоз",
+    "catalogSearchPlaceholder": "Китобхонаро ҷустуҷӯ кунед"
   }
 };
 

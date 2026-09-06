@@ -251,7 +251,11 @@ const ne: TranslationShape = {
     "generateButton": "उत्पन्न गर्नुहोस्",
     "regenerateButton": "पुनः उत्पन्न गर्नुहोस्",
     "generateErrorTitle": "त्यो उत्पन्न गर्न सकिएन",
-    "generateErrorFallback": "कृपया आफ्नो जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।"
+    "generateErrorFallback": "कृपया आफ्नो जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "त्यो लिङ्क खोल्न सकिएन",
@@ -279,6 +283,20 @@ const ne: TranslationShape = {
     "loadingLanguages": "उपलब्ध भाषाहरू लोड गर्दै...",
     "loadError": "लाइब्रेरी लोड गर्न सकिएन। आफ्नो जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।",
     "retryButton": "पुनः प्रयास गर्नुहोस्"
+  },
+  "studyLibrary": {
+    "entranceTitle": "यो तपाईंको अध्ययन पुस्तकालय हो। पढ्न एउटा पुस्तक ट्याप गर्नुहोस्। प्लेटिनम सदस्यहरूले AI येशूलाई हामीसँग भएका पुस्तकहरू उनीहरूको भाषामा पढेर सुनाउन सक्छन्।",
+    "enterLibrary": "पुस्तकालयमा प्रवेश गर्नुहोस्",
+    "readAloudShelfTitle": "जोडले पढ्ने",
+    "readAloudShelfSubtitle": "AI येशूले यी पुस्तकहरू जोडले पढ्न सक्नुहुन्छ। प्लेटिनम।",
+    "readerLoadError": "यो पुस्तक लोड गर्न सकिएन। आफ्नो जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।",
+    "speakerLockedLabel": "प्लेटिनम",
+    "narrationLabel": "वाचन",
+    "jesusVoiceDisclosure": "AI येशूले जोडले पढ्ने सूचीमा उल्लेख भएका पुस्तकहरू मात्र पढ्नुहुन्छ। यो यस एपको लागि बनाइएको आवाज हो, धर्मशास्त्रमा आधारित — कुनै वास्तविक व्यक्तिको रेकर्डिङ होइन। उपलब्धता भाषा समर्थनमा निर्भर गर्दछ।",
+    "notAvailableLanguage": "यो भाषामा अहिले उपलब्ध छैन",
+    "textOnlyLabel": "पाठ मात्र",
+    "readAloudFilterLabel": "जोडले पढ्ने",
+    "catalogSearchPlaceholder": "पुस्तकालय खोज्नुहोस्"
   }
 };
 

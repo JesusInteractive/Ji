@@ -1,8 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useI18n, interpolate } from '../i18n';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 interface Step {
   title: string;
@@ -12,6 +17,8 @@ interface Step {
 // Guided prayer mode (spec section 7) -- a simple ACTS-style walkthrough.
 export default function GuidedPrayerScreen() {
   const { t } = useI18n();
+  const { hasAccess } = useFeatureAccess();
+  const navigation = useNavigation();
   const [stepIndex, setStepIndex] = useState(0);
 
   const STEPS: Step[] = useMemo(
@@ -27,7 +34,21 @@ export default function GuidedPrayerScreen() {
 
   const step = STEPS[stepIndex];
 
+  // Placed after every hook above (rules of hooks). Nested ChatStack ->
+  // MainTabs -> RootStack, same as ChatScreen -- two getParent() hops.
+  if (!hasAccess) {
+    return (
+      <PaywallLockScreen
+        featureName="Guided Prayer"
+        onSubscribe={() =>
+          navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')
+        }
+      />
+    );
+  }
+
   return (
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={{ flex: 1 }} resizeMode="cover">
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>{t.guidedPrayer.title}</Text>
       <View style={styles.card}>
@@ -56,11 +77,12 @@ export default function GuidedPrayerScreen() {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20, backgroundColor: '#F4F6FA', flexGrow: 1 },
+  container: { padding: 20, flexGrow: 1 },
   title: { fontSize: 22, fontWeight: '800', color: Colors.royal, marginBottom: 16 },
   card: { backgroundColor: Colors.white, borderRadius: 16, padding: 20, minHeight: 180 },
   stepLabel: { fontSize: 12, color: '#A0AEC0', fontWeight: '600' },

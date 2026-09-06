@@ -251,7 +251,11 @@ const fa: TranslationShape = {
     "generateButton": "ایجاد",
     "regenerateButton": "ایجاد مجدد",
     "generateErrorTitle": "نتوانستیم آن را ایجاد کنیم",
-    "generateErrorFallback": "لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید."
+    "generateErrorFallback": "لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "نتوانستیم آن پیوند را باز کنیم",
@@ -279,6 +283,20 @@ const fa: TranslationShape = {
     "loadingLanguages": "در حال بارگذاری زبان‌های موجود...",
     "loadError": "کتابخانه بارگذاری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
     "retryButton": "تلاش مجدد"
+  },
+  "studyLibrary": {
+    "entranceTitle": "این کتابخانه مطالعه شماست. روی یک کتاب ضربه بزنید تا بخوانید. اعضای پلاتینیوم می‌توانند بشنوند که عیسی هوش مصنوعی کتاب‌ها را به زبانشان بخواند.",
+    "enterLibrary": "وارد کتابخانه شوید",
+    "readAloudShelfTitle": "خواندن با صدای بلند",
+    "readAloudShelfSubtitle": "عیسی هوش مصنوعی می‌تواند این کتاب‌ها را با صدای بلند بخواند. پلاتینیوم.",
+    "readerLoadError": "نتوانستیم این کتاب را بارگذاری کنیم. اتصال خود را بررسی کنید و دوباره تلاش کنید.",
+    "speakerLockedLabel": "پلاتینیوم",
+    "narrationLabel": "روایت",
+    "jesusVoiceDisclosure": "عیسی هوش مصنوعی فقط کتاب‌های فهرست‌شده در کاتالوگ خواندن با صدای بلند را می‌خواند. این صدایی است که برای این برنامه مدل‌سازی شده و بر اساس کتاب مقدس است — نه ضبط صدای یک شخص واقعی. در دسترس بودن آن به پشتیبانی زبان بستگی دارد.",
+    "notAvailableLanguage": "هنوز در این زبان در دسترس نیست",
+    "textOnlyLabel": "فقط متن",
+    "readAloudFilterLabel": "خواندن با صدای بلند",
+    "catalogSearchPlaceholder": "کتابخانه را جستجو کنید"
   }
 };
 

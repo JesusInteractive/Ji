@@ -251,7 +251,11 @@ const hmn: TranslationShape = {
     "generateButton": "Tsim",
     "regenerateButton": "Tsim dua",
     "generateErrorTitle": "Tsis tuaj yeem tsim qhov ntawd",
-    "generateErrorFallback": "Thov xyuas koj qhov kev sib txuas thiab sim dua."
+    "generateErrorFallback": "Thov xyuas koj qhov kev sib txuas thiab sim dua.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Tsis tuaj yeem qhib qhov txuas ntawd",
@@ -279,6 +283,20 @@ const hmn: TranslationShape = {
     "loadingLanguages": "Thauj cov hom lus uas siv tau...",
     "loadError": "Thauj tsis tau lub tsev qiv ntawv. Txheeb koj qhov txuas thiab sim dua.",
     "retryButton": "Sim dua"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Qhov no yog lub tsev qiv ntawv kawm ntawm koj. Nyem ib phau ntawv los nyeem. Cov tswv cuab Platinum tuaj yeem hnov AI Yexus nyeem cov phau ntawv uas peb muaj rau lawv hom lus.",
+    "enterLibrary": "Nkag mus rau lub tsev qiv ntawv",
+    "readAloudShelfTitle": "Nyeem nrov",
+    "readAloudShelfSubtitle": "AI Yexus tuaj yeem nyeem cov phau ntawv no nrov. Platinum.",
+    "readerLoadError": "Tsis tuaj yeem thauj phau ntawv no. Txheeb xyuas koj qhov txuas thiab sim dua.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Kev piav qhia",
+    "jesusVoiceDisclosure": "AI Yexus tsuas nyeem cov phau ntawv uas sau rau hauv Daim Ntawv Qhov Chaw Nyeem Nrov xwb. Qhov no yog lub suab ua qauv rau app no, ua raws li Vajlus — tsis yog kev kaw suab ntawm tus neeg tiag. Kev siv tau nyob ntawm kev txhawb nqa hom lus.",
+    "notAvailableLanguage": "Tseem tsis tau siv tau rau hom lus no",
+    "textOnlyLabel": "Ntawv nkaus xwb",
+    "readAloudFilterLabel": "Nyeem Nrov",
+    "catalogSearchPlaceholder": "Nrhiav lub tsev qiv ntawv"
   }
 };
 

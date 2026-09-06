@@ -251,7 +251,11 @@ const cy: TranslationShape = {
     "generateButton": "Cynhyrchu",
     "regenerateButton": "Cynhyrchu eto",
     "generateErrorTitle": "Methu cynhyrchu hynny",
-    "generateErrorFallback": "Gwiriwch eich cysylltiad a cheisiwch eto."
+    "generateErrorFallback": "Gwiriwch eich cysylltiad a cheisiwch eto.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Methu agor y ddolen honno",
@@ -279,6 +283,20 @@ const cy: TranslationShape = {
     "loadingLanguages": "Yn llwytho ieithoedd sydd ar gael...",
     "loadError": "Methu llwytho'r llyfrgell. Gwiriwch eich cysylltiad a cheisiwch eto.",
     "retryButton": "Ceisio eto"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Dyma'ch llyfrgell astudio. Tapiwch lyfr i'w ddarllen. Gall aelodau Platinwm glywed AI Iesu yn darllen y llyfrau sydd gennym yn eu hiaith.",
+    "enterLibrary": "Ewch i'r llyfrgell",
+    "readAloudShelfTitle": "Darllen yn Uchel",
+    "readAloudShelfSubtitle": "Gall AI Iesu ddarllen y llyfrau hyn yn uchel. Platinwm.",
+    "readerLoadError": "Ni lwyddwyd i lwytho'r llyfr hwn. Gwiriwch eich cysylltiad a cheisiwch eto.",
+    "speakerLockedLabel": "Platinwm",
+    "narrationLabel": "Adroddiad",
+    "jesusVoiceDisclosure": "Dim ond y llyfrau a restrir yn y Catalog Darllen-Uchel y mae AI Iesu yn eu darllen. Llais wedi'i fodelu ar gyfer yr app hwn yw hwn, wedi'i seilio ar yr Ysgrythur — nid recordiad o berson go iawn. Mae argaeledd yn dibynnu ar gefnogaeth iaith.",
+    "notAvailableLanguage": "Dim ar gael yn yr iaith hon eto",
+    "textOnlyLabel": "Testun yn unig",
+    "readAloudFilterLabel": "Darllen yn Uchel",
+    "catalogSearchPlaceholder": "Chwilio'r llyfrgell"
   }
 };
 

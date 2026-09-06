@@ -251,7 +251,11 @@ const bo: TranslationShape = {
     "generateButton": "བཟོ།",
     "regenerateButton": "ཡང་བསྐྱར་བཟོ།",
     "generateErrorTitle": "དེ་བཟོ་མ་ཐུབ།",
-    "generateErrorFallback": "ཁྱེད་ཀྱི་འབྲེལ་ལམ་ཞིག་བརྟག་ནས་ཡང་བསྐྱར་ཚོད་ལྟ་བྱོས།"
+    "generateErrorFallback": "ཁྱེད་ཀྱི་འབྲེལ་ལམ་ཞིག་བརྟག་ནས་ཡང་བསྐྱར་ཚོད་ལྟ་བྱོས།",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "འབྲེལ་ཐག་ཁ་ཕྱེ་མ་ཐུབ།",
@@ -279,6 +283,20 @@ const bo: TranslationShape = {
     "loadingLanguages": "སྤྱོད་རུང་སྐད་རིགས་ཁག་ལེན་བཞིན་པ་...",
     "loadError": "དེབ་མཛོད་ལེན་མ་ཐུབ་པ་རེད། ཁྱེད་ཀྱི་འབྲེལ་ལམ་ལ་ཞིབ་བཤེར་བྱས་ནས་ཡང་བསྐྱར་ཚོད་ལྟ་བྱེད་རོགས།",
     "retryButton": "ཡང་བསྐྱར་ཚོད་ལྟ་"
+  },
+  "studyLibrary": {
+    "entranceTitle": "འདི་ནི་ཁྱེད་ཀྱི་སློབ་སྦྱོང་མཛོད་ཡིན། དཔེ་དེབ་ཞིག་ལ་མཐེབ་གཞོན་བྱས་ནས་ཀློགས། པླཊི་ནམ་འབྲེལ་མཁན་རྣམས་ཀྱིས་ཨེ་ཨའི་ཡེ་ཤུས་ཁོ་ཚོའི་སྐད་ཡིག་ཏུ་ཡོད་པའི་དཔེ་དེབ་རྣམས་ཀློག་གི་ཡོད་པ་ཐོས་ཐུབ།",
+    "enterLibrary": "མཛོད་ནང་དུ་འཇུག་པ",
+    "readAloudShelfTitle": "ཀློག་གཏོང་",
+    "readAloudShelfSubtitle": "ཨེ་ཨའི་ཡེ་ཤུས་ཀྱིས་དཔེ་དེབ་འདི་དག་ཀློག་གཏོང་ཐུབ། པླཊི་ནམ།",
+    "readerLoadError": "དཔེ་དེབ་འདི་ལེན་མ་ཐུབ། ཁྱེད་ཀྱི་འབྲེལ་མཐུད་ཞིབ་བཤེར་བྱས་ཏེ་ཡང་བསྐྱར་ཚོད་ལྟ་བྱོས།",
+    "speakerLockedLabel": "པླཊི་ནམ",
+    "narrationLabel": "སྒྲ་སྙན་གཏོང་བ",
+    "jesusVoiceDisclosure": "ཨེ་ཨའི་ཡེ་ཤུས་ཀྱིས་ཀློག་གཏོང་དཀར་ཆག་ཏུ་ཐོ་འགོད་བྱས་པའི་དཔེ་དེབ་ཁོ་ན་ཀློག་གི་ཡོད། འདི་ནི་ཨེཕ་ལི་ཀེ་ཤན་འདིའི་ཆེད་དུ་བཟོས་པའི་སྐད་ཤུགས་ཤིག་ཡིན་ཞིང་། ལུང་གཞུང་ལ་གཞིགས་ནས་བཟོས་པ་ཡིན། ངོ་མའི་མི་ཞིག་གི་ཟིན་ཐོ་མིན། སྤྱོད་ཐུབ་པ་ནི་སྐད་ཡིག་གི་རྒྱབ་སྐྱོར་ལ་རག་ལས།",
+    "notAvailableLanguage": "སྐད་ཡིག་འདིར་ད་དུང་སྤྱོད་མི་ཐུབ",
+    "textOnlyLabel": "ཡིག་ཆ་ཁོ་ན",
+    "readAloudFilterLabel": "ཀློག་གཏོང་",
+    "catalogSearchPlaceholder": "མཛོད་ནང་དུ་འཚོལ"
   }
 };
 

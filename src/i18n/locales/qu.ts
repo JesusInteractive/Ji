@@ -251,7 +251,11 @@ const qu: TranslationShape = {
     "generateButton": "Ruway",
     "regenerateButton": "Musuq ruway",
     "generateErrorTitle": "Kayta mana ruwayta atirqayku",
-    "generateErrorFallback": "Conexionyki qhaway hinaspa yaykuy."
+    "generateErrorFallback": "Conexionyki qhaway hinaspa yaykuy.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kay linkta mana kichayta atirqayku",
@@ -279,6 +283,20 @@ const qu: TranslationShape = {
     "loadingLanguages": "Kachasqa simikunata cargachaspa...",
     "loadError": "Qelqakunata mana cargayta atirqanchu. Internetniykiwan qhawaspa kutiy.",
     "retryButton": "Kutiy"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Kayqa yachanayki qelqasqa wasiyki. Librokunata ñit'iy ñawinchaypaq. Platinum miembrukunaqa AI Jesus librokunata siminkupi uyariy atinku.",
+    "enterLibrary": "Qelqasqa wasiman yaykuy",
+    "readAloudShelfTitle": "Uyariy Ñawinchay",
+    "readAloudShelfSubtitle": "AI Jesus kay qelqakunata uyarichiy atin. Platinum.",
+    "readerLoadError": "Manam kay qelqata q'epiy atinchu. Wiñay wasiykita qhaway hinaspa musuqmanta ruway.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Uyariy",
+    "jesusVoiceDisclosure": "AI Jesus Read-Aloud Catalog nisqapi qelqasqa qelqakunallata ñawinchiy atin. Kayqa kay app-paq ruwasqa qhawaqmi, Qelqasqa Simikunapi sayasqa — mana chiqap runap qhawasqan. Kay simi yanapaypi kashan.",
+    "notAvailableLanguage": "Kay simipi manaraq kashanchu",
+    "textOnlyLabel": "Qelqaqaqlla",
+    "readAloudFilterLabel": "Uyariy Ñawinchay",
+    "catalogSearchPlaceholder": "Qelqasqa wasita maskay"
   }
 };
 

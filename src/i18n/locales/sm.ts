@@ -251,7 +251,11 @@ const sm: TranslationShape = {
     "generateButton": "Faia",
     "regenerateButton": "Toe faia",
     "generateErrorTitle": "E lē mafai ona faia lena",
-    "generateErrorFallback": "Fa'amolemole siaki lau feso'ota'iga ma toe taumafai."
+    "generateErrorFallback": "Fa'amolemole siaki lau feso'ota'iga ma toe taumafai.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "E lē mafai ona tatala lena sootaga",
@@ -279,6 +283,20 @@ const sm: TranslationShape = {
     "loadingLanguages": "O loo utaina gagana avanoa...",
     "loadError": "Le mafai ona utaina le faletusi. Siaki lau fesoʻotaʻiga ma toe taumafai.",
     "retryButton": "Toe taumafai"
+  },
+  "studyLibrary": {
+    "entranceTitle": "O lau faletusi o suʻesuʻega lenei. Tago i se tusi e faitau. E mafai e tagata Platinum ona faʻalogo i le AI Jesus o loʻo faitauina tusi i la latou gagana.",
+    "enterLibrary": "Ulufale i le faletusi",
+    "readAloudShelfTitle": "Faitau Faʻalogo",
+    "readAloudShelfSubtitle": "E mafai e le AI Jesus ona faitau faʻalogo nei tusi. Platinum.",
+    "readerLoadError": "Le mafai ona laʻu le tusi lea. Siaki lau fesoʻotaʻiga ma toe taumafai.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Faitauga",
+    "jesusVoiceDisclosure": "AI Jesus e faitau naʻo tusi o loʻo lisiina i le Catalog Faitau Faʻalogo. O se leo ua faʻataʻitaʻiina mo lenei app, e faʻavae i le Tusi Paia — e le o se puʻeina o se tagata moni. E faʻalagolago le avanoa i le lagolago o le gagana.",
+    "notAvailableLanguage": "E leʻo avanoa i lenei gagana i le taimi nei",
+    "textOnlyLabel": "Tusitusiga naʻo",
+    "readAloudFilterLabel": "Faitau Faʻalogo",
+    "catalogSearchPlaceholder": "Suʻe le faletusi"
   }
 };
 

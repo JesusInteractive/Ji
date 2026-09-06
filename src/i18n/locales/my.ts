@@ -251,7 +251,11 @@ const my: TranslationShape = {
     "generateButton": "ထုတ်လုပ်ပါ",
     "regenerateButton": "ပြန်လည်ထုတ်လုပ်ပါ",
     "generateErrorTitle": "ထိုအရာကို ထုတ်လုပ်၍ မရပါ",
-    "generateErrorFallback": "သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ပြန်ကြိုးစားပါ။"
+    "generateErrorFallback": "သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ပြန်ကြိုးစားပါ။",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ထိုလင့်ခ်ကို ဖွင့်၍ မရပါ",
@@ -279,6 +283,20 @@ const my: TranslationShape = {
     "loadingLanguages": "ရရှိနိုင်သော ဘာသာစကားများကို တင်နေသည်...",
     "loadError": "စာကြည့်တိုက်ကို တင်၍မရပါ။ သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။",
     "retryButton": "ထပ်စမ်းရန်"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ဒါက သင့်ရဲ့ လေ့လာရေး စာကြည့်တိုက်ပါ။ စာအုပ်တစ်အုပ်ကို တို့ပြီး ဖတ်ပါ။ ပလက်တီနမ် အဖွဲ့ဝင်တွေ AI ယေရှု ဖတ်ပြတဲ့ စာအုပ်တွေကို သူတို့ဘာသာစကားနဲ့ နားထောင်နိုင်ပါတယ်။",
+    "enterLibrary": "စာကြည့်တိုက်ထဲ ဝင်ပါ",
+    "readAloudShelfTitle": "အသံထွက်ဖတ်ရန်",
+    "readAloudShelfSubtitle": "AI ယေရှု ဒီစာအုပ်တွေကို အသံထွက်ဖတ်ပြနိုင်ပါတယ်။ ပလက်တီနမ်။",
+    "readerLoadError": "ဒီစာအုပ်ကို ဖွင့်မရပါ။ သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်ကြိုးစားပါ။",
+    "speakerLockedLabel": "ပလက်တီနမ်",
+    "narrationLabel": "အသံဖတ်",
+    "jesusVoiceDisclosure": "AI ယေရှုသည် အသံထွက်ဖတ်ရန် ကတ်တလောက်တွင် ဖော်ပြထားသော စာအုပ်များကိုသာ ဖတ်ပြပါသည်။ ဤအသံသည် ဤအက်ပ်အတွက် ပုံစံထုတ်ထားခြင်းဖြစ်ပြီး ကျမ်းစာအပေါ် အခြေခံထားပါသည် — လူတစ်ဦး၏ အသံဖိုင်မဟုတ်ပါ။ ရရှိနိုင်မှုသည် ဘာသာစကား ပံ့ပိုးမှုပေါ်တွင် မူတည်ပါသည်။",
+    "notAvailableLanguage": "ဒီဘာသာစကားမှာ မရသေးပါ",
+    "textOnlyLabel": "စာသားသာ",
+    "readAloudFilterLabel": "အသံထွက်ဖတ်ရန်",
+    "catalogSearchPlaceholder": "စာကြည့်တိုက်တွင် ရှာဖွေပါ"
   }
 };
 

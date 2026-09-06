@@ -251,7 +251,11 @@ const sw: TranslationShape = {
     "generateButton": "Tengeneza",
     "regenerateButton": "Tengeneza tena",
     "generateErrorTitle": "Haikuweza kutengeneza hicho",
-    "generateErrorFallback": "Tafadhali angalia muunganisho wako na ujaribu tena."
+    "generateErrorFallback": "Tafadhali angalia muunganisho wako na ujaribu tena.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Haikuweza kufungua kiungo hicho",
@@ -279,6 +283,20 @@ const sw: TranslationShape = {
     "loadingLanguages": "Inapakia lugha zinazopatikana...",
     "loadError": "Haikuweza kupakia maktaba. Angalia muunganisho wako na ujaribu tena.",
     "retryButton": "Jaribu tena"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Hii ni maktaba yako ya masomo. Gusa kitabu ili kusoma. Wanachama wa Platinum wanaweza kusikiliza AI Yesu akisoma vitabu tulivyo katika lugha yao.",
+    "enterLibrary": "Ingia maktabani",
+    "readAloudShelfTitle": "Soma kwa Sauti",
+    "readAloudShelfSubtitle": "AI Yesu anaweza kusoma vitabu hivi kwa sauti. Platinum.",
+    "readerLoadError": "Haikuweza kupakia kitabu hiki. Angalia muunganisho wako na ujaribu tena.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Masimulizi",
+    "jesusVoiceDisclosure": "AI Yesu husoma vitabu vilivyoorodheshwa katika Katalogi ya Kusoma kwa Sauti pekee. Hii ni sauti iliyotengenezwa kwa ajili ya programu hii, iliyotegemezwa kwenye Maandiko — si rekodi ya mtu halisi. Upatikanaji unategemea usaidizi wa lugha.",
+    "notAvailableLanguage": "Bado haipatikani katika lugha hii",
+    "textOnlyLabel": "Maandishi pekee",
+    "readAloudFilterLabel": "Soma kwa Sauti",
+    "catalogSearchPlaceholder": "Tafuta maktaba"
   }
 };
 

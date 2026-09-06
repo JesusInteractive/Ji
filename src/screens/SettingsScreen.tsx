@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Alert, Linking, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ImageBackground, Linking, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
@@ -28,7 +28,8 @@ export default function SettingsScreen({ navigation }: Props) {
   const { t, language, setLanguage } = useI18n();
   const {
     plan,
-    remainingQuestions,
+    isInTrial,
+    daysSinceFirstOpen,
     ageAppropriateMode,
     setAgeAppropriateMode,
     offlineMode,
@@ -50,6 +51,8 @@ export default function SettingsScreen({ navigation }: Props) {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
 
   // The Language row previously just showed an Alert telling *us* to wire
   // a picker here -- LanguagePicker already exists (built for onboarding's
@@ -229,26 +232,28 @@ export default function SettingsScreen({ navigation }: Props) {
   return (
     <>
     <View style={{ flex: 1 }}>
+    <ImageBackground source={require('../../assets/textures/parchment-navy.jpg')} style={styles.container} resizeMode="cover">
     <ScrollView
       ref={scrollRef}
-      style={styles.container}
+      style={{ flex: 1 }}
       onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
       onContentSizeChange={(_width, height) => setContentHeight(height)}
       onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
       scrollEventThrottle={16}
+      scrollEnabled={!scrollbarDragging}
     >
-      <View style={styles.section}>
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.section} imageStyle={styles.sectionImage}>
         <Text style={styles.sectionTitle}>{t.settings.account}</Text>
         <Row icon="card-outline" label={t.settings.plan} value={`${currentPlan.name} · ${currentPlan.priceLabel}`} onPress={handleManagePlan} />
-        <Row
-          icon="chatbox-ellipses-outline"
-          label={plan === 'free' ? 'Free questions left' : 'Questions left today'}
-          value={remainingQuestions === Infinity ? 'Unlimited' : String(Math.max(remainingQuestions, 0))}
-        />
+        {isInTrial && (
+          // Plain English, not run through t. -- see ProfileScreen.tsx's
+          // identical row for why this isn't in the i18n system.
+          <Row icon="hourglass-outline" label="Free trial" value={`${Math.max(5 - daysSinceFirstOpen, 0)} days left`} />
+        )}
         <Row icon="gift-outline" label={t.settings.giftPlan} onPress={() => navigation.navigate('TokenGift')} />
-      </View>
+      </ImageBackground>
 
-      <View style={styles.section}>
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.section} imageStyle={styles.sectionImage}>
         <Text style={styles.sectionTitle}>{t.settings.preferences}</Text>
         <Row icon="sunny-outline" label={t.settings.dailyVerse} switchValue={dailyVerseReminder} onSwitchChange={handleDailyVerseReminderChange} />
         <Row icon="shield-half-outline" label={t.settings.ageAppropriate} switchValue={ageAppropriateMode} onSwitchChange={setAgeAppropriateMode} />
@@ -268,17 +273,17 @@ export default function SettingsScreen({ navigation }: Props) {
           onPress={() => setTextSizePickerOpen(true)}
         />
         <Row icon="language-outline" label={t.settings.language} value={currentLanguage?.nativeLabel} onPress={() => setLanguagePickerOpen(true)} />
-      </View>
+      </ImageBackground>
 
-      <View style={styles.section}>
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.section} imageStyle={styles.sectionImage}>
         <Text style={styles.sectionTitle}>{t.settings.privacyData}</Text>
         <Row icon="analytics-outline" label="Anonymous analytics" switchValue={analyticsOptIn} onSwitchChange={handleAnalyticsToggle} />
         <Row icon="download-outline" label={t.settings.downloadData} onPress={handleDownloadData} />
         <Row icon="chatbubbles-outline" label="Clear chat history" onPress={handleClearChatHistory} destructive />
         <Row icon="trash-outline" label={t.settings.deleteAccount} onPress={handleDeleteAccount} destructive />
-      </View>
+      </ImageBackground>
 
-      <View style={styles.section}>
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.section} imageStyle={styles.sectionImage}>
         <Text style={styles.sectionTitle}>{t.settings.support}</Text>
         <Row icon="library-outline" label={t.settings.reportContent} onPress={() => Alert.alert('Report', 'Long-press any message in Chat to report it, or contact us here.')} />
         <Row
@@ -295,9 +300,9 @@ export default function SettingsScreen({ navigation }: Props) {
             });
           }}
         />
-      </View>
+      </ImageBackground>
 
-      <View style={styles.section}>
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.section} imageStyle={styles.sectionImage}>
         <Text style={styles.sectionTitle}>{t.settings.about}</Text>
         <Row
           icon="apps-outline"
@@ -316,7 +321,7 @@ export default function SettingsScreen({ navigation }: Props) {
         <Row icon="shield-checkmark-outline" label={t.settings.privacyPolicy} onPress={() => navigation.navigate('LegalDoc', PRIVACY_POLICY)} />
         <Row icon="document-text-outline" label={t.settings.terms} onPress={() => navigation.navigate('LegalDoc', USER_AGREEMENT)} />
         <Row icon="alert-circle-outline" label={t.settings.disclosureLink} onPress={() => navigation.navigate('LegalDoc', AI_DISCLOSURE)} />
-      </View>
+      </ImageBackground>
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>Jesus Interactive</Text>
@@ -331,11 +336,15 @@ export default function SettingsScreen({ navigation }: Props) {
       contentHeight={contentHeight}
       viewportHeight={viewportHeight}
       scrollOffset={scrollOffset}
+      thumbColor={Colors.gold}
       onScrollTo={(offset) => {
         scrollRef.current?.scrollTo({ y: offset, animated: false });
         setScrollOffset(offset);
       }}
+      onDragStart={() => setScrollbarDragging(true)}
+      onDragEnd={() => setScrollbarDragging(false)}
     />
+    </ImageBackground>
     </View>
 
     <Modal
@@ -395,8 +404,16 @@ export default function SettingsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
-  section: { backgroundColor: '#fff', marginTop: 16, marginHorizontal: 16, borderRadius: 12, paddingVertical: 6 },
+  container: { flex: 1, backgroundColor: Colors.royal, borderWidth: 5, borderColor: Colors.royal },
+  // "Back cover of the Bible" -- deep blue spine (this screen's own
+  // parchment-navy.jpg background), gold-edged tan parchment pages for
+  // each group of rows, in place of the plain white cards every other
+  // settings-style list in this app uses.
+  section: {
+    marginTop: 16, marginHorizontal: 16, borderRadius: 12, paddingVertical: 6,
+    borderWidth: 1.5, borderColor: Colors.gold, overflow: 'hidden',
+  },
+  sectionImage: { borderRadius: 10.5 },
   sectionTitle: {
     fontSize: 12.5, fontWeight: '700', color: '#718096', textTransform: 'uppercase',
     letterSpacing: 0.5, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 4,
@@ -409,15 +426,16 @@ const styles = StyleSheet.create({
   rowLabel: { fontSize: 14.5, color: '#2D3748', flexShrink: 1 },
   rowValue: { fontSize: 12.5, color: '#718096' },
   footer: { alignItems: 'center', paddingVertical: 32 },
-  footerText: { fontSize: 16, fontWeight: '700', color: Colors.royal },
-  footerSub: { fontSize: 12.5, color: '#A0AEC0', marginTop: 4 },
+  footerText: { fontSize: 16, fontWeight: '700', color: Colors.ivory },
+  footerSub: { fontSize: 12.5, color: Colors.muted, marginTop: 4 },
   languageModalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
   languageModalSheet: {
-    // Fixed px, not a %, since LanguagePicker's FlatList doesn't take a
-    // height/style prop -- 8 languages comfortably fit without needing
-    // the list to scroll inside a percentage-height container.
+    // A fixed (not max) height so LanguagePicker's internal FlatList --
+    // flex:1 inside here -- gets real bounded space to lay out into and
+    // scroll within, now that it's searching/scrolling a 117-language list
+    // rather than the original handful.
     backgroundColor: Colors.royal, borderTopLeftRadius: 18, borderTopRightRadius: 18,
-    paddingTop: 16, paddingBottom: 32, maxHeight: 500,
+    paddingTop: 16, paddingBottom: 32, height: 560,
   },
   languageModalTitle: {
     fontSize: 16, fontWeight: '800', color: Colors.ivory, marginBottom: 10, paddingHorizontal: 20,

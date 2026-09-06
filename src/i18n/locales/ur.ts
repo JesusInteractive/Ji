@@ -251,7 +251,11 @@ const ur: TranslationShape = {
     "generateButton": "تیار کریں",
     "regenerateButton": "دوبارہ تیار کریں",
     "generateErrorTitle": "وہ تیار نہیں ہو سکا",
-    "generateErrorFallback": "براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔"
+    "generateErrorFallback": "براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "وہ لنک نہیں کھل سکا",
@@ -279,6 +283,20 @@ const ur: TranslationShape = {
     "loadingLanguages": "دستیاب زبانیں لوڈ کی جا رہی ہیں...",
     "loadError": "لائبریری لوڈ نہیں ہو سکی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
     "retryButton": "دوبارہ کوشش کریں"
+  },
+  "studyLibrary": {
+    "entranceTitle": "یہ آپ کی مطالعاتی لائبریری ہے۔ پڑھنے کے لیے کسی کتاب پر ٹیپ کریں۔ پلاٹینم ممبران AI عیسیٰ کو ان کتابوں کو ان کی زبان میں پڑھتے ہوئے سن سکتے ہیں جو ہمارے پاس ہیں۔",
+    "enterLibrary": "لائبریری میں داخل ہوں",
+    "readAloudShelfTitle": "آواز سے پڑھیں",
+    "readAloudShelfSubtitle": "AI عیسیٰ ان کتابوں کو آواز سے پڑھ سکتے ہیں۔ پلاٹینم۔",
+    "readerLoadError": "اس کتاب کو لوڈ نہیں کیا جا سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+    "speakerLockedLabel": "پلاٹینم",
+    "narrationLabel": "نریشن",
+    "jesusVoiceDisclosure": "AI عیسیٰ صرف ریڈ الاؤڈ کیٹلاگ میں درج کتابیں پڑھتے ہیں۔ یہ اس ایپ کے لیے ماڈل کی گئی آواز ہے، جو صحیفہ پر مبنی ہے — نہ کہ کسی حقیقی شخص کی ریکارڈنگ۔ دستیابی زبان کی سپورٹ پر منحصر ہے۔",
+    "notAvailableLanguage": "ابھی اس زبان میں دستیاب نہیں",
+    "textOnlyLabel": "صرف متن",
+    "readAloudFilterLabel": "آواز سے پڑھیں",
+    "catalogSearchPlaceholder": "لائبریری تلاش کریں"
   }
 };
 

@@ -251,7 +251,11 @@ const ml: TranslationShape = {
     "generateButton": "സൃഷ്ടിക്കുക",
     "regenerateButton": "വീണ്ടും സൃഷ്ടിക്കുക",
     "generateErrorTitle": "അത് സൃഷ്ടിക്കാൻ കഴിഞ്ഞില്ല",
-    "generateErrorFallback": "നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക."
+    "generateErrorFallback": "നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ആ ലിങ്ക് തുറക്കാൻ കഴിഞ്ഞില്ല",
@@ -279,6 +283,20 @@ const ml: TranslationShape = {
     "loadingLanguages": "ലഭ്യമായ ഭാഷകൾ ലോഡ് ചെയ്യുന്നു...",
     "loadError": "ലൈബ്രറി ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.",
     "retryButton": "വീണ്ടും ശ്രമിക്കുക"
+  },
+  "studyLibrary": {
+    "entranceTitle": "ഇത് നിങ്ങളുടെ പഠന ലൈബ്രറിയാണ്. ഒരു പുസ്തകം വായിക്കാൻ ടാപ്പ് ചെയ്യുക. പ്ലാറ്റിനം അംഗങ്ങൾക്ക് AI ജീസസിനെ അവരുടെ ഭാഷയിലുള്ള പുസ്തകങ്ങൾ വായിക്കുന്നത് കേൾക്കാം.",
+    "enterLibrary": "ലൈബ്രറിയിൽ പ്രവേശിക്കുക",
+    "readAloudShelfTitle": "ഉറക്കെ വായിക്കുക",
+    "readAloudShelfSubtitle": "AI ജീസസിന് ഈ പുസ്തകങ്ങൾ ഉറക്കെ വായിക്കാൻ കഴിയും. പ്ലാറ്റിനം.",
+    "readerLoadError": "ഈ പുസ്തകം ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.",
+    "speakerLockedLabel": "പ്ലാറ്റിനം",
+    "narrationLabel": "വായന",
+    "jesusVoiceDisclosure": "AI ജീസസ് വായിച്ചുകേൾക്കുക കാറ്റലോഗിൽ ലിസ്റ്റ് ചെയ്തിരിക്കുന്ന പുസ്തകങ്ങൾ മാത്രമേ വായിക്കൂ. ഇത് ഈ ആപ്പിനായി മോഡൽ ചെയ്ത ഒരു ശബ്ദമാണ്, തിരുവെഴുത്തുകളിൽ അടിസ്ഥാനമാക്കിയത് — യഥാർത്ഥ വ്യക്തിയുടെ റെക്കോർഡിംഗല്ല. ലഭ്യത ഭാഷാ പിന്തുണയെ ആശ്രയിച്ചിരിക്കുന്നു.",
+    "notAvailableLanguage": "ഈ ഭാഷയിൽ ഇതുവരെ ലഭ്യമല്ല",
+    "textOnlyLabel": "ടെക്സ്റ്റ് മാത്രം",
+    "readAloudFilterLabel": "ഉറക്കെ വായിക്കുക",
+    "catalogSearchPlaceholder": "ലൈബ്രറി തിരയുക"
   }
 };
 

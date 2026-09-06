@@ -251,7 +251,11 @@ const lt: TranslationShape = {
     "generateButton": "Generuoti",
     "regenerateButton": "Generuoti iš naujo",
     "generateErrorTitle": "Nepavyko sugeneruoti",
-    "generateErrorFallback": "Patikrinkite ryšį ir bandykite dar kartą."
+    "generateErrorFallback": "Patikrinkite ryšį ir bandykite dar kartą.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Nepavyko atidaryti nuorodos",
@@ -279,6 +283,20 @@ const lt: TranslationShape = {
     "loadingLanguages": "Įkeliamos galimos kalbos...",
     "loadError": "Nepavyko įkelti bibliotekos. Patikrinkite ryšį ir bandykite dar kartą.",
     "retryButton": "Bandyti dar kartą"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Tai jūsų studijų biblioteka. Bakstelėkite knygą, kad ją skaitytumėte. „Platinum“ nariai gali girdėti, kaip AI Jėzus skaito turimas knygas jų kalba.",
+    "enterLibrary": "Įeikite į biblioteką",
+    "readAloudShelfTitle": "Skaityti balsu",
+    "readAloudShelfSubtitle": "AI Jėzus gali garsiai skaityti šias knygas. „Platinum“.",
+    "readerLoadError": "Nepavyko įkelti šios knygos. Patikrinkite ryšį ir bandykite dar kartą.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Naracija",
+    "jesusVoiceDisclosure": "AI Jėzus skaito tik knygas, išvardytas Skaitymo balsu kataloge. Tai balsas, sukurtas šiai programėlei, pagrįstas Šventuoju Raštu — ne tikro žmogaus įrašas. Prieinamumas priklauso nuo kalbos palaikymo.",
+    "notAvailableLanguage": "Kol kas neprieinama šia kalba",
+    "textOnlyLabel": "Tik tekstas",
+    "readAloudFilterLabel": "Skaityti balsu",
+    "catalogSearchPlaceholder": "Ieškoti bibliotekoje"
   }
 };
 

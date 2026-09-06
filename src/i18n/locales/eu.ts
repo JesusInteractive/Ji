@@ -251,7 +251,11 @@ const eu: TranslationShape = {
     "generateButton": "Sortu",
     "regenerateButton": "Sortu berriro",
     "generateErrorTitle": "Ezin izan da hori sortu",
-    "generateErrorFallback": "Egiaztatu zure konexioa eta saiatu berriro."
+    "generateErrorFallback": "Egiaztatu zure konexioa eta saiatu berriro.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ezin izan da esteka hori ireki",
@@ -279,6 +283,20 @@ const eu: TranslationShape = {
     "loadingLanguages": "Hizkuntza erabilgarriak kargatzen...",
     "loadError": "Ezin izan da liburutegia kargatu. Egiaztatu zure konexioa eta saiatu berriro.",
     "retryButton": "Saiatu berriro"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Hau zure ikasketa-liburutegia da. Sakatu liburu bat irakurtzeko. Platinum kideek AI Jesusek liburuak beren hizkuntzan irakurtzen entzun ditzakete.",
+    "enterLibrary": "Sartu liburutegian",
+    "readAloudShelfTitle": "Ozen Irakurri",
+    "readAloudShelfSubtitle": "AI Jesusek liburu hauek ozen irakur ditzake. Platinum.",
+    "readerLoadError": "Ezin izan da liburu hau kargatu. Egiaztatu zure konexioa eta saiatu berriro.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narrazioa",
+    "jesusVoiceDisclosure": "AI Jesusek Ozen Irakurtzeko Katalogoan zerrendatutako liburuak bakarrik irakurtzen ditu. App honetarako sortutako ahotsa da, Eskrituretan oinarritua — ez benetako pertsona baten grabazioa. Erabilgarritasuna hizkuntzaren araberakoa da.",
+    "notAvailableLanguage": "Ez dago eskuragarri hizkuntza honetan oraindik",
+    "textOnlyLabel": "Soilik testua",
+    "readAloudFilterLabel": "Ozen Irakurri",
+    "catalogSearchPlaceholder": "Bilatu liburutegian"
   }
 };
 

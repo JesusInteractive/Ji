@@ -251,7 +251,11 @@ const hy: TranslationShape = {
     "generateButton": "Ստեղծել",
     "regenerateButton": "Կրկին ստեղծել",
     "generateErrorTitle": "Չհաջողվեց ստեղծել դա",
-    "generateErrorFallback": "Խնդրում ենք ստուգել ձեր կապը և կրկին փորձել։"
+    "generateErrorFallback": "Խնդրում ենք ստուգել ձեր կապը և կրկին փորձել։",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Չհաջողվեց բացել այդ հղումը",
@@ -279,6 +283,20 @@ const hy: TranslationShape = {
     "loadingLanguages": "Հասանելի լեզուների բեռնում...",
     "loadError": "Չհաջողվեց բեռնել գրադարանը։ Ստուգեք ձեր կապը և փորձեք կրկին։",
     "retryButton": "Կրկին փորձել"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Սա Ձեր ուսումնական գրադարանն է։ Հպեք գրքին՝ կարդալու համար։ Պլատինում անդամները կարող են լսել ԱԻ Հիսուսին, ով կարդում է գրքերը իրենց լեզվով։",
+    "enterLibrary": "Մուտք գործել գրադարան",
+    "readAloudShelfTitle": "Կարդալ բարձրաձայն",
+    "readAloudShelfSubtitle": "ԱԻ Հիսուսը կարող է բարձրաձայն կարդալ այս գրքերը։ Պլատինում։",
+    "readerLoadError": "Չհաջողվեց բեռնել այս գիրքը։ Ստուգեք ձեր կապը և փորձեք կրկին։",
+    "speakerLockedLabel": "Պլատինում",
+    "narrationLabel": "Պատում",
+    "jesusVoiceDisclosure": "ԱԻ Հիսուսը կարդում է միայն այն գրքերը, որոնք նշված են Բարձրաձայն կարդալու կատալոգում։ Սա ձայն է, որը մոդելավորված է այս հավելվածի համար, հիմնված Սուրբ Գրքի վրա — ոչ թե իրական մարդու ձայնագրություն։ Հասանելիությունը կախված է լեզվի աջակցությունից։",
+    "notAvailableLanguage": "Դեռ հասանելի չէ այս լեզվով",
+    "textOnlyLabel": "Միայն տեքստ",
+    "readAloudFilterLabel": "Կարդալ բարձրաձայն",
+    "catalogSearchPlaceholder": "Որոնել գրադարանում"
   }
 };
 

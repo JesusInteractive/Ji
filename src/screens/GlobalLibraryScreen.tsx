@@ -1,13 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, ImageBackground, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DraggableScrollbar from '../components/DraggableScrollbar';
 import { Ionicons } from '@expo/vector-icons';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import Colors from '../theme/colors';
 import { useI18n, interpolate } from '../i18n';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import PaywallLockScreen from '../components/PaywallLockScreen';
 import type { StudyToolsStackParamList } from '../navigation/StudyToolsStack';
 import type { MainTabParamList } from '../navigation/MainTabs';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 import {
   getBibleLanguageGroups,
   getBibleGroupForAppLanguage,
@@ -31,6 +35,7 @@ type Props = CompositeScreenProps<
 // to their Internet Archive details/reader page.
 export default function GlobalLibraryScreen({ navigation }: Props) {
   const { t, language } = useI18n();
+  const { hasAccess } = useFeatureAccess();
 
   const [allGroups, setAllGroups] = useState<BibleLanguageGroup[]>([]);
   const [yourGroup, setYourGroup] = useState<BibleLanguageGroup | undefined>(undefined);
@@ -40,6 +45,13 @@ export default function GlobalLibraryScreen({ navigation }: Props) {
 
   const [books, setBooks] = useState<ChristianLibraryItem[] | null>(null);
   const [loadingBooks, setLoadingBooks] = useState(true);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
 
   const languageOption = LANGUAGES.find((l) => l.code === language);
   const languageEnglishName = languageOption?.label ?? 'English';
@@ -90,8 +102,31 @@ export default function GlobalLibraryScreen({ navigation }: Props) {
 
   const pluralize = (count: number) => interpolate(t.globalLibrary.translationCount, { count, plural: count === 1 ? '' : 's' });
 
+  // Placed after every hook above (rules of hooks). Nested
+  // StudyToolsStack -> MainTabs -> RootStack -- two getParent() hops,
+  // same as StudyLibraryReaderScreen.
+  if (!hasAccess) {
+    return (
+      <PaywallLockScreen
+        featureName="Multi-Language Bible Tools"
+        onSubscribe={() => navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
+      />
+    );
+  }
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <View style={{ flex: 1 }}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
+    <ScrollView
+      ref={scrollRef}
+      style={{ flex: 1 }}
+      contentContainerStyle={styles.content}
+      onContentSizeChange={(_w, height) => setContentHeight(height)}
+      onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+      onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+      scrollEventThrottle={16}
+      scrollEnabled={!scrollbarDragging}
+    >
       <Text style={styles.title}>{t.globalLibrary.title}</Text>
       <Text style={styles.intro}>{t.globalLibrary.intro}</Text>
 
@@ -186,6 +221,19 @@ export default function GlobalLibraryScreen({ navigation }: Props) {
         ))
       )}
     </ScrollView>
+    <DraggableScrollbar
+      contentHeight={contentHeight}
+      viewportHeight={viewportHeight}
+      scrollOffset={scrollOffset}
+      onScrollTo={(offset) => {
+        scrollRef.current?.scrollTo({ y: offset, animated: false });
+        setScrollOffset(offset);
+      }}
+      onDragStart={() => setScrollbarDragging(true)}
+      onDragEnd={() => setScrollbarDragging(false)}
+    />
+    </ImageBackground>
+    </View>
   );
 }
 

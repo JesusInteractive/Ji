@@ -251,7 +251,11 @@ const ay: TranslationShape = {
     "generateButton": "Generate",
     "regenerateButton": "Regenerate",
     "generateErrorTitle": "Aka ukax janiw generate",
-    "generateErrorFallback": "Conexión ukax qhawqhaña jan ukax yant'aña."
+    "generateErrorFallback": "Conexión ukax qhawqhaña jan ukax yant'aña.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Aka enlace ukax janiw jist'antañati",
@@ -279,6 +283,20 @@ const ay: TranslationShape = {
     "loadingLanguages": "Arunaka uñjirinak ch'ampara...",
     "loadError": "Yatiqawi jan uñjirï. Qhant'ata uñakiña ukhamaraki mayamp yatiqaña.",
     "retryButton": "Mayamp yatiqaña"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Aka juman yatichasiñataki biblioteca. Libro maya liyt'añataki yapxata. Platinum miembros AI Jesus uka libros ukanak juman arunakampi liyt'ayata.",
+    "enterLibrary": "Bibliotecar mantaña",
+    "readAloudShelfTitle": "Liyt'ayasiña",
+    "readAloudShelfSubtitle": "AI Jesus uka libros ukanak liyt'ayata. Platinum.",
+    "readerLoadError": "Aka libro uka carga jaqokipxi. Conexión uka uñch'ukiñataki yapxata.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Liyt'ayawi",
+    "jesusVoiceDisclosure": "AI Jesus uka Read-Aloud Catálogo ukan libros ukanakak liyt'ayata. Aka app-taki modelat aru, Escritura ukanakampi, jan chiqap jaqen uñacht'ayawi. Disponibilidad aru yanapt'awimpi.",
+    "notAvailableLanguage": "Aka arunakax janiw wakichatakiti",
+    "textOnlyLabel": "Qillqa kiki",
+    "readAloudFilterLabel": "Liyt'ayasiña",
+    "catalogSearchPlaceholder": "Biblioteca uñjawi"
   }
 };
 

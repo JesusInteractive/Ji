@@ -251,7 +251,11 @@ const bn: TranslationShape = {
     "generateButton": "তৈরি করুন",
     "regenerateButton": "পুনরায় তৈরি করুন",
     "generateErrorTitle": "তা তৈরি করা যায়নি",
-    "generateErrorFallback": "অনুগ্রহ করে আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+    "generateErrorFallback": "অনুগ্রহ করে আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "সেই লিঙ্ক খোলা যায়নি",
@@ -279,6 +283,20 @@ const bn: TranslationShape = {
     "loadingLanguages": "উপলব্ধ ভাষা লোড হচ্ছে...",
     "loadError": "লাইব্রেরি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
     "retryButton": "আবার চেষ্টা করুন"
+  },
+  "studyLibrary": {
+    "entranceTitle": "এটি আপনার স্টাডি লাইব্রেরি। পড়ার জন্য একটি বইয়ে ট্যাপ করুন। প্ল্যাটিনাম সদস্যরা AI যীশুকে আমাদের বইগুলো তাদের ভাষায় পড়ে শোনাতে পারবেন।",
+    "enterLibrary": "লাইব্রেরিতে প্রবেশ করুন",
+    "readAloudShelfTitle": "পড়ে শোনানো",
+    "readAloudShelfSubtitle": "AI যীশু এই বইগুলো জোরে পড়ে শোনাতে পারেন। প্ল্যাটিনাম।",
+    "readerLoadError": "এই বইটি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।",
+    "speakerLockedLabel": "প্ল্যাটিনাম",
+    "narrationLabel": "ন্যারেশন",
+    "jesusVoiceDisclosure": "AI যীশু শুধুমাত্র Read-Aloud Catalog-এ তালিকাভুক্ত বইগুলোই পড়েন। এটি এই অ্যাপের জন্য তৈরি করা একটি কণ্ঠস্বর, যা ধর্মগ্রন্থের উপর ভিত্তি করে — কোনো বাস্তব ব্যক্তির রেকর্ডিং নয়। প্রাপ্যতা ভাষার সমর্থনের উপর নির্ভর করে।",
+    "notAvailableLanguage": "এই ভাষায় এখনো উপলব্ধ নয়",
+    "textOnlyLabel": "শুধুমাত্র টেক্সট",
+    "readAloudFilterLabel": "পড়ে শোনানো",
+    "catalogSearchPlaceholder": "লাইব্রেরি অনুসন্ধান করুন"
   }
 };
 

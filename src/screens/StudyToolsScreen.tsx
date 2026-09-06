@@ -1,17 +1,16 @@
-import React, { useRef, useState } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
 import MagnifyButton from '../components/MagnifyButton';
-import DraggableScrollbar from '../components/DraggableScrollbar';
 import type { StudyToolsStackParamList } from '../navigation/StudyToolsStack';
-import { useI18n, interpolate } from '../i18n';
+import { useI18n } from '../i18n';
 
 type Props = NativeStackScreenProps<StudyToolsStackParamList, 'StudyToolsHome'>;
 
-interface StudyResource {
+export interface StudyResource {
   title: string;
   author: string;
   era: string;
@@ -19,7 +18,7 @@ interface StudyResource {
   url: string;
 }
 
-interface StudyCategory {
+export interface StudyCategory {
   heading: string;
   note?: string;
   resources: StudyResource[];
@@ -37,7 +36,7 @@ interface StudyCategory {
 // still live/correctly-slugged -- same caveat as bibleApi.ts's Bible
 // translation list. Worth a click-through check on a real device before
 // shipping.
-const CATEGORIES: StudyCategory[] = [
+export const CATEGORIES: StudyCategory[] = [
   {
     heading: 'Classic Commentaries',
     note: 'All public domain -- free to read in full, no license required. Hosted by the Christian Classics Ethereal Library (ccel.org), a nonprofit public-domain archive.',
@@ -1954,124 +1953,40 @@ const CATEGORIES: StudyCategory[] = [
 export default function StudyToolsScreen({ navigation }: Props) {
   const { textZoom } = useApp();
   const { t } = useI18n();
-  const scrollRef = useRef<ScrollView>(null);
-  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
-  // Content/viewport heights + scroll offset as state, not refs -- needed
-  // by DraggableScrollbar's thumb to actually re-render, and doubles as
-  // the button-visibility tracking (RN's onScroll only fires once the
-  // user actually scrolls, so a screen that's scrollable from the very
-  // first frame needs onLayout/onContentSizeChange too, not just onScroll).
-  const [scrollOffset, setScrollOffset] = useState(0);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [viewportHeight, setViewportHeight] = useState(0);
-  const recomputeInitialVisibility = (newContentHeight: number, newViewportHeight: number) => {
-    if (newContentHeight && newViewportHeight) {
-      setShowScrollToBottom(newContentHeight - newViewportHeight > 200);
-    }
-  };
-  const openLink = (url: string) => {
-    // Silently doing nothing on failure read as a dead/broken tap --
-    // with 70+ external links here, some pointing at raw GitHub file
-    // URLs or a source that's temporarily down, a failure is a real
-    // possibility, not just theoretical.
-    Linking.openURL(url).catch(() => {
-      Alert.alert(t.studyTools.linkErrorTitle, t.studyTools.linkErrorMessage);
-    });
-  };
 
+  // Three full-height tappable destinations, same "block" pattern as
+  // JIRadioScreen.tsx's station picker -- these three ARE the whole
+  // screen now, not cards atop a long scroll (the 500+ individual
+  // resources live one tap deeper, inside Study Tools itself).
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        ref={scrollRef}
-        style={styles.container}
-        contentContainerStyle={[styles.content, { transform: [{ scale: textZoom }] }]}
-        onLayout={({ nativeEvent }) => {
-          setViewportHeight(nativeEvent.layout.height);
-          recomputeInitialVisibility(contentHeight, nativeEvent.layout.height);
-        }}
-        onContentSizeChange={(_width, height) => {
-          setContentHeight(height);
-          recomputeInitialVisibility(height, viewportHeight);
-        }}
-        onScroll={({ nativeEvent }) => {
-          const { contentOffset, contentSize, layoutMeasurement } = nativeEvent;
-          const distanceFromBottom = contentSize.height - layoutMeasurement.height - contentOffset.y;
-          setShowScrollToBottom(distanceFromBottom > 200);
-          setScrollOffset(contentOffset.y);
-        }}
-        scrollEventThrottle={16}
-      >
-        <TouchableOpacity style={styles.globalLibraryCard} onPress={() => navigation.navigate('GlobalLibrary')}>
-          <View style={styles.globalLibraryIcon}>
-            <Ionicons name="earth-outline" size={24} color={Colors.white} />
+      <View style={[styles.container, { transform: [{ scale: textZoom }] }]}>
+        <TouchableOpacity style={[styles.block, styles.globalLibraryBlock]} onPress={() => navigation.navigate('GlobalLibrary')}>
+          <View style={styles.blockIcon}>
+            <Ionicons name="earth-outline" size={44} color={Colors.white} />
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.globalLibraryTitle}>{t.globalLibrary.title}</Text>
-            <Text style={styles.globalLibrarySubtitle}>{t.globalLibrary.bibleSectionTitle} · {t.globalLibrary.booksSectionTitle}</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color={Colors.white} />
+          <Text style={styles.blockTitle}>{t.globalLibrary.title}</Text>
+          <Text style={styles.blockSubtitle}>{t.globalLibrary.bibleSectionTitle} · {t.globalLibrary.booksSectionTitle}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.intro}>
-          {t.studyTools.intro}
-        </Text>
-
-        <TouchableOpacity style={styles.sermonWriterCard} onPress={() => navigation.navigate('SermonWriter')}>
-          <View style={styles.sermonWriterIcon}>
-            <Ionicons name="create-outline" size={22} color={Colors.gold} />
+        <TouchableOpacity style={[styles.block, styles.sermonWriterBlock]} onPress={() => navigation.navigate('SermonWriter')}>
+          <View style={styles.blockIcon}>
+            <Ionicons name="create-outline" size={44} color={Colors.gold} />
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.sermonWriterTitle}>{t.studyTools.sermonWriterCardTitle}</Text>
-            <Text style={styles.sermonWriterSubtitle}>{t.studyTools.sermonWriterCardSubtitle}</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color="#A0AEC0" />
+          <Text style={styles.blockTitle}>{t.studyTools.sermonWriterCardTitle}</Text>
+          <Text style={styles.blockSubtitle}>{t.studyTools.sermonWriterCardSubtitle}</Text>
         </TouchableOpacity>
 
-        {CATEGORIES.map((category) => (
-          <View key={category.heading} style={styles.category}>
-            <Text style={styles.categoryHeading}>{category.heading}</Text>
-            {category.note && <Text style={styles.categoryNote}>{category.note}</Text>}
-
-            {category.resources.map((resource) => (
-              <TouchableOpacity
-                key={resource.title}
-                style={styles.card}
-                onPress={() => openLink(resource.url)}
-                accessibilityRole="link"
-                accessibilityLabel={interpolate(t.studyTools.resourceAccessibilityLabel, { title: resource.title, author: resource.author })}
-              >
-                <View style={styles.cardIcon}>
-                  <Ionicons name="book-outline" size={20} color={Colors.gold} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.cardTitle}>{resource.title}</Text>
-                  <Text style={styles.cardMeta}>{resource.author} · {resource.era}</Text>
-                  <Text style={styles.cardDescription}>{resource.description}</Text>
-                </View>
-                <Ionicons name="open-outline" size={18} color="#A0AEC0" />
-              </TouchableOpacity>
-            ))}
+        <TouchableOpacity style={[styles.block, styles.libraryBlock]} onPress={() => navigation.navigate('StudyLibraryEntrance')}>
+          <View style={[styles.blockIcon, styles.libraryBlockIcon]}>
+            <Ionicons name="library-outline" size={44} color="#E4C766" />
           </View>
-        ))}
-      </ScrollView>
-      <DraggableScrollbar
-        contentHeight={contentHeight}
-        viewportHeight={viewportHeight}
-        scrollOffset={scrollOffset}
-        onScrollTo={(offset) => {
-          scrollRef.current?.scrollTo({ y: offset, animated: false });
-          setScrollOffset(offset);
-        }}
-      />
-      {showScrollToBottom && (
-        <TouchableOpacity
-          style={styles.scrollToBottomBtn}
-          onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}
-          accessibilityLabel={t.studyTools.scrollToBottomLabel}
-        >
-          <Ionicons name="arrow-down" size={20} color={Colors.ivory} />
+          <Text style={[styles.blockTitle, styles.libraryBlockTitle]}>{t.tabs.studyTools}</Text>
+          <Text style={[styles.blockSubtitle, styles.libraryBlockSubtitle]}>
+            {CATEGORIES.reduce((n, c) => n + c.resources.length, 0)} books
+          </Text>
         </TouchableOpacity>
-      )}
+      </View>
       <MagnifyButton style={{ bottom: 80 }} />
     </View>
   );
@@ -2079,83 +1994,28 @@ export default function StudyToolsScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#EFE7D6', borderWidth: 5, borderColor: Colors.royal },
-  content: { padding: 16, paddingBottom: 32 },
-  intro: { fontSize: 13.5, lineHeight: 20, color: '#718096', marginBottom: 20 },
-  category: { marginBottom: 24 },
-  globalLibraryCard: {
-    flexDirection: 'row',
+  block: {
+    flex: 1,
     alignItems: 'center',
-    backgroundColor: Colors.goldDark,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 14,
-    gap: 12,
+    justifyContent: 'center',
+    paddingHorizontal: 30,
+    gap: 6,
   },
-  globalLibraryIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  blockIcon: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
     backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  globalLibraryTitle: { fontSize: 15.5, fontWeight: '800', color: Colors.white },
-  globalLibrarySubtitle: { fontSize: 11.5, color: 'rgba(255,255,255,0.85)', marginTop: 2 },
-  sermonWriterCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.royal,
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 22,
-    gap: 12,
-  },
-  sermonWriterIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sermonWriterTitle: { fontSize: 15, fontWeight: '700', color: Colors.white },
-  sermonWriterSubtitle: { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 2 },
-  categoryHeading: { fontSize: 17, fontWeight: '800', color: Colors.royal, marginBottom: 4 },
-  categoryNote: { fontSize: 12, lineHeight: 17, color: '#A0AEC0', marginBottom: 10 },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
     marginBottom: 10,
-    gap: 12,
   },
-  cardIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#EBF8FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardTitle: { fontSize: 14.5, fontWeight: '700', color: Colors.ink },
-  cardMeta: { fontSize: 11.5, color: '#718096', marginTop: 2 },
-  cardDescription: { fontSize: 12.5, lineHeight: 17, color: '#4A5568', marginTop: 4 },
-  scrollToBottomBtn: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.royal,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
+  blockTitle: { fontSize: 22, fontWeight: '800', color: Colors.white, textAlign: 'center' },
+  blockSubtitle: { fontSize: 13.5, color: 'rgba(255,255,255,0.8)', textAlign: 'center', marginTop: 4 },
+  globalLibraryBlock: { backgroundColor: Colors.goldDark },
+  sermonWriterBlock: { backgroundColor: Colors.royal },
+  libraryBlock: { backgroundColor: '#2E1F16' },
+  libraryBlockIcon: { backgroundColor: 'rgba(228,199,102,0.15)' },
+  libraryBlockTitle: { color: '#E4C766' },
+  libraryBlockSubtitle: { color: 'rgba(228,199,102,0.75)' },
 });

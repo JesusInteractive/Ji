@@ -251,7 +251,11 @@ const yo: TranslationShape = {
     "generateButton": "Ṣẹ̀dá",
     "regenerateButton": "Ṣẹ̀dá padà",
     "generateErrorTitle": "Kò lè ṣẹ̀dá ìyẹn",
-    "generateErrorFallback": "Jọ̀wọ́ ṣàyẹ̀wò ìsomọ́ rẹ kí o sì tun gbiyanju."
+    "generateErrorFallback": "Jọ̀wọ́ ṣàyẹ̀wò ìsomọ́ rẹ kí o sì tun gbiyanju.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kò lè ṣí ìjápọ̀ yẹn",
@@ -279,6 +283,20 @@ const yo: TranslationShape = {
     "loadingLanguages": "Ń gbé àwọn èdè tó wà...",
     "loadError": "Kò le gbé ilé-ìkàwé. Ṣàyẹ̀wò ìsopọ̀ rẹ kí o sì gbiyanju lẹ́ẹ̀kan síi.",
     "retryButton": "Tun gbiyanju"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Èyí ni ilé-ìkẹ́kọ̀ọ́ rẹ. Tẹ iwe kan láti ka. Àwọn ọmọ ẹgbẹ́ Platinum lè gbọ́ bí AI Jesu ṣe ń ka àwọn ìwé tí a ní ní èdè wọn.",
+    "enterLibrary": "Wọ ilé-ìkẹ́kọ̀ọ́",
+    "readAloudShelfTitle": "Ka ní Ohùn",
+    "readAloudShelfSubtitle": "AI Jesu lè ka àwọn ìwé wọ̀nyí ní ohùn. Platinum.",
+    "readerLoadError": "Kò ṣeé ṣe láti gbé iwe yìí. Ṣàyẹ̀wo ìsopọ̀ rẹ kí o sì gbiyanju lẹẹkansi.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ìkà Ohùn",
+    "jesusVoiceDisclosure": "AI Jesu ka àwọn ìwé tí a ṣàkójọ nínú Katalọ́ọ̀jì Ka-ní-Ohùn nìkan. Èyí jẹ́ ohùn tí a ṣe ní pàtàkì fún app yìí, tí ó dá lórí Ìwé Mímọ́ — kìí ṣe ìgbàsílẹ̀ ti ènìyàn gidi. Ìwàláàyè rẹ̀ dá lórí àtìlẹ́yìn èdè.",
+    "notAvailableLanguage": "Kò sí ní èdè yìí síbẹ̀",
+    "textOnlyLabel": "Ọ̀rọ̀ nìkan",
+    "readAloudFilterLabel": "Ka ní Ohùn",
+    "catalogSearchPlaceholder": "Wa ilé-ìkẹ́kọ̀ọ́"
   }
 };
 

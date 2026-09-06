@@ -251,7 +251,11 @@ const it: TranslationShape = {
     "generateButton": "Genera",
     "regenerateButton": "Rigenera",
     "generateErrorTitle": "Impossibile generare",
-    "generateErrorFallback": "Controlla la connessione e riprova."
+    "generateErrorFallback": "Controlla la connessione e riprova.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Impossibile aprire il link",
@@ -279,6 +283,20 @@ const it: TranslationShape = {
     "loadingLanguages": "Caricamento delle lingue disponibili...",
     "loadError": "Impossibile caricare la biblioteca. Controlla la tua connessione e riprova.",
     "retryButton": "Riprova"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Questa è la tua biblioteca di studio. Tocca un libro per leggerlo. I membri Platinum possono ascoltare AI Jesus leggere i libri disponibili nella loro lingua.",
+    "enterLibrary": "Entra nella biblioteca",
+    "readAloudShelfTitle": "Lettura ad alta voce",
+    "readAloudShelfSubtitle": "AI Jesus può leggere questi libri ad alta voce. Solo per Platinum.",
+    "readerLoadError": "Impossibile caricare questo libro. Controlla la connessione e riprova.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narrazione",
+    "jesusVoiceDisclosure": "AI Jesus legge solo i libri elencati nel Catalogo Lettura ad Alta Voce. Questa è una voce creata per l'app, basata sulle Scritture — non una registrazione di una persona reale. La disponibilità dipende dal supporto linguistico.",
+    "notAvailableLanguage": "Non ancora disponibile in questa lingua",
+    "textOnlyLabel": "Solo testo",
+    "readAloudFilterLabel": "Lettura ad alta voce",
+    "catalogSearchPlaceholder": "Cerca nella biblioteca"
   }
 };
 

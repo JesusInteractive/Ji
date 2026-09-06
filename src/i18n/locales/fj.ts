@@ -251,7 +251,11 @@ const fj: TranslationShape = {
     "generateButton": "Bulia",
     "regenerateButton": "Bulia tale",
     "generateErrorTitle": "E sega ni rawa ni buli na ka oya",
-    "generateErrorFallback": "Ni raica na nomu veitaratara ka tovolea tale."
+    "generateErrorFallback": "Ni raica na nomu veitaratara ka tovolea tale.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "E sega ni rawa ni dolavi na link oya",
@@ -279,6 +283,20 @@ const fj: TranslationShape = {
     "loadingLanguages": "Sa vakavinakataka tiko na veivosa e rawa ni vakayagataki...",
     "loadError": "Sega ni rawa ni vakavinakataka na ivola. Raica na nomu veisemati kei na internet ka toqalo tale.",
     "retryButton": "Toqalo Tale"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Oqo na nomu raivulivuli ni vuli. Tabaka e dua na ivola me wilika. Na lewe ni Platinum era na rawa ni rogoca na AI Jesus ni wilika na ivola eda tu kina ena nodra vosa.",
+    "enterLibrary": "Curu ki na raivulivuli",
+    "readAloudShelfTitle": "Wilika Vakadomo",
+    "readAloudShelfSubtitle": "Na AI Jesus e rawa ni wilika vakadomo na ivola oqo. Platinum.",
+    "readerLoadError": "E sega ni rawa ni ucuna na ivola oqo. Raica na nomu internet ka tovolea tale.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narration",
+    "jesusVoiceDisclosure": "Na AI Jesus e wilika ga na ivola e volai tu ena Catalog ni Wilika Vakadomo. Oqo e dua na domo e caka me baleta na app oqo, e vakadeitaki ena iVola Tabu — sega ni recording ni dua na tamata dina. Na kena rawa ni vakarautaki e veisautaki ena veivakabauti ni vosa.",
+    "notAvailableLanguage": "E se sega ni rawa ena vosa oqo",
+    "textOnlyLabel": "Text walega",
+    "readAloudFilterLabel": "Wilika Vakadomo",
+    "catalogSearchPlaceholder": "Vakasaqara na raivulivuli"
   }
 };
 

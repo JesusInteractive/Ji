@@ -251,7 +251,11 @@ const ca: TranslationShape = {
     "generateButton": "Genera",
     "regenerateButton": "Regenera",
     "generateErrorTitle": "No s’ha pogut generar això",
-    "generateErrorFallback": "Comprova la connexió i torna-ho a provar."
+    "generateErrorFallback": "Comprova la connexió i torna-ho a provar.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "No s’ha pogut obrir aquest enllaç",
@@ -279,6 +283,20 @@ const ca: TranslationShape = {
     "loadingLanguages": "Carregant els idiomes disponibles...",
     "loadError": "No s'ha pogut carregar la biblioteca. Comprova la teva connexió i torna-ho a provar.",
     "retryButton": "Torna-ho a provar"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Aquesta és la teva biblioteca d'estudis. Toca un llibre per llegir-lo. Els membres Platinum poden escoltar Jesús IA llegint els llibres que tenim en el seu idioma.",
+    "enterLibrary": "Entra a la biblioteca",
+    "readAloudShelfTitle": "Lectura en veu alta",
+    "readAloudShelfSubtitle": "Jesús IA pot llegir aquests llibres en veu alta. Platinum.",
+    "readerLoadError": "No s'ha pogut carregar aquest llibre. Comprova la teva connexió i torna-ho a provar.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Narració",
+    "jesusVoiceDisclosure": "Jesús IA només llegeix els llibres llistats al Catàleg de Lectura en Veu Alta. Aquesta és una veu modelada per a aquesta app, basada en les Escriptures — no una gravació d'una persona real. La disponibilitat depèn del suport d'idioma.",
+    "notAvailableLanguage": "Encara no disponible en aquest idioma",
+    "textOnlyLabel": "Només text",
+    "readAloudFilterLabel": "Lectura en veu alta",
+    "catalogSearchPlaceholder": "Cerca a la biblioteca"
   }
 };
 

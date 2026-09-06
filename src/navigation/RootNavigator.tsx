@@ -13,15 +13,25 @@ import EntranceScreen from '../screens/onboarding/EntranceScreen';
 import PricingScreen from '../screens/onboarding/PricingScreen';
 import LegalDocScreen from '../screens/LegalDocScreen';
 import BibleWordSearchScreen from '../screens/BibleWordSearchScreen';
+import BibleTriviaScreen from '../screens/trivia/TriviaScreen';
+import JIRadioScreen from '../screens/JIRadioScreen';
+import ApprovedCharitiesScreen from '../screens/ApprovedCharitiesScreen';
+import GospelTranslatorScreen from '../screens/GospelTranslatorScreen';
 import MainTabs from './MainTabs';
 import type { LegalDocParams } from './SettingsStack';
 
+// Pricing is no longer a forced day-one step here -- see EntranceScreen's
+// handleEnter and AppContext.tsx's onboardingComplete (which dropped its
+// old `plan !== null` clause). Everyone gets straight into Main once
+// they've seen Entrance; the 5-day trial starts silently, and Pricing
+// only resurfaces from Settings/Profile or a paywall once it expires
+// (it's still registered at the root level below, just never inside
+// this onboarding stack).
 export type OnboardingStackParamList = {
   LanguageSelect: undefined;
   Disclaimer: undefined;
   UserAgreement: undefined;
   Entrance: undefined;
-  Pricing: undefined;
 };
 
 export type RootStackParamList = {
@@ -48,6 +58,33 @@ export type RootStackParamList = {
   // above, not nested in a tab stack, since it's a standalone diversion
   // rather than part of any tab's own flow.
   WordSearch: undefined;
+  // Same root-level-modal pattern as WordSearch above, reached from a
+  // card directly below it on Home. See src/screens/trivia/TriviaScreen.tsx's
+  // own comment on why it's one route with internal view-state rather
+  // than a nested stack.
+  Trivia: undefined;
+  // Same root-level-modal pattern as WordSearch above, reached from a
+  // card directly below it on Home. "24/7 Global Praise and Worship" --
+  // this app's own radio.co-hosted live stream, played in-app via
+  // expo-audio. See JIRadioScreen.tsx's own comment for the
+  // backend-hosted stream config this fetches at runtime.
+  JIRadio: undefined;
+  // Same root-level-modal pattern as JIRadio/WordSearch above, reached
+  // from a card directly below "About This App" on Home. See
+  // ApprovedCharitiesScreen.tsx's own comment on the stamp marks.
+  ApprovedCharities: undefined;
+  // Same root-level-modal pattern as the others above, reached from a
+  // card directly below Quick Scripture Search on Home. See
+  // GospelTranslatorScreen.tsx's own comment for the two-pane,
+  // face-to-face design.
+  //
+  // initialText/initialLabel are optional: ScriptureSearchScreen's "Read
+  // in Gospel Translator" (a chapter) and SermonWriterScreen's (a
+  // generated sermon) both hand off through these -- see their own
+  // comments -- so the pastor's own pane opens already carrying exactly
+  // what they meant to read aloud, translated immediately, instead of
+  // making them re-type or re-speak it from memory.
+  GospelTranslator: { initialText: string; initialLabel: string } | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -60,7 +97,6 @@ function OnboardingNavigator() {
       <OnboardingStack.Screen name="Disclaimer" component={DisclaimerScreen} />
       <OnboardingStack.Screen name="UserAgreement" component={UserAgreementScreen} />
       <OnboardingStack.Screen name="Entrance" component={EntranceScreen} />
-      <OnboardingStack.Screen name="Pricing" component={PricingScreen} />
     </OnboardingStack.Navigator>
   );
 }
@@ -148,6 +184,72 @@ export default function RootNavigator() {
               headerRight: () => (
                 <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
                   <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="Trivia"
+            component={BibleTriviaScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Bible Trivia',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="JIRadio"
+            component={JIRadioScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: '24/7 Global Praise and Worship',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="ApprovedCharities"
+            component={ApprovedCharitiesScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Approved Charities',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="GospelTranslator"
+            component={GospelTranslatorScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Gospel Translator',
+              headerStyle: { backgroundColor: Colors.royal },
+              headerTintColor: Colors.gold,
+              headerTitleStyle: { color: Colors.ivory },
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.gold} />
                 </TouchableOpacity>
               ),
             })}

@@ -251,7 +251,11 @@ const sn: TranslationShape = {
     "generateButton": "Gadzira",
     "regenerateButton": "Gadzira zvakare",
     "generateErrorTitle": "Hatina kukwanisa kugadzira izvo",
-    "generateErrorFallback": "Ndapota tarisa connection yako uye edza zvakare."
+    "generateErrorFallback": "Ndapota tarisa connection yako uye edza zvakare.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Hatina kukwanisa kuvhura link iyoyo",
@@ -279,6 +283,20 @@ const sn: TranslationShape = {
     "loadingLanguages": "Tichikurodha mitauro iripo...",
     "loadError": "Hatina kukwanisa kurodha raibhurari. Tarisa kubatana kwako uye edza zvakare.",
     "retryButton": "Edza zvakare"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Iyi ndiyo raibhurari yako yekufunda. Dzvanya bhuku kuti uverenge. Nhengo dzePlatinum dzinogona kunzwa AI Jesu achiverenga mabhuku atinadzo nemutauro wavo.",
+    "enterLibrary": "Pinda muraibhurari",
+    "readAloudShelfTitle": "Verenga Zvinonzwika",
+    "readAloudShelfSubtitle": "AI Jesu anogona kuverenga mabhuku aya zvinonzwika. Platinum.",
+    "readerLoadError": "Hatina kukwanisa kurodha bhuku iri. Tarisa kubatana kwako uye edza zvakare.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Kutaura",
+    "jesusVoiceDisclosure": "AI Jesu anoverenga chete mabhuku akanyorwa muKatalogi yeKuverenga Zvinonzwika. Ino inzwi rakagadzirwa kuti rienderane neapp iyi, rakavakirwa paMagwaro — harisi rekodhi yemunhu chaiye. Kuwanikwa kunotsamira parutsigiro rwemutauro.",
+    "notAvailableLanguage": "Harisi kuwanikwa mumutauro uyu parizvino",
+    "textOnlyLabel": "Mavara chete",
+    "readAloudFilterLabel": "Verenga Zvinonzwika",
+    "catalogSearchPlaceholder": "Tsvaga muraibhurari"
   }
 };
 

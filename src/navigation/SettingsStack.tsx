@@ -10,6 +10,7 @@ export type LegalDocParams = {
   title: string;
   lastUpdated?: string;
   intro?: string;
+  sectionsHeading?: string;
   sections: { heading: string; body: string }[];
   closing?: string;
 };

@@ -36,7 +36,7 @@ export default function DedicationFooter() {
       pointerEvents="none"
       numberOfLines={1}
     >
-      Dedicated to Jesus for His glory.
+      Dedicated to Jesus
     </Text>
   );
 }

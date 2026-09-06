@@ -251,7 +251,11 @@ const as: TranslationShape = {
     "generateButton": "সৃষ্টি কৰক",
     "regenerateButton": "পুনৰ সৃষ্টি কৰক",
     "generateErrorTitle": "সেয়া সৃষ্টি কৰিব নোৱাৰিলোঁ",
-    "generateErrorFallback": "অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।"
+    "generateErrorFallback": "অনুগ্ৰহ কৰি আপোনাৰ সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "সেই লিংক খুলিব নোৱাৰিলোঁ",
@@ -279,6 +283,20 @@ const as: TranslationShape = {
     "loadingLanguages": "উপলব্ধ ভাষা লোড কৰা হৈছে...",
     "loadError": "গ্ৰন্থাগাৰ লোড কৰিব পৰা নগ'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক।",
     "retryButton": "পুনৰ চেষ্টা কৰক"
+  },
+  "studyLibrary": {
+    "entranceTitle": "এয়া আপোনাৰ অধ্যয়ন গ্ৰন্থাগাৰ। পঢ়িবলৈ এখন কিতাপত টিপক। প্লেটিনাম সদস্যসকলে AI যীশুক তেওঁলোকৰ ভাষাত থকা কিতাপবোৰ পঢ়ি শুনিব পাৰে।",
+    "enterLibrary": "গ্ৰন্থাগাৰত প্ৰৱেশ কৰক",
+    "readAloudShelfTitle": "উচ্চস্বৰে পঢ়ক",
+    "readAloudShelfSubtitle": "AI যীশুৱে এই কিতাপবোৰ উচ্চস্বৰে পঢ়িব পাৰে। প্লেটিনাম।",
+    "readerLoadError": "এই কিতাপখন লোড কৰিব পৰা নগ’ল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
+    "speakerLockedLabel": "প্লেটিনাম",
+    "narrationLabel": "নাৰেচন",
+    "jesusVoiceDisclosure": "AI যীশুৱে কেৱল ৰিড-আলাউড কেটেলগত তালিকাভুক্ত কিতাপবোৰহে পঢ়ে। এয়া এই এপৰ বাবে মডেল কৰা এটা কণ্ঠ, শাস্ত্ৰত নিহিত — কোনো বাস্তৱ ব্যক্তিৰ ৰেকৰ্ডিং নহয়। উপলব্ধতা ভাষা সমৰ্থনৰ ওপৰত নিৰ্ভৰ কৰে।",
+    "notAvailableLanguage": "এই ভাষাত এতিয়াও উপলব্ধ নহয়",
+    "textOnlyLabel": "কেৱল পাঠ্য",
+    "readAloudFilterLabel": "উচ্চস্বৰে পঢ়ক",
+    "catalogSearchPlaceholder": "গ্ৰন্থাগাৰ সন্ধান কৰক"
   }
 };
 

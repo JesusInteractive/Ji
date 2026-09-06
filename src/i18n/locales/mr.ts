@@ -251,7 +251,11 @@ const mr: TranslationShape = {
     "generateButton": "तयार करा",
     "regenerateButton": "पुन्हा तयार करा",
     "generateErrorTitle": "ते तयार करता आले नाही",
-    "generateErrorFallback": "कृपया तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा."
+    "generateErrorFallback": "कृपया तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "तो लिंक उघडता आला नाही",
@@ -279,6 +283,20 @@ const mr: TranslationShape = {
     "loadingLanguages": "उपलब्ध भाषा लोड करत आहे...",
     "loadError": "ग्रंथालय लोड करता आले नाही. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
     "retryButton": "पुन्हा प्रयत्न करा"
+  },
+  "studyLibrary": {
+    "entranceTitle": "हे तुमचे अभ्यास ग्रंथालय आहे. वाचण्यासाठी एखाद्या पुस्तकावर टॅप करा. प्लॅटिनम सदस्य AI येशूला त्यांच्या भाषेत उपलब्ध पुस्तके वाचताना ऐकू शकतात.",
+    "enterLibrary": "ग्रंथालयात प्रवेश करा",
+    "readAloudShelfTitle": "मोठ्याने वाचा",
+    "readAloudShelfSubtitle": "AI येशू ही पुस्तके मोठ्याने वाचू शकतो. प्लॅटिनम.",
+    "readerLoadError": "हे पुस्तक लोड करता आले नाही. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.",
+    "speakerLockedLabel": "प्लॅटिनम",
+    "narrationLabel": "नैरेशन",
+    "jesusVoiceDisclosure": "AI येशू फक्त रीड-अलाउड कॅटलॉगमध्ये सूचीबद्ध पुस्तके वाचतो. हे या अॅपसाठी तयार केलेले आवाज आहे, जे शास्त्रावर आधारित आहे — वास्तविक व्यक्तीचे रेकॉर्डिंग नाही. उपलब्धता भाषा समर्थनावर अवलंबून आहे.",
+    "notAvailableLanguage": "या भाषेत अद्याप उपलब्ध नाही",
+    "textOnlyLabel": "फक्त मजकूर",
+    "readAloudFilterLabel": "मोठ्याने वाचा",
+    "catalogSearchPlaceholder": "ग्रंथालय शोधा"
   }
 };
 

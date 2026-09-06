@@ -251,7 +251,11 @@ const th: TranslationShape = {
     "generateButton": "สร้าง",
     "regenerateButton": "สร้างใหม่",
     "generateErrorTitle": "ไม่สามารถสร้างได้",
-    "generateErrorFallback": "โปรดตรวจสอบการเชื่อมต่อและลองอีกครั้ง"
+    "generateErrorFallback": "โปรดตรวจสอบการเชื่อมต่อและลองอีกครั้ง",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "ไม่สามารถเปิดลิงก์นั้นได้",
@@ -279,6 +283,20 @@ const th: TranslationShape = {
     "loadingLanguages": "กำลังโหลดภาษาที่มี...",
     "loadError": "ไม่สามารถโหลดห้องสมุดได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
     "retryButton": "ลองใหม่"
+  },
+  "studyLibrary": {
+    "entranceTitle": "นี่คือห้องสมุดศึกษาของคุณ แตะหนังสือเพื่ออ่าน สมาชิกแพลตตินัมสามารถฟัง AI Jesus อ่านหนังสือที่มีในภาษาของพวกเขาได้",
+    "enterLibrary": "เข้าห้องสมุด",
+    "readAloudShelfTitle": "อ่านออกเสียง",
+    "readAloudShelfSubtitle": "AI Jesus สามารถอ่านหนังสือเหล่านี้ออกเสียงได้ แพลตตินัม",
+    "readerLoadError": "ไม่สามารถโหลดหนังสือนี้ได้ กรุณาตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+    "speakerLockedLabel": "แพลตตินัม",
+    "narrationLabel": "เสียงอ่าน",
+    "jesusVoiceDisclosure": "AI Jesus อ่านเฉพาะหนังสือที่อยู่ในรายการ Read-Aloud Catalog เท่านั้น นี่คือเสียงที่สร้างขึ้นสำหรับแอปนี้ โดยอิงจากพระคัมภีร์ — ไม่ใช่การบันทึกเสียงของบุคคลจริง ความพร้อมใช้งานขึ้นอยู่กับการรองรับภาษา",
+    "notAvailableLanguage": "ยังไม่พร้อมใช้งานในภาษานี้",
+    "textOnlyLabel": "ข้อความเท่านั้น",
+    "readAloudFilterLabel": "อ่านออกเสียง",
+    "catalogSearchPlaceholder": "ค้นหาห้องสมุด"
   }
 };
 

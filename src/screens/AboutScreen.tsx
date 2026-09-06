@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { BIOGRAPHY_PARAGRAPHS, ABOUT_INTRO } from '../constants/about';
@@ -7,6 +7,7 @@ import { MATTHEW_LINEAGE, LINEAGE_NOTE, LUKE_LINEAGE_NOTE } from '../constants/l
 import { PROPHECIES, PROPHECY_CATEGORIES, prophecyCountLabel } from '../constants/prophecies';
 import { useI18n } from '../i18n';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
 
 // Biography + Lineage + Prophecies are presented as one unified story of
 // who Jesus is (spec: "should feel unified... working together"), not
@@ -19,17 +20,26 @@ export default function AboutScreen() {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
+  const [scrollbarDragging, setScrollbarDragging] = useState(false);
+
+  useArrowKeyScroll({
+    getOffset: useCallback(() => scrollOffset, [scrollOffset]),
+    scrollTo: useCallback((y: number) => scrollRef.current?.scrollTo({ y, animated: true }), []),
+  });
 
   return (
     <View style={{ flex: 1 }}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
     <ScrollView
       ref={scrollRef}
-      style={styles.container}
+      style={{ flex: 1 }}
       contentContainerStyle={styles.content}
       onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
       onContentSizeChange={(_width, height) => setContentHeight(height)}
       onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
       scrollEventThrottle={16}
+      scrollEnabled={!scrollbarDragging}
     >
       <Text style={styles.pageTitle}>{t.about.title}</Text>
       <Text style={styles.intro}>{ABOUT_INTRO}</Text>
@@ -97,7 +107,10 @@ export default function AboutScreen() {
         scrollRef.current?.scrollTo({ y: offset, animated: false });
         setScrollOffset(offset);
       }}
+      onDragStart={() => setScrollbarDragging(true)}
+      onDragEnd={() => setScrollbarDragging(false)}
     />
+    </ImageBackground>
     </View>
   );
 }

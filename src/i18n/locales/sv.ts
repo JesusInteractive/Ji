@@ -251,7 +251,11 @@ const sv: TranslationShape = {
     "generateButton": "Generera",
     "regenerateButton": "Generera igen",
     "generateErrorTitle": "Kunde inte generera det",
-    "generateErrorFallback": "Kontrollera din anslutning och försök igen."
+    "generateErrorFallback": "Kontrollera din anslutning och försök igen.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kunde inte öppna den länken",
@@ -279,6 +283,20 @@ const sv: TranslationShape = {
     "loadingLanguages": "Laddar tillgängliga språk...",
     "loadError": "Kunde inte ladda biblioteket. Kontrollera din anslutning och försök igen.",
     "retryButton": "Försök igen"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Detta är ditt studiebibliotek. Tryck på en bok för att läsa. Platinum-medlemmar kan höra AI Jesus läsa böckerna vi har på deras språk.",
+    "enterLibrary": "Gå in i biblioteket",
+    "readAloudShelfTitle": "Läs högt",
+    "readAloudShelfSubtitle": "AI Jesus kan läsa dessa böcker högt. Platinum.",
+    "readerLoadError": "Kunde inte ladda den här boken. Kontrollera din anslutning och försök igen.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Uppläsning",
+    "jesusVoiceDisclosure": "AI Jesus läser endast böckerna som listas i Katalogen för uppläsning. Detta är en röst som modellerats för den här appen, grundad i Skriften — inte en inspelning av en verklig person. Tillgängligheten beror på språkstöd.",
+    "notAvailableLanguage": "Inte tillgänglig på detta språk ännu",
+    "textOnlyLabel": "Endast text",
+    "readAloudFilterLabel": "Läs högt",
+    "catalogSearchPlaceholder": "Sök i biblioteket"
   }
 };
 

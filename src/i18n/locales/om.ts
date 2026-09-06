@@ -251,7 +251,11 @@ const om: TranslationShape = {
     "generateButton": "Qopheessi",
     "regenerateButton": "Irra deebi’i qopheessi",
     "generateErrorTitle": "Qopheessuu hin dandeenye",
-    "generateErrorFallback": "Connection kee ilaali, irra deebi’i yaali."
+    "generateErrorFallback": "Connection kee ilaali, irra deebi’i yaali.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Link sana banuu hin dandeenye",
@@ -279,6 +283,20 @@ const om: TranslationShape = {
     "loadingLanguages": "Afaanota argaman loading...",
     "loadError": "Kutubxanaa loading gochuun hin danda'amne. Walitti qabsiisa kee ilaali fi irra deebi'i yaali.",
     "retryButton": "Irra deebi'i"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Kun mana barumsa keessaniti. Kitaaba tokko tuquun dubbisaa. Miisaanota Platinum AI Jesus kitaabota afaan isaanii keessatti qabnu dubbisu dhaga'uu danda'u.",
+    "enterLibrary": "Mana barumsa seena",
+    "readAloudShelfTitle": "Sagalee Dubbisuu",
+    "readAloudShelfSubtitle": "AI Jesus kitaabota kana sagalee guddaa dubbisuu danda'a. Platinum.",
+    "readerLoadError": "Kitaaba kana fe'u hin dandeenye. Walqunnamtii kee ilaali fi deebi'ii yaali.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Sagalee Dubbisuu",
+    "jesusVoiceDisclosure": "AI Jesus kitaabota Catalog Sagalee Dubbisuu keessatti tarreeffaman qofa dubbisa. Kun sagalee app kanaaf model godhame, Qulqulluu irratti hundaa'e — waadaa namoota dhugaa miti. Argamni deeggarsa afaanii irratti hundaa'a.",
+    "notAvailableLanguage": "Afaan kana keessatti amma hin jiru",
+    "textOnlyLabel": "Barreeffama qofa",
+    "readAloudFilterLabel": "Sagalee Dubbisuu",
+    "catalogSearchPlaceholder": "Mana barumsa barbaadi"
   }
 };
 

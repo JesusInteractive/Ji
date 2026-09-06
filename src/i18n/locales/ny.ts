@@ -251,7 +251,11 @@ const ny: TranslationShape = {
     "generateButton": "Pangani",
     "regenerateButton": "Panganinso",
     "generateErrorTitle": "Sitinathe kupanga zimenezo",
-    "generateErrorFallback": "Chonde onani kulumikizana kwanu ndikuyesanso."
+    "generateErrorFallback": "Chonde onani kulumikizana kwanu ndikuyesanso.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Sitinathe kutsegula ulalo uwo",
@@ -279,6 +283,20 @@ const ny: TranslationShape = {
     "loadingLanguages": "Kukweza zinenero zomwe zilipo...",
     "loadError": "Sinaloŵe mulaibulale. Yang'anani kulumikizana kwanu ndikuyesanso.",
     "retryButton": "Yesaninso"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Iyi ndi laibulale yanu yophunzira. Dinani buku kuti muwerenge. Mamembala a Platinum amatha kumva AI Jesus akuwerenga mabuku m'chinenero chawo.",
+    "enterLibrary": "Lowani mu laibulale",
+    "readAloudShelfTitle": "Werengera Mofuwula",
+    "readAloudShelfSubtitle": "AI Jesus amatha kuwera mabuku awa mofuwula. Platinum.",
+    "readerLoadError": "Sitinathe kutsegula buku ili. Yang'anani kulumikizana kwanu ndikuyesanso.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Kuwera",
+    "jesusVoiceDisclosure": "AI Jesus amawerenga mabuku omwe ali mu Read-Aloud Catalog yokha. Iyi ndi mawu omwe adapangidwira app iyi, yozikidwa pa Malemba — osati kujambula munthu weniweni. Kupezeka kumadalira chithandizo cha chinenero.",
+    "notAvailableLanguage": "Sichipezeka m'chinenerochi panopa",
+    "textOnlyLabel": "Mawu okha",
+    "readAloudFilterLabel": "Werengera Mofuwula",
+    "catalogSearchPlaceholder": "Fufuzani laibulale"
   }
 };
 

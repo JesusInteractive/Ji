@@ -1,41 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../theme/colors';
 
 interface Props {
-  storageKey: string;
+  visible: boolean;
   text: string;
+  onDismiss: () => void;
 }
 
-// Light, non-intrusive first-time guidance (spec requirement 7): a
-// dismissible banner shown once per screen, remembered in AsyncStorage so
-// it never nags a returning user. Deliberately not a multi-step guided
-// tour/overlay -- those are easy to build annoyingly; a one-line tip that
-// goes away for good reads as more respectful of the user's attention.
-export default function TipBanner({ storageKey, text }: Props) {
-  const [visible, setVisible] = useState(false);
-  const [checked, setChecked] = useState(false);
-
-  useEffect(() => {
-    AsyncStorage.getItem(storageKey)
-      .then((seen) => setVisible(!seen))
-      .finally(() => setChecked(true));
-  }, [storageKey]);
-
-  const dismiss = () => {
-    setVisible(false);
-    AsyncStorage.setItem(storageKey, '1').catch(() => {});
-  };
-
-  if (!checked || !visible) return null;
+// Light, non-intrusive guidance (spec requirement 7): a dismissible
+// banner the caller fully controls. ChatScreen.tsx's usage shows this
+// again every time the chat screen gains focus and hides it once the
+// user sends their first question that visit -- a "remind me each time,
+// but don't nag mid-conversation" pattern, not a one-time-forever
+// dismissal (this used to persist "seen" to AsyncStorage; that's gone
+// now that the only caller wants it to reappear on every visit instead).
+export default function TipBanner({ visible, text, onDismiss }: Props) {
+  if (!visible) return null;
 
   return (
     <View style={styles.banner} accessibilityRole="text">
       <Ionicons name="bulb-outline" size={16} color={Colors.gold} style={{ marginTop: 1 }} />
       <Text style={styles.text}>{text}</Text>
-      <TouchableOpacity onPress={dismiss} accessibilityRole="button" accessibilityLabel="Dismiss tip" hitSlop={8}>
+      <TouchableOpacity onPress={onDismiss} accessibilityRole="button" accessibilityLabel="Dismiss tip" hitSlop={8}>
         <Ionicons name="close" size={16} color="#8A8474" />
       </TouchableOpacity>
     </View>

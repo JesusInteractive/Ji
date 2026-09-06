@@ -251,7 +251,11 @@ const fi: TranslationShape = {
     "generateButton": "Luo",
     "regenerateButton": "Luo uudelleen",
     "generateErrorTitle": "Sitä ei voitu luoda",
-    "generateErrorFallback": "Tarkista yhteytesi ja yritä uudelleen."
+    "generateErrorFallback": "Tarkista yhteytesi ja yritä uudelleen.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Linkkiä ei voitu avata",
@@ -279,6 +283,20 @@ const fi: TranslationShape = {
     "loadingLanguages": "Ladataan saatavilla olevia kieliä...",
     "loadError": "Kirjastoa ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
     "retryButton": "Yritä uudelleen"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Tämä on opiskelukirjastosi. Napauta kirjaa lukeaksesi. Platinum-jäsenet voivat kuunnella AI Jeesuksen lukevan kirjoja heidän kielellään.",
+    "enterLibrary": "Siirry kirjastoon",
+    "readAloudShelfTitle": "Lue ääneen",
+    "readAloudShelfSubtitle": "AI Jeesus voi lukea nämä kirjat ääneen. Platinum.",
+    "readerLoadError": "Kirjaa ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Äänikerronta",
+    "jesusVoiceDisclosure": "AI Jeesus lukee vain Read-Aloud-katalogissa listatut kirjat. Tämä on sovellusta varten mallinnettu ääni, joka perustuu Raamattuun — ei oikean henkilön tallenne. Saatavuus riippuu kielituesta.",
+    "notAvailableLanguage": "Ei vielä saatavilla tällä kielellä",
+    "textOnlyLabel": "Vain teksti",
+    "readAloudFilterLabel": "Lue ääneen",
+    "catalogSearchPlaceholder": "Hae kirjastosta"
   }
 };
 

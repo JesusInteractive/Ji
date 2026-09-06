@@ -251,7 +251,11 @@ const tl: TranslationShape = {
     "generateButton": "Gumawa",
     "regenerateButton": "Gumawa muli",
     "generateErrorTitle": "Hindi magawa iyan",
-    "generateErrorFallback": "Pakisuri ang iyong koneksyon at subukan muli."
+    "generateErrorFallback": "Pakisuri ang iyong koneksyon at subukan muli.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Hindi mabuksan ang link na iyan",
@@ -279,6 +283,20 @@ const tl: TranslationShape = {
     "loadingLanguages": "Nilo-load ang mga available na wika...",
     "loadError": "Hindi ma-load ang library. Suriin ang iyong koneksyon at subukan muli.",
     "retryButton": "Subukan muli"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Ito ang iyong aklatan sa pag-aaral. Pindutin ang isang aklat para basahin. Maaaring marinig ng mga Platinum members ang AI Jesus na nagbabasa ng mga aklat sa kanilang wika.",
+    "enterLibrary": "Pumasok sa aklatan",
+    "readAloudShelfTitle": "Basahin nang Malakas",
+    "readAloudShelfSubtitle": "Maaaring basahin nang malakas ng AI Jesus ang mga aklat na ito. Platinum.",
+    "readerLoadError": "Hindi ma-load ang librong ito. Tingnan ang iyong koneksyon at subukan ulit.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Pagbabasa",
+    "jesusVoiceDisclosure": "Ang AI Jesus ay nagbabasa lamang ng mga aklat na nakalista sa Read-Aloud Catalog. Ito ay boses na ginawa para sa app na ito, batay sa Kasulatan — hindi recording ng tunay na tao. Nakadepende sa suporta ng wika ang availability.",
+    "notAvailableLanguage": "Hindi pa available sa wikang ito",
+    "textOnlyLabel": "Teksto lamang",
+    "readAloudFilterLabel": "Basahin nang Malakas",
+    "catalogSearchPlaceholder": "Maghanap sa aklatan"
   }
 };
 

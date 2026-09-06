@@ -251,7 +251,11 @@ const mt: TranslationShape = {
     "generateButton": "Iġġenera",
     "regenerateButton": "Iġġenera mill-ġdid",
     "generateErrorTitle": "Ma setax jiġġenera dak",
-    "generateErrorFallback": "Jekk jogħġbok iċċekkja l-konnessjoni tiegħek u erġa' pprova."
+    "generateErrorFallback": "Jekk jogħġbok iċċekkja l-konnessjoni tiegħek u erġa' pprova.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ma setax jinfetaħ dak il-link",
@@ -279,6 +283,20 @@ const mt: TranslationShape = {
     "loadingLanguages": "Qed jitgħabbew il-lingwi disponibbli...",
     "loadError": "Ma setax jitgħabba l-librerija. Iċċekkja l-konnessjoni tiegħek u erġa' pprova.",
     "retryButton": "Erġa' pprova"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Din hija l-librerija tal-istudju tiegħek. Agħżel ktieb biex taqrah. Il-membri Platinum jistgħu jisimgħu lil AI Jesus jaqra l-kotba li għandna bil-lingwa tagħhom.",
+    "enterLibrary": "Idħol fil-librerija",
+    "readAloudShelfTitle": "Aqra b'Leħen",
+    "readAloudShelfSubtitle": "AI Jesus jista' jaqra dawn il-kotba b'leħen għoli. Platinum.",
+    "readerLoadError": "Ma setax jitgħabba dan il-ktieb. Iċċekkja l-konnessjoni tiegħek u erġa' pprova.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Qari",
+    "jesusVoiceDisclosure": "AI Jesus jaqra biss il-kotba elenkati fil-Katalgu tal-Qari b'Leħen. Din hija vuċi mudellata għal din l-app, ibbażata fuq l-Iskrittura — mhux reġistrazzjoni ta' persuna reali. Id-disponibbiltà tiddependi mill-appoġġ tal-lingwa.",
+    "notAvailableLanguage": "Mhux disponibbli f'din il-lingwa għadha",
+    "textOnlyLabel": "Test biss",
+    "readAloudFilterLabel": "Aqra b'Leħen",
+    "catalogSearchPlaceholder": "Fittex fil-librerija"
   }
 };
 

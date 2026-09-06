@@ -251,7 +251,11 @@ const be: TranslationShape = {
     "generateButton": "Стварыць",
     "regenerateButton": "Стварыць нанова",
     "generateErrorTitle": "Не ўдалося стварыць",
-    "generateErrorFallback": "Праверце злучэнне і паспрабуйце зноў."
+    "generateErrorFallback": "Праверце злучэнне і паспрабуйце зноў.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Не ўдалося адкрыць спасылку",
@@ -279,6 +283,20 @@ const be: TranslationShape = {
     "loadingLanguages": "Загрузка даступных моў...",
     "loadError": "Не ўдалося загрузіць бібліятэку. Праверце злучэнне і паспрабуйце зноў.",
     "retryButton": "Паўтарыць"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Гэта ваша бібліятэка вывучэння. Націсніце на кнігу, каб прачытаць. Удзельнікі Плацінум могуць пачуць, як ІІ Ісус чытае кнігі, якія ў нас ёсць на іх мове.",
+    "enterLibrary": "Увайсці ў бібліятэку",
+    "readAloudShelfTitle": "Чытанне ўслых",
+    "readAloudShelfSubtitle": "ІІ Ісус можа чытаць гэтыя кнігі ўслых. Плацінум.",
+    "readerLoadError": "Не ўдалося загрузіць гэтую кнігу. Праверце злучэнне і паспрабуйце зноў.",
+    "speakerLockedLabel": "Плацінум",
+    "narrationLabel": "Агучванне",
+    "jesusVoiceDisclosure": "ІІ Ісус чытае толькі кнігі, пералічаныя ў Каталогу чытання ўслых. Гэта голас, створаны для гэтай праграмы, заснаваны на Пісанні — не запіс рэальнага чалавека. Даступнасць залежыць ад падтрымкі мовы.",
+    "notAvailableLanguage": "Пакуль недаступна на гэтай мове",
+    "textOnlyLabel": "Толькі тэкст",
+    "readAloudFilterLabel": "Чытанне ўслых",
+    "catalogSearchPlaceholder": "Пошук у бібліятэцы"
   }
 };
 

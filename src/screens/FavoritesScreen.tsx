@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, ImageBackground, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
@@ -21,7 +21,7 @@ export default function FavoritesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
       <Text style={styles.title}>{t.favorites.title}</Text>
       <FlatList
         data={favorites}
@@ -47,7 +47,7 @@ export default function FavoritesScreen() {
           </View>
         )}
       />
-    </View>
+    </ImageBackground>
   );
 }
 

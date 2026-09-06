@@ -251,7 +251,11 @@ const af: TranslationShape = {
     "generateButton": "Genereer",
     "regenerateButton": "Hergenereer",
     "generateErrorTitle": "Kon dit nie genereer nie",
-    "generateErrorFallback": "Kontroleer asseblief jou verbinding en probeer weer."
+    "generateErrorFallback": "Kontroleer asseblief jou verbinding en probeer weer.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Kon nie daardie skakel open nie",
@@ -279,6 +283,20 @@ const af: TranslationShape = {
     "loadingLanguages": "Laai beskikbare tale...",
     "loadError": "Kon nie die biblioteek laai nie. Gaan jou verbinding na en probeer weer.",
     "retryButton": "Probeer weer"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Dit is jou studiebiblioteek. Tik op 'n boek om te lees. Platinum-lede kan AI Jesus die boeke wat ons in hul taal het, hoor voorlees.",
+    "enterLibrary": "Betree die biblioteek",
+    "readAloudShelfTitle": "Voorlees",
+    "readAloudShelfSubtitle": "AI Jesus kan hierdie boeke voorlees. Platinum.",
+    "readerLoadError": "Kon nie hierdie boek laai nie. Gaan jou verbinding na en probeer weer.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Voorlesing",
+    "jesusVoiceDisclosure": "AI Jesus lees slegs die boeke wat in die Voorlees-katalogus gelys is. Dit is 'n stem wat vir hierdie app gemodelleer is, gegrond op die Skrif — nie 'n opname van 'n werklike persoon nie. Beskikbaarheid hang af van taalondersteuning.",
+    "notAvailableLanguage": "Nog nie in hierdie taal beskikbaar nie",
+    "textOnlyLabel": "Slegs teks",
+    "readAloudFilterLabel": "Voorlees",
+    "catalogSearchPlaceholder": "Soek die biblioteek"
   }
 };
 

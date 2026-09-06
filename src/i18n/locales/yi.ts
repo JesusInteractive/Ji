@@ -251,7 +251,11 @@ const yi: TranslationShape = {
     "generateButton": "גענערירן",
     "regenerateButton": "ווידער גענערירן",
     "generateErrorTitle": "קען נישט גענערירן דאָס",
-    "generateErrorFallback": "ביטע קאָנטראָליר דיין פֿאַרבינדונג און פּרוּוון ווידער."
+    "generateErrorFallback": "ביטע קאָנטראָליר דיין פֿאַרבינדונג און פּרוּוון ווידער.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "קען נישט עפֿענען דעם לינק",
@@ -279,6 +283,20 @@ const yi: TranslationShape = {
     "loadingLanguages": "לאָדן די פֿאַראַנענע שפּראַכן...",
     "loadError": "נישט געקענט לאָדן די ביבליאָטעק. קאָנטראָליר דיין פֿאַרבינדונג און פּרוּווט נאָך אַ מאָל.",
     "retryButton": "נאָך אַ מאָל פּרוּווט"
+  },
+  "studyLibrary": {
+    "entranceTitle": "דאָס איז דײַן לערן־ביבליאָטעק. דרוק אויף א בוך צו לייענען. פּלאַטינום מיטגלידער קענען הערן ווי AI יעזוס לייענט פֿאַר זיי די ביכער אין זייער שפּראַך.",
+    "enterLibrary": "אַרײַן אין דער ביבליאָטעק",
+    "readAloudShelfTitle": "פֿאַרלייענען",
+    "readAloudShelfSubtitle": "AI יעזוס קען פֿאַרלייענען די ביכער. פּלאַטינום.",
+    "readerLoadError": "קען נישט לאָדן דאָס בוך. קאָנטראָליר דיין פֿאַרבינדונג און פּרוּוו נאָך אַ מאָל.",
+    "speakerLockedLabel": "פּלאַטינום",
+    "narrationLabel": "פֿאַרלייענונג",
+    "jesusVoiceDisclosure": "AI יעזוס לייענט נאָר די ביכער וואָס זענען אויפֿגעליסט אין דער פֿאַרלייענען־קאַטאַלאָג. דאָס איז אַ קול מאָדעלירט פֿאַר דער אַפּ, באַזירט אויף דער שריפֿט — נישט אַ רעקאָרדירונג פֿון אַ רעאַלן מענטש. די פֿאַרעפֿנטלעכונג דעפּענדירט אויף שפּראַך־שטיצע.",
+    "notAvailableLanguage": "נאָך נישט פֿאַרעפֿנטלעכט אין דער שפּראַך",
+    "textOnlyLabel": "נאָר טעקסט",
+    "readAloudFilterLabel": "פֿאַרלייענען",
+    "catalogSearchPlaceholder": "זוך אין דער ביבליאָטעק"
   }
 };
 

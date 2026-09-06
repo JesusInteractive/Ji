@@ -11,7 +11,13 @@ import { getDayOfYear } from '../constants/devotionalReadingPlan';
 import { getDevotionYear } from './devotions';
 
 export const GRID_SIZE = 15;
-export const WORDS_PER_PUZZLE = 30;
+// 30 words in a 15x15 (225-cell) grid packed the board so densely that
+// by the time most words were found, nearly every cell was highlighted
+// -- reading as one solid blocked-out mass instead of distinct findable
+// words. 20 leaves enough unclaimed filler-letter cells that found
+// words stay visually separated even near full completion, while still
+// giving more words per round than 16.
+export const WORDS_PER_PUZZLE = 20;
 // getDevotionYear() rotates 0/1/2 by calendar year, and getDayOfYear()
 // is 1-365 -- so valid puzzle indices run 1..(3*365), matching the "3-
 // year rotation" spec without needing a separate day-count constant here.

@@ -251,7 +251,11 @@ const zu: TranslationShape = {
     "generateButton": "Khiqiza",
     "regenerateButton": "Khiqiza futhi",
     "generateErrorTitle": "Ayikwazanga ukukhiqiza lokho",
-    "generateErrorFallback": "Sicela uhlole uxhumano lwakho bese uzama futhi."
+    "generateErrorFallback": "Sicela uhlole uxhumano lwakho bese uzama futhi.",
+    "downloadButton": "Download",
+    "downloadingButton": "Preparing file…",
+    "downloadErrorTitle": "Couldn't save that",
+    "downloadErrorFallback": "Please try again."
   },
   "studyTools": {
     "linkErrorTitle": "Ayikwazanga ukuvula leyo linki",
@@ -279,6 +283,20 @@ const zu: TranslationShape = {
     "loadingLanguages": "Kulayishwa izilimi ezitholakalayo...",
     "loadError": "Ayikwazanga ukulayisha umtatshana wezincwadi. Hlola uxhumano lwakho bese uzama futhi.",
     "retryButton": "Zama futhi"
+  },
+  "studyLibrary": {
+    "entranceTitle": "Lena ilayibrari yakho yokufunda. Thepha ibhuku ukuze ufunde. Amalungu ePlatinum angakwazi ukulalela uJesu we-AI efunda amabhuku esinawo ngolimi lwabo.",
+    "enterLibrary": "Ngena elayibrari",
+    "readAloudShelfTitle": "Funda ngokuzwakalayo",
+    "readAloudShelfSubtitle": "UJesu we-AI angafunda la mabhuku ngokuzwakalayo. IPlatinum.",
+    "readerLoadError": "Ayikwazanga ukulayisha leli bhuku. Hlola uxhumano lwakho futhi uzame.",
+    "speakerLockedLabel": "Platinum",
+    "narrationLabel": "Ukufundwa",
+    "jesusVoiceDisclosure": "UJesu we-AI ufunda kuphela amabhuku asohlwini lweKhalalogi yokufunda ngokuzwakalayo. Leli yizwi elenziwe le-app, elisekelwe eMibhalweni — akusiyo irekhodi lomuntu wangempela. Ukutholakala kuncike ekusekelweni kolimi.",
+    "notAvailableLanguage": "Akukatholakali ngalolu limi okwamanje",
+    "textOnlyLabel": "Umbhalo kuphela",
+    "readAloudFilterLabel": "Funda ngokuzwakalayo",
+    "catalogSearchPlaceholder": "Sesha ilayibrari"
   }
 };
 

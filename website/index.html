@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>(Ji) Jesus Interactive — Ask, Seek, Knock</title>
-<meta name="description" content="Jesus Interactive is an AI companion app in the voice and character of Jesus Christ, grounded in Scripture — for reflection, encouragement, and spiritual growth." />
+<title>(Ji) Jesus Interactive — Global AI Bible Companion</title>
+<meta name="description" content="Jesus Interactive is a premium Global AI Bible Companion — Multi-Language Bible Tools in 117 languages, Sermon & Bible Study Writer, Ask Jesus, Gospel Translator, prayer, study, and worship in one app." />
 <link rel="icon" href="assets/icon.png" />
 <style>
   :root {
@@ -82,14 +82,15 @@
   .verse span { display: block; margin-top: 6px; font-style: normal; color: var(--gold); font-weight: 700; letter-spacing: 0.03em; font-size: 12px; text-transform: uppercase; }
 
   .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .cta-row-secondary { margin-top: 14px; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 13px 26px; border-radius: 12px; font-weight: 700; font-size: 15px;
-    text-decoration: none; border: 1px solid transparent; cursor: default;
+    text-decoration: none; border: 1px solid transparent; cursor: pointer;
   }
   .btn-gold { background: var(--gold); color: var(--royal); }
   .btn-outline { background: transparent; color: var(--ivory); border-color: rgba(251,247,236,0.35); }
-  .btn-soon { opacity: 0.75; }
+  .btn-soon { opacity: 0.75; cursor: default; font-size: 13.5px; padding: 10px 20px; }
   .btn-soon .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(0,0,0,0.2); padding: 2px 7px; border-radius: 6px; margin-left: 4px; }
 
   /* Sections */
@@ -124,6 +125,62 @@
   }
   .card h3 { margin: 0 0 8px; font-size: 17px; color: var(--gold-light); }
   .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  .grid-more { margin-top: 22px; }
+  .see-all-row { text-align: center; margin-top: 32px; }
+  .see-all-btn {
+    background: transparent; color: var(--gold-light); border: 1px solid rgba(201,162,39,0.4);
+    border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .see-all-btn:hover { background: rgba(201,162,39,0.1); }
+
+  /* Shop */
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  .product {
+    background: rgba(251,247,236,0.05);
+    border: 1px solid rgba(201,162,39,0.2);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .product-art {
+    width: 100%; height: 96px; border-radius: 12px;
+    background: linear-gradient(160deg, rgba(201,162,39,0.22), rgba(28,47,110,0.6));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; margin-bottom: 16px;
+    border: 1px solid rgba(201,162,39,0.25);
+  }
+  .product h3 { margin: 0 0 6px; font-size: 15.5px; color: var(--ivory); }
+  .product-price { font-weight: 800; color: var(--gold-light); font-size: 17px; margin-bottom: 14px; }
+  .product .btn { width: 100%; justify-content: center; padding: 10px 18px; font-size: 13.5px; }
+
+  .cart-fab {
+    position: fixed; right: 22px; bottom: 22px; z-index: 20;
+    background: var(--gold); color: var(--royal); border: none; border-radius: 999px;
+    padding: 13px 18px; font-size: 16px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cart-count {
+    background: var(--royal); color: var(--gold-light); border-radius: 999px;
+    min-width: 20px; height: 20px; font-size: 12px; display: inline-flex;
+    align-items: center; justify-content: center; padding: 0 5px;
+  }
+  .cart-panel {
+    position: fixed; right: 22px; bottom: 84px; z-index: 20; width: 260px;
+    background: var(--royal-light); border: 1px solid rgba(201,162,39,0.3); border-radius: 14px;
+    padding: 18px; box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+    display: none;
+  }
+  .cart-panel.open { display: block; }
+  .cart-panel h4 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gold); }
+  .cart-items { max-height: 220px; overflow-y: auto; margin-bottom: 10px; }
+  .cart-row { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--muted); padding: 5px 0; }
+  .cart-empty { color: var(--muted); font-size: 13.5px; margin: 0; }
+  .cart-note { font-size: 11.5px; color: var(--muted); opacity: 0.75; margin: 0; }
 
   /* Pricing */
   .plans {
@@ -186,6 +243,7 @@
     <a class="brand" href="#top"><img src="assets/icon.png" alt="" />(Ji) Jesus Interactive</a>
     <div class="links">
       <a href="#features">Features</a>
+      <a href="#shop">Shop</a>
       <a href="#pricing">Pricing</a>
       <a href="#disclosure">About the AI</a>
       <a href="#contact">Contact</a>
@@ -197,10 +255,13 @@
   <div class="wrap">
     <img class="logo" src="assets/icon.png" alt="Jesus Interactive logo" />
     <h1>Ask. Seek. <span class="accent">Knock.</span></h1>
-    <p class="tagline">An AI companion in the voice and character of Jesus Christ — grounded in Scripture, here for honest conversation, encouragement, and reflection, any hour of the day.</p>
+    <p class="tagline">A premium Global AI Bible Companion — Multi-Language Bible Tools in 117 languages, a Sermon & Bible Study Writer, Ask Jesus, and a Gospel Translator for sharing the gospel across languages — prayer, study, and worship in one app.</p>
     <p class="verse">"Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you."<span>Matthew 7:7</span></p>
     <div class="cta-row">
-      <span class="btn btn-gold btn-soon">🍎 App Store <span class="badge">Coming soon</span></span>
+      <a class="btn btn-gold" href="mailto:support@jesusinteractive.com?subject=Add%20me%20to%20the%20waitlist">✦ Join the waitlist</a>
+    </div>
+    <div class="cta-row cta-row-secondary">
+      <span class="btn btn-outline btn-soon">🍎 App Store <span class="badge">Coming soon</span></span>
       <span class="btn btn-outline btn-soon">▶ Google Play <span class="badge">Coming soon</span></span>
     </div>
   </div>
@@ -208,23 +269,40 @@
 
 <section id="features">
   <div class="wrap">
-    <h2 class="section-title">A space to bring anything</h2>
-    <p class="section-sub">Questions, doubts, gratitude, grief, curiosity — typed or spoken, in your own language.</p>
+    <h2 class="section-title">A full toolkit, in one app</h2>
+    <p class="section-sub">Scripture, study, sermon prep, prayer, and worship — questions, doubts, gratitude, grief, curiosity — typed or spoken, in your own language.</p>
     <div class="grid">
+      <div class="card">
+        <div class="icon">🌍</div>
+        <h3>Multi-Language Bible Tools</h3>
+        <p>Bibles by language, Christian books, and testimonies — 117 languages, built for a global church.</p>
+      </div>
+      <div class="card">
+        <div class="icon">✍️</div>
+        <h3>Sermon &amp; Bible Study Writer</h3>
+        <p>Enter a topic or passage and generate a full sermon or Bible study. Edit it, pray over it, make it your own.</p>
+      </div>
       <div class="card">
         <div class="icon">💬</div>
         <h3>Ask Jesus</h3>
         <p>A real conversation — type or speak your question and get a thoughtful, Scripture-grounded reply, with a natural spoken voice.</p>
       </div>
       <div class="card">
-        <div class="icon">🎙️</div>
-        <h3>Voice, both ways</h3>
-        <p>Talk freely with your mic — no need to type — and hear the reply spoken back, warm and unhurried.</p>
+        <div class="icon">🗣️</div>
+        <h3>Gospel Translator</h3>
+        <p>Live, two-way speech translation for sharing the gospel across languages — speak or type on either side, translated and read back instantly.</p>
       </div>
+    </div>
+    <div class="grid grid-more" id="more-features" hidden>
       <div class="card">
         <div class="icon">📖</div>
-        <h3>Study tools</h3>
-        <p>Public-domain Scripture in the original Hebrew and Greek, cross-references, and a library of classic Christian and Jewish commentary.</p>
+        <h3>Study Tools library</h3>
+        <p>A 243-book library of Scripture and classic Christian works, plus cross-references in the original Hebrew and Greek.</p>
+      </div>
+      <div class="card">
+        <div class="icon">☀️</div>
+        <h3>Daily Devotions &amp; Promises</h3>
+        <p>Start the day with a fresh devotion and a promise from Scripture, timed to your own reading plan.</p>
       </div>
       <div class="card">
         <div class="icon">🕊️</div>
@@ -237,13 +315,87 @@
         <p>A private place to keep reflections, favorite answers, and moments worth returning to.</p>
       </div>
       <div class="card">
-        <div class="icon">🌍</div>
-        <h3>Multiple languages</h3>
-        <p>English, Spanish, French, Portuguese, Arabic, and Hindi — with replies that adapt to whichever language you use.</p>
+        <div class="icon">🎙️</div>
+        <h3>Audio Jesus</h3>
+        <p>Hear replies spoken back, warm and unhurried — talk freely with your mic, no need to type.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📻</div>
+        <h3>24/7 Praise &amp; Worship Radio</h3>
+        <p>K-LOVE and Air1, streaming right from the app — worship playing whenever you need it.</p>
+      </div>
+    </div>
+    <div class="see-all-row">
+      <button type="button" class="see-all-btn" id="see-all-toggle" onclick="var m=document.getElementById('more-features'),b=this;m.hidden=!m.hidden;b.textContent=m.hidden?'See all tools ↓':'Show fewer tools ↑';">See all tools ↓</button>
+    </div>
+  </div>
+</section>
+
+<section id="shop">
+  <div class="wrap">
+    <h2 class="section-title">Official merch</h2>
+    <p class="section-sub">Premium pieces, printed and shipped on demand. Gold and navy, no cheap blanks.</p>
+    <div class="shop-grid">
+      <div class="product" data-name="Heavyweight Hoodie" data-price="68">
+        <div class="product-art">🧥</div>
+        <h3>Heavyweight Hoodie</h3>
+        <div class="product-price">$68</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Premium Tee" data-price="30">
+        <div class="product-art">👕</div>
+        <h3>Premium Tee</h3>
+        <div class="product-price">$30</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Staff Polo" data-price="45">
+        <div class="product-art">🎽</div>
+        <h3>Staff Polo</h3>
+        <div class="product-price">$45</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Organic Canvas Tote" data-price="30">
+        <div class="product-art">👜</div>
+        <h3>Organic Canvas Tote</h3>
+        <div class="product-price">$30</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Sherpa Blanket" data-price="73">
+        <div class="product-art">🧣</div>
+        <h3>Sherpa Blanket</h3>
+        <div class="product-price">$73</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Ceramic Mug" data-price="23">
+        <div class="product-art">☕</div>
+        <h3>Ceramic Mug</h3>
+        <div class="product-price">$23</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Leather Bookmark" data-price="13">
+        <div class="product-art">🔖</div>
+        <h3>Leather Bookmark</h3>
+        <div class="product-price">$13</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
+      </div>
+      <div class="product" data-name="Embroidered Cap" data-price="38">
+        <div class="product-art">🧢</div>
+        <h3>Embroidered Cap</h3>
+        <div class="product-price">$38</div>
+        <button type="button" class="btn btn-outline add-to-cart">Add to cart</button>
       </div>
     </div>
   </div>
 </section>
+
+<button type="button" class="cart-fab" id="cart-fab" onclick="document.getElementById('cart-panel').classList.toggle('open')">
+  🛍️ <span class="cart-count" id="cart-count">0</span>
+</button>
+<div class="cart-panel" id="cart-panel">
+  <h4>Your cart</h4>
+  <div id="cart-items" class="cart-items"><p class="cart-empty">Nothing added yet.</p></div>
+  <p class="cart-note">Preview only — checkout opens when the shop goes live.</p>
+</div>
 
 <section class="alt" id="pricing">
   <div class="wrap">
@@ -251,18 +403,18 @@
     <p class="section-sub">Start free, forever. Upgrade any time — cancel any time.</p>
     <div class="plans">
       <div class="plan">
-        <h3>Free</h3>
+        <h3>Free trial</h3>
         <div class="price">$0</div>
         <ul>
-          <li>5 questions a day</li>
-          <li>Daily verse</li>
+          <li>5 questions, one time</li>
+          <li>Then choose a plan to keep going</li>
         </ul>
       </div>
       <div class="plan">
         <h3>Basic</h3>
-        <div class="price">$4.99<small>/mo</small></div>
+        <div class="price">$5.99<small>/mo</small></div>
         <ul>
-          <li>50 questions a day</li>
+          <li>20 questions a day</li>
           <li>Saved conversation history</li>
         </ul>
       </div>
@@ -271,10 +423,10 @@
         <h3>Pro</h3>
         <div class="price">$9.99<small>/mo</small></div>
         <ul>
-          <li>300 questions a day</li>
+          <li>50 questions a day</li>
           <li>Priority responses</li>
           <li>Saved conversations across devices</li>
-          <li>Bonus: sermon writer for pastors</li>
+          <li>Bonus: Sermon &amp; Bible Study Writer</li>
         </ul>
       </div>
       <div class="plan">
@@ -285,8 +437,9 @@
           <li>Everything in Pro</li>
           <li>Unlimited questions</li>
           <li>Highest priority responses</li>
-          <li>Advanced sermon writer</li>
-          <li>Early access to new features</li>
+          <li>Advanced sermon writer (longer, more detailed)</li>
+          <li>Audio Jesus reads the Read-Aloud Catalog aloud</li>
+          <li>Exclusive features &amp; early access</li>
         </ul>
       </div>
     </div>
@@ -310,26 +463,59 @@
   <div class="wrap">
     <div class="col">
       <h4>Jesus Interactive</h4>
-      <p>An AI companion app by Jesus & Me, Inc.</p>
     </div>
     <div class="col">
       <h4>Company</h4>
       <a href="#features">Features</a>
+      <a href="#shop">Shop</a>
       <a href="#pricing">Pricing</a>
       <a href="#disclosure">AI Disclosure</a>
     </div>
     <div class="col">
       <h4>Legal</h4>
-      <a href="mailto:support@jesusinteractive.com">Privacy Policy</a>
-      <a href="mailto:support@jesusinteractive.com">Terms of Service</a>
+      <a href="https://api.jesusinteractive.com/privacy">Privacy Policy</a>
+      <a href="https://api.jesusinteractive.com/terms">Terms of Service</a>
     </div>
     <div class="col">
       <h4>Contact</h4>
       <a href="mailto:support@jesusinteractive.com">support@jesusinteractive.com</a>
     </div>
   </div>
-  <p class="bottom">© 2026 Jesus & Me, Inc. Jesus Interactive is a fictionalized AI portrayal and is not affiliated with any church or denomination.</p>
+  <p class="bottom">© 2026 Jesus Interactive. Jesus Interactive is a fictionalized AI portrayal and is not affiliated with any church or denomination.</p>
 </footer>
 
+<script>
+(function () {
+  var cart = [];
+  var countEl = document.getElementById('cart-count');
+  var itemsEl = document.getElementById('cart-items');
+
+  function render() {
+    var total = cart.reduce(function (n, i) { return n + i.qty; }, 0);
+    countEl.textContent = total;
+    if (!cart.length) {
+      itemsEl.innerHTML = '<p class="cart-empty">Nothing added yet.</p>';
+      return;
+    }
+    itemsEl.innerHTML = cart.map(function (i) {
+      return '<div class="cart-row"><span>' + i.qty + '× ' + i.name + '</span><span>$' + (i.price * i.qty) + '</span></div>';
+    }).join('');
+  }
+
+  document.querySelectorAll('.add-to-cart').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var card = btn.closest('.product');
+      var name = card.getAttribute('data-name');
+      var price = Number(card.getAttribute('data-price'));
+      var existing = cart.find(function (i) { return i.name === name; });
+      if (existing) { existing.qty += 1; } else { cart.push({ name: name, price: price, qty: 1 }); }
+      render();
+      document.getElementById('cart-panel').classList.add('open');
+    });
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>
