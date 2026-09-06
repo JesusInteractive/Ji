@@ -94,6 +94,10 @@ export default function MainTabs() {
         tabBarActiveTintColor: Colors.gold,
         tabBarInactiveTintColor: Colors.gold,
         tabBarStyle: { backgroundColor: Colors.royal, borderTopColor: Colors.royalLight },
+        // Icons stay gold (tint color above); labels use the same ivory
+        // used everywhere else in the app (card labels, etc.) instead of
+        // inheriting that same gold tint.
+        tabBarLabelStyle: { color: Colors.ivory },
         tabBarIcon: ({ color, size }) =>
           route.name === 'PrayerWall' ? (
             <MaterialCommunityIcons name="hands-pray" size={size} color={color} />
