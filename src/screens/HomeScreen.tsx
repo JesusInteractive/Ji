@@ -378,7 +378,6 @@ export default function HomeScreen() {
           <Ionicons name="heart-outline" size={16} color={Colors.gold} />
           <View style={{ flex: 1 }}>
             <Text style={styles.aboutCardTitle}>{APPROVED_CHARITIES_TITLE}</Text>
-            <Text style={styles.aboutCardSubtitle}>{APPROVED_CHARITIES_SUBTITLE}</Text>
             <View style={styles.charityChipRow}>
               {['Gospel', 'Life', 'Children', 'Rescue', 'Animals'].map((label) => (
                 <View key={label} style={styles.charityChip}>
@@ -564,7 +563,7 @@ const styles = StyleSheet.create({
   },
   aboutCardSubtitle: {
     fontSize: 11,
-    color: Colors.muted,
+    color: Colors.gold,
     marginTop: 2,
   },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
