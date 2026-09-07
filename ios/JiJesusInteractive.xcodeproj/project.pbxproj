@@ -379,7 +379,7 @@
 				CODE_SIGN_ENTITLEMENTS = JiJesusInteractive/JiJesusInteractive.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FRWQGD95HY;
 				ENABLE_BITCODE = NO;
@@ -422,7 +422,7 @@
 				CODE_SIGN_ENTITLEMENTS = JiJesusInteractive/JiJesusInteractive.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = FRWQGD95HY;
 				INFOPLIST_FILE = JiJesusInteractive/Info.plist;
