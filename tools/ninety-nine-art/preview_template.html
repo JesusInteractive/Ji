@@ -1,0 +1,634 @@
+<meta charset="utf-8">
+<title>99 and the One Proofs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Alegreya+Sans:wght@400;500;700;800&display=swap">
+<style>
+  [hidden] { display: none !important; }
+  /* Single-theme on purpose: paintings read best on a dark gallery wall. */
+  :root {
+    color-scheme: dark;
+    --wall: #15110d;
+    --wall-raised: #221b14;
+    --seam: #3a2f22;
+    --gilt: #c9a227;
+    --gilt-bright: #e6c457;
+    --parchment: #efe6d2;
+    --muted: #a99d88;
+    --display: 'IM Fell English SC', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --display-italic: 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --ui: 'Alegreya Sans', 'Gill Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+  html, body { background: var(--wall); color: var(--parchment); }
+  body { font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--gilt-bright); outline-offset: 2px; }
+
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 22px 20px 56px; display: grid; gap: 16px; }
+
+  .masthead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 28px; }
+  .kicker { margin: 0 0 6px; font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5vw, 52px); line-height: .95; text-wrap: balance; }
+  h1 .num { color: var(--gilt); }
+  .lede { margin: 10px 0 0; max-width: 64ch; color: var(--muted); font-size: 14.5px; }
+
+  .tally { display: grid; justify-items: end; gap: 2px; font-variant-numeric: tabular-nums; }
+  .tally-line { display: flex; align-items: baseline; gap: 8px; }
+  .tally-num { font-family: var(--ui); font-weight: 800; font-size: 44px; line-height: 1; color: var(--gilt-bright); min-width: 2ch; text-align: right; }
+  .tally-of { font-size: 15px; color: var(--muted); }
+  .tally-label { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  @media (max-width: 860px) { .tally { justify-items: start; } .tally-num { text-align: left; } }
+
+  .scenes { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+  .scene-tab {
+    flex: 0 0 auto; display: grid; gap: 1px; text-align: left; cursor: pointer;
+    padding: 9px 16px 10px; background: var(--wall-raised); border: 1px solid var(--seam); border-radius: 3px;
+  }
+  .scene-tab .t { font-family: var(--display-italic); font-style: italic; font-size: 17px; line-height: 1.2; }
+  .scene-tab .r { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+  .scene-tab[aria-pressed="true"] { border-color: var(--gilt); box-shadow: inset 0 -3px 0 var(--gilt); }
+
+  .controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+  .group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .btn {
+    cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 14px; font-weight: 700;
+    background: var(--wall-raised); border: 1px solid var(--seam);
+  }
+  .btn:hover { border-color: var(--gilt); }
+  .btn[aria-pressed="true"] { background: var(--gilt); border-color: var(--gilt); color: #1a1206; }
+  .zoom-label { min-width: 3ch; text-align: center; font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 700; }
+
+  .status { margin: 0; min-height: 1.5em; font-size: 14.5px; color: var(--parchment); }
+  .status.seeking { color: var(--gilt-bright); font-family: var(--display-italic); font-style: italic; font-size: 17px; }
+
+  /* The one flourish: a burnished gilt frame around the painting. */
+  .frame {
+    padding: 12px; border-radius: 2px;
+    background: linear-gradient(135deg, #f0d77a 0%, #9a7418 22%, #e2bd45 48%, #7a5a10 74%, #d8b24a 100%);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(255, 240, 190, .35);
+  }
+  .viewport {
+    position: relative; overflow: auto; max-height: 78vh; min-height: 240px; background: #000;
+    box-shadow: inset 0 0 0 3px #5a4210;
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+  canvas { display: block; width: 100%; height: auto; }
+  .loading {
+    position: absolute; inset: 0; display: grid; place-items: center; margin: 0;
+    font-family: var(--display-italic); font-style: italic; font-size: 20px; color: var(--muted);
+  }
+
+  .placard {
+    justify-self: end; display: grid; gap: 2px; min-width: min(100%, 340px);
+    padding: 10px 16px; background: var(--wall-raised); border: 1px solid var(--seam); border-radius: 2px;
+  }
+  .placard .t { font-family: var(--display-italic); font-style: italic; font-size: 19px; }
+  .placard .meta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  /* On touch screens there is no pointer, so the Shepherd appears above the finger. */
+  .touch-shepherd {
+    position: fixed; left: 0; top: 0; z-index: 40; height: 132px; width: auto; pointer-events: none;
+    transform: translate(-50%, calc(-100% - 22px)); opacity: 0; transition: opacity .25s ease-out;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .6));
+  }
+  .touch-shepherd.shown { opacity: 1; transition-duration: .08s; }
+
+  /* Found / missed feedback: one soft flash of light, never an outline. */
+  .glow {
+    position: fixed; z-index: 39; width: 72px; height: 72px; margin: -36px 0 0 -36px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255, 240, 185, .95) 0%, rgba(230, 196, 87, .55) 32%, rgba(230, 196, 87, 0) 70%);
+    animation: glow .75s ease-out forwards;
+  }
+  .glow.miss {
+    width: 26px; height: 26px; margin: -13px 0 0 -13px; animation-duration: .4s;
+    background: radial-gradient(circle, rgba(239, 230, 210, .4) 0%, rgba(239, 230, 210, 0) 70%);
+  }
+  @keyframes glow { from { transform: scale(.3); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
+
+  .finale { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: rgba(10, 8, 5, .78); }
+  .finale-card {
+    max-width: 560px; padding: 28px 30px 26px; display: grid; gap: 14px; border-radius: 3px;
+    background: linear-gradient(180deg, #2a2118, #1b150f); border: 1px solid var(--gilt);
+    box-shadow: 0 0 0 6px rgba(201, 162, 39, .15), 0 30px 80px rgba(0, 0, 0, .7);
+  }
+  .finale-card h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 30px; color: var(--gilt-bright); text-wrap: balance; }
+  .finale-card blockquote { margin: 0; font-family: var(--display-italic); font-size: 19px; line-height: 1.45; }
+  .finale-card cite { font-style: normal; font-size: 13px; color: var(--muted); letter-spacing: .06em; }
+  .finale-card .btn { justify-self: start; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .touch-shepherd { transition: none; }
+    .glow { animation-duration: .01s; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <p class="kicker">Jesus Interactive Games Hub · Art proof, round two</p>
+      <h1><span class="num">99</span> and the One</h1>
+      <p class="lede">The Garden of Eden, the temple and the manger at full resolution, each hiding a flock of one hundred. Your pointer is the Shepherd: move him across the painting and click a sheep to bring it home. Find the ninety-nine, then go after the one that was lost.</p>
+    </div>
+    <div class="tally">
+      <span class="tally-label" id="tallyLabel">Found</span>
+      <div class="tally-line"><span class="tally-num" id="count">0</span><span class="tally-of" id="countOf">of 99</span></div>
+    </div>
+  </header>
+
+  <nav class="scenes" id="sceneTabs" aria-label="Test scenes"></nav>
+
+  <div class="controls">
+    <div class="group" role="group" aria-label="Difficulty" id="tiers"></div>
+    <div class="group">
+      <button class="btn" id="sound" aria-pressed="true">Sound on</button>
+      <button class="btn" id="zoomOut" aria-label="Zoom out">−</button>
+      <span class="zoom-label" id="zoomLabel">1×</span>
+      <button class="btn" id="zoomIn" aria-label="Zoom in">+</button>
+      <button class="btn" id="rehide">Re-hide the flock</button>
+    </div>
+  </div>
+
+  <p class="status" id="status" aria-live="polite"></p>
+
+  <div class="frame">
+    <div class="viewport" id="viewport">
+      <canvas id="canvas" aria-label="Painted scene with one hundred hidden sheep"></canvas>
+      <p class="loading" id="loading">Unrolling the canvas…</p>
+    </div>
+  </div>
+
+  <div class="placard">
+    <span class="t" id="placardTitle"></span>
+    <span class="meta" id="placardMeta"></span>
+  </div>
+</div>
+
+<img class="touch-shepherd" id="touchShepherd" alt="">
+
+<div class="finale" id="finale" hidden>
+  <div class="finale-card" role="dialog" aria-modal="true" aria-labelledby="finaleTitle">
+    <h2 id="finaleTitle">The one that was lost is found</h2>
+    <blockquote>“Which of you men, if you had one hundred sheep and lost one of them, wouldn’t leave the ninety-nine in the wilderness and go after the one that was lost, until he found it? When he has found it, he carries it on his shoulders, rejoicing. When he comes home, he calls together his friends and his neighbors, saying to them, ‘Rejoice with me, for I have found my sheep which was lost!’”</blockquote>
+    <cite>Luke 15:4–6 · World English Bible</cite>
+    <button class="btn" id="again" aria-pressed="true">Hunt again</button>
+  </div>
+</div>
+
+<script>
+const DATA = __DATA__;
+
+// size: sheep length as a fraction of painting width in the foreground.
+// blend: how far a sheep is relit toward the paint around it. grain: how
+// strongly the painting's brushstrokes are laid over it. behindShare: share
+// of the flock hidden behind objects or down in strands. cover: allowed
+// fraction of a sheep covered by the foreground. `one` = the lost lamb.
+const TIERS = {
+  beginner:     { label: 'Beginner',     size: [0.050, 0.064], blend: 0.55, grain: 0.35, alpha: 1,    behindShare: 0.5,  cover: [0.08, 0.35], one: { size: 0.05,  blend: 0.7,  grain: 0.45, alpha: 1,    cover: [0.25, 0.45] } },
+  intermediate: { label: 'Intermediate', size: [0.036, 0.048], blend: 0.78, grain: 0.55, alpha: 1,    behindShare: 0.8,  cover: [0.18, 0.5],  one: { size: 0.036, blend: 0.9,  grain: 0.65, alpha: 0.8,  cover: [0.4, 0.6] } },
+  hard:         { label: 'Hard',         size: [0.026, 0.036], blend: 0.92, grain: 0.7,  alpha: 0.96, behindShare: 0.92, cover: [0.28, 0.62], one: { size: 0.026, blend: 1,    grain: 0.8,  alpha: 0.45, cover: [0.55, 0.75] } },
+};
+const TIER_HINTS = {
+  beginner: 'Beginner: larger sheep, lightly blended, mostly out in the open.',
+  intermediate: 'Intermediate: smaller sheep, relit to the paint, many tucked behind things.',
+  hard: 'Hard: tiny sheep, fully blended and mostly hidden. The last lamb is nearly invisible.',
+};
+const REGULAR = 99; // plus the one that was lost = 100 sheep in every painting
+const MASK_SCALE = 4;
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const newSeed = () => Math.floor(Math.random() * 99999) + 1;
+const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('canvas'), ctx = canvas.getContext('2d'), viewport = $('viewport'), touchShepherd = $('touchShepherd');
+ctx.imageSmoothingQuality = 'high';
+const loadImage = (src) => new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src; });
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const loaded = new Map();
+const state = { scene: 0, tier: 'intermediate', seed: newSeed(), zoom: 1, flock: [], found: new Set(), phase: 'flock' };
+
+// ---------- Sound: soft footsteps while the Shepherd moves, a lamb's bleat on a find ----------
+const sound = { ctx: null, on: true, noise: null, lastStep: 0, travel: 0, lastX: null, lastY: null, foot: 0 };
+function audio() {
+  if (!sound.on) return null;
+  if (!sound.ctx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return null;
+    sound.ctx = new AudioCtx();
+    const length = Math.floor(sound.ctx.sampleRate * 0.25);
+    sound.noise = sound.ctx.createBuffer(1, length, sound.ctx.sampleRate);
+    const samples = sound.noise.getChannelData(0);
+    for (let i = 0; i < length; i++) samples[i] = Math.random() * 2 - 1;
+  }
+  if (sound.ctx.state === 'suspended') sound.ctx.resume();
+  return sound.ctx;
+}
+function footstep() {
+  const ac = sound.ctx;
+  if (!sound.on || !ac || ac.state !== 'running') return; // browsers allow audio only after the first click
+  const t = ac.currentTime;
+  const source = ac.createBufferSource();
+  source.buffer = sound.noise;
+  source.playbackRate.value = 0.75 + Math.random() * 0.3;
+  const muffle = ac.createBiquadFilter();
+  muffle.type = 'lowpass'; muffle.frequency.value = 420 + Math.random() * 160;
+  const level = ac.createGain();
+  level.gain.setValueAtTime(0.0001, t);
+  level.gain.exponentialRampToValueAtTime(0.28, t + 0.012);
+  level.gain.exponentialRampToValueAtTime(0.0001, t + 0.17);
+  source.connect(muffle).connect(level);
+  if (ac.createStereoPanner) {
+    const pan = ac.createStereoPanner();
+    pan.pan.value = (sound.foot ^= 1) ? -0.2 : 0.2; // left, right, left...
+    level.connect(pan).connect(ac.destination);
+  } else {
+    level.connect(ac.destination);
+  }
+  source.start(t); source.stop(t + 0.2);
+}
+function stepWith(x, y) {
+  if (sound.lastX !== null) sound.travel += Math.hypot(x - sound.lastX, y - sound.lastY);
+  sound.lastX = x; sound.lastY = y;
+  const now = performance.now();
+  if (sound.travel > 55 && now - sound.lastStep > 270) { sound.travel = 0; sound.lastStep = now; footstep(); }
+}
+function bleat() {
+  const ac = audio();
+  if (!ac) return;
+  const t = ac.currentTime + 0.02, duration = 0.62;
+  const voice = ac.createOscillator();
+  voice.type = 'sawtooth';
+  voice.frequency.setValueAtTime(560, t);
+  voice.frequency.linearRampToValueAtTime(610, t + 0.12);
+  voice.frequency.exponentialRampToValueAtTime(430, t + duration);
+  const flutter = ac.createOscillator(); // the quaver that makes it a bleat
+  flutter.frequency.value = 26;
+  const flutterDepth = ac.createGain(); flutterDepth.gain.value = 0.45;
+  const tremolo = ac.createGain(); tremolo.gain.value = 0.55;
+  flutter.connect(flutterDepth).connect(tremolo.gain);
+  const low = ac.createBiquadFilter(); low.type = 'bandpass'; low.frequency.value = 950; low.Q.value = 4;
+  const high = ac.createBiquadFilter(); high.type = 'bandpass'; high.frequency.value = 2300; high.Q.value = 6;
+  const envelope = ac.createGain();
+  envelope.gain.setValueAtTime(0.0001, t);
+  envelope.gain.exponentialRampToValueAtTime(0.7, t + 0.05);
+  envelope.gain.setValueAtTime(0.7, t + duration - 0.18);
+  envelope.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+  voice.connect(tremolo);
+  tremolo.connect(low); tremolo.connect(high);
+  low.connect(envelope); high.connect(envelope);
+  envelope.connect(ac.destination);
+  voice.start(t); flutter.start(t);
+  voice.stop(t + duration + 0.05); flutter.stop(t + duration + 0.05);
+}
+
+// ---------- Loading a scene ----------
+async function loadScene(index) {
+  if (loaded.has(index)) return loaded.get(index);
+  const scene = DATA.scenes[index], meta = scene.meta;
+  const [img, front, grain, ...sheepImgs] = await Promise.all([
+    loadImage(scene.img), loadImage(scene.front), loadImage(scene.grain), ...meta.sheep.map((s) => loadImage(s.src)),
+  ]);
+  // Low-res alpha of the foreground layer: where a sheep would be covered.
+  const mw = Math.ceil(meta.width / MASK_SCALE), mh = Math.ceil(meta.height / MASK_SCALE);
+  const mc = document.createElement('canvas'); mc.width = mw; mc.height = mh;
+  const mctx = mc.getContext('2d', { willReadFrequently: true });
+  mctx.drawImage(front, 0, 0, mw, mh);
+  const md = mctx.getImageData(0, 0, mw, mh).data;
+  const mask = new Float32Array(mw * mh);
+  for (let k = 0; k < mask.length; k++) mask[k] = md[k * 4 + 3] / 255;
+  const sprites = sheepImgs.map((im) => {
+    const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height).data;
+    const alpha = new Uint8ClampedArray(c.width * c.height);
+    let r = 0, gg = 0, b = 0, n = 0;
+    for (let p = 0; p < alpha.length; p++) {
+      alpha[p] = d[p * 4 + 3];
+      if (alpha[p] > 200) { r += d[p * 4]; gg += d[p * 4 + 1]; b += d[p * 4 + 2]; n++; }
+    }
+    return { img: im, w: c.width, h: c.height, alpha, mean: [r / n, gg / n, b / n] };
+  });
+  const entry = { img, front, grain, sprites, mask, mw, mh, light: meta.colors.map(hexToRgb) };
+  loaded.set(index, entry);
+  return entry;
+}
+
+function lightAt(meta, entry, x, y) {
+  const { cols, rows, width: W, height: H } = meta;
+  const gx = Math.min(cols - 1.001, Math.max(0, (x / W) * cols - 0.5));
+  const gy = Math.min(rows - 1.001, Math.max(0, (y / H) * rows - 0.5));
+  const x0 = Math.floor(gx), y0 = Math.floor(gy), fx = gx - x0, fy = gy - y0;
+  const c = (cx, cy) => entry.light[cy * cols + cx];
+  const a = c(x0, y0), b = c(x0 + 1, y0), d = c(x0, y0 + 1), e = c(x0 + 1, y0 + 1);
+  return [0, 1, 2].map((k) => (a[k] * (1 - fx) + b[k] * fx) * (1 - fy) + (d[k] * (1 - fx) + e[k] * fx) * fy);
+}
+
+function coverage(entry, left, top, w, h) {
+  const { mask, mw, mh } = entry;
+  const x0 = Math.max(0, Math.floor((left + w * 0.15) / MASK_SCALE)), x1 = Math.min(mw - 1, Math.floor((left + w * 0.85) / MASK_SCALE));
+  const y0 = Math.max(0, Math.floor((top + h * 0.12) / MASK_SCALE)), y1 = Math.min(mh - 1, Math.floor((top + h * 0.95) / MASK_SCALE));
+  let sum = 0, n = 0;
+  for (let yy = y0; yy <= y1; yy++) for (let xx = x0; xx <= x1; xx++) { sum += mask[yy * mw + xx]; n++; }
+  return n ? sum / n : 0;
+}
+
+// ---------- Hiding the flock: 99 + the one, anchored at their feet ----------
+function hideFlock(index, tier, seed) {
+  const meta = DATA.scenes[index].meta, entry = loaded.get(index);
+  const zones = meta.zones.filter((z) => !z.sky); // sheep stand on the ground, never in the sky
+  const hideouts = [...meta.objects, ...meta.strands];
+  const rnd = mulberry32(seed), W = meta.width, H = meta.height;
+  const depth = (y) => 0.5 + 0.6 * Math.min(1, Math.max(0, (y / H - meta.horizon) / (1 - meta.horizon)));
+  const perSpot = new Map();
+  const flock = [];
+  for (let i = 0; i <= REGULAR; i++) {
+    const one = i === REGULAR;
+    const t = one ? { ...tier, ...tier.one } : tier;
+    const sizeFrac = one ? tier.one.size : tier.size[0] + rnd() * (tier.size[1] - tier.size[0]);
+    const spriteIndex = Math.floor(rnd() * entry.sprites.length), sprite = entry.sprites[spriteIndex];
+    let spot = null;
+    for (let attempt = 0; attempt < 160 && !spot; attempt++) {
+      const relaxed = attempt > 110;
+      const behind = one || rnd() < tier.behindShare || !zones.length;
+      let x, y, source, sky = false, key = null;
+      if (behind && (meta.objects.length || meta.strands.length)) {
+        const useObject = meta.objects.length && (!meta.strands.length || rnd() < 0.6);
+        const list = useObject ? meta.objects : meta.strands;
+        const k = Math.floor(rnd() * list.length), r = list[k].rect;
+        key = (useObject ? 'o' : 's') + k;
+        if (!relaxed && (perSpot.get(key) || 0) >= (useObject ? 5 : 9)) continue;
+        x = (r[0] + rnd() * r[2]) * W;
+        y = (r[1] + (useObject ? 0.4 + rnd() * 0.62 : rnd()) * r[3]) * H;
+        source = useObject ? 'object' : 'strands';
+      } else if (zones.length) {
+        const z = zones[Math.floor(rnd() * zones.length)];
+        x = (z.rect[0] + rnd() * z.rect[2]) * W; y = (z.rect[1] + rnd() * z.rect[3]) * H;
+        sky = !!z.sky; source = 'zone';
+      } else continue;
+      const longSide = sizeFrac * W * (sky ? 0.7 : depth(y));
+      const k2 = longSide / Math.max(sprite.w, sprite.h), w = sprite.w * k2, h = sprite.h * k2;
+      const left = x - w / 2, top = y - h;
+      if (left < 4 || top < 4 || left + w > W - 4 || y > H - 3) continue;
+      const cov = coverage(entry, left, top, w, h);
+      const [cmin, cmax] = t.cover;
+      const minNeeded = relaxed || source === 'zone' ? 0 : source === 'strands' ? cmin * 0.5 : cmin;
+      if (cov < minNeeded || cov > cmax) continue;
+      if (flock.some((s) => Math.hypot(s.cx - x, s.cy - (y - h / 2)) < (Math.max(s.w, s.h) + Math.max(w, h)) * 0.42)) continue;
+      spot = { x, y, w, h, cx: x, cy: y - h / 2, sky, key };
+    }
+    if (!spot) {
+      const r = hideouts[Math.floor(rnd() * hideouts.length)].rect;
+      const x = (r[0] + (0.2 + rnd() * 0.6) * r[2]) * W, y = (r[1] + (0.75 + rnd() * 0.25) * r[3]) * H;
+      const longSide = sizeFrac * W * depth(y), k2 = longSide / Math.max(sprite.w, sprite.h);
+      const w = sprite.w * k2, h = sprite.h * k2;
+      spot = { x, y, w, h, cx: x, cy: y - h / 2, sky: false, key: null };
+    }
+    if (spot.key) perSpot.set(spot.key, (perSpot.get(spot.key) || 0) + 1);
+    flock.push({
+      id: i, one, sprite: spriteIndex, ...spot,
+      flip: rnd() < 0.5,
+      rot: ((rnd() * 2 - 1) * (spot.sky ? 8 : 3) * Math.PI) / 180,
+      light: lightAt(meta, entry, spot.cx, spot.cy),
+      blend: t.blend, grain: t.grain, alpha: t.alpha,
+    });
+  }
+  return flock;
+}
+
+// ---------- Drawing: relit, grain-matched sheep with the foreground back over them ----------
+function sheepCanvas(sheep, entry) {
+  if (sheep.cache) return sheep.cache;
+  const sprite = entry.sprites[sheep.sprite];
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(sheep.w)); c.height = Math.max(1, Math.round(sheep.h));
+  const g = c.getContext('2d');
+  g.imageSmoothingQuality = 'high';
+  const drawSprite = () => {
+    g.save();
+    if (sheep.flip) { g.translate(c.width, 0); g.scale(-1, 1); }
+    g.drawImage(sprite.img, 0, 0, c.width, c.height);
+    g.restore();
+  };
+  drawSprite();
+  const tint = [0, 1, 2].map((k) => Math.round(255 * (1 - sheep.blend * (1 - Math.min(1, sheep.light[k] / Math.max(1, sprite.mean[k]))))));
+  g.globalCompositeOperation = 'multiply';
+  g.fillStyle = `rgb(${tint.join(',')})`;
+  g.fillRect(0, 0, c.width, c.height);
+  g.globalCompositeOperation = 'overlay';
+  g.globalAlpha = sheep.grain;
+  g.drawImage(entry.grain, (sheep.x - sheep.w / 2) / 2, (sheep.y - sheep.h) / 2, sheep.w / 2, sheep.h / 2, 0, 0, c.width, c.height);
+  g.globalAlpha = 1;
+  g.globalCompositeOperation = 'destination-in';
+  drawSprite();
+  sheep.cache = c;
+  return c;
+}
+
+function contactShadow(sheep) {
+  if (sheep.sky) return;
+  const rx = sheep.w * 0.42, ry = Math.max(3, sheep.h * 0.1);
+  const [r, g, b] = sheep.light.map((v) => Math.round(v * 0.35));
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.translate(sheep.x, sheep.y - ry * 0.3);
+  ctx.scale(1, ry / rx);
+  const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, rx);
+  gradient.addColorStop(0, `rgba(${r},${g},${b},0.55)`);
+  gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  ctx.fillStyle = gradient;
+  ctx.beginPath(); ctx.arc(0, 0, rx, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function render() {
+  const entry = loaded.get(state.scene);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.drawImage(entry.img, 0, 0);
+  for (const sheep of state.flock) {
+    if (state.found.has(sheep.id) || (sheep.one && state.phase === 'flock')) continue;
+    contactShadow(sheep);
+    ctx.save();
+    ctx.globalAlpha = sheep.alpha;
+    ctx.translate(sheep.x, sheep.y); ctx.rotate(sheep.rot);
+    ctx.drawImage(sheepCanvas(sheep, entry), -sheep.w / 2, -sheep.h);
+    ctx.restore();
+  }
+  ctx.drawImage(entry.front, 0, 0); // foreground back over the flock
+}
+
+function updateUi(message) {
+  const scene = DATA.scenes[state.scene];
+  $('count').textContent = state.found.size;
+  $('countOf').textContent = 'of 100';
+  $('tallyLabel').textContent = state.phase === 'home' ? 'All home' : 'Found';
+  const status = $('status');
+  status.classList.toggle('seeking', state.phase === 'searching');
+  status.textContent = state.phase === 'searching'
+    ? 'The ninety-nine are safe. The Shepherd leaves them to go after the one that was lost.'
+    : message || TIER_HINTS[state.tier];
+  document.querySelectorAll('.scene-tab').forEach((b, i) => b.setAttribute('aria-pressed', String(i === state.scene)));
+  document.querySelectorAll('#tiers .btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tier === state.tier)));
+  $('placardTitle').textContent = scene.title;
+  $('placardMeta').textContent = `${scene.reference} · 100 sheep · ${TIERS[state.tier].label} · ${scene.meta.width} × ${scene.meta.height} px · Hunt no. ${state.seed}`;
+}
+
+async function startHunt() {
+  const scene = DATA.scenes[state.scene];
+  $('loading').hidden = loaded.has(state.scene);
+  await loadScene(state.scene);
+  $('loading').hidden = true;
+  canvas.width = scene.meta.width; canvas.height = scene.meta.height;
+  state.flock = hideFlock(state.scene, TIERS[state.tier], state.seed);
+  state.found = new Set(); state.phase = 'flock';
+  $('finale').hidden = true;
+  render(); updateUi();
+}
+
+// ---------- Finding ----------
+function toScene(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  return { x: ((clientX - r.left) / r.width) * canvas.width, y: ((clientY - r.top) / r.height) * canvas.height, scale: canvas.width / r.width };
+}
+
+// True when scene point (px, py) lands on a part of this sheep that is actually showing.
+function visibleAt(sheep, entry, px, py) {
+  const dx = px - sheep.x, dy = py - sheep.y, cos = Math.cos(-sheep.rot), sin = Math.sin(-sheep.rot);
+  const lx = dx * cos - dy * sin + sheep.w / 2, ly = dx * sin + dy * cos + sheep.h;
+  if (lx < 0 || ly < 0 || lx >= sheep.w || ly >= sheep.h) return false;
+  const sprite = entry.sprites[sheep.sprite];
+  let sx = Math.floor((lx / sheep.w) * sprite.w);
+  if (sheep.flip) sx = sprite.w - 1 - sx;
+  const sy = Math.floor((ly / sheep.h) * sprite.h);
+  if (sprite.alpha[sy * sprite.w + sx] < 90) return false;
+  const covered = entry.mask[Math.floor(py / MASK_SCALE) * entry.mw + Math.floor(px / MASK_SCALE)] || 0;
+  return covered < 0.55;
+}
+
+function glow(clientX, clientY, hit) {
+  const el = document.createElement('div');
+  el.className = hit ? 'glow' : 'glow miss';
+  el.style.left = clientX + 'px'; el.style.top = clientY + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 800);
+}
+
+function tryFind(p, clientX, clientY) {
+  if (state.phase === 'home') return;
+  const entry = loaded.get(state.scene);
+  const r = Math.max(4, 9 * p.scale); // about 9 screen pixels of forgiveness
+  const probes = [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r], [r * 0.7, r * 0.7], [-r * 0.7, r * 0.7], [r * 0.7, -r * 0.7], [-r * 0.7, -r * 0.7]];
+  let best = null, bestDistance = Infinity;
+  for (const sheep of state.flock) {
+    if (state.found.has(sheep.id) || sheep.one !== (state.phase === 'searching')) continue;
+    if (p.x < sheep.x - sheep.w / 2 - r || p.x > sheep.x + sheep.w / 2 + r || p.y < sheep.y - sheep.h - r || p.y > sheep.y + r) continue;
+    if (!probes.some(([ox, oy]) => visibleAt(sheep, entry, p.x + ox, p.y + oy))) continue;
+    const d = Math.hypot(p.x - sheep.cx, p.y - sheep.cy);
+    if (d < bestDistance) { best = sheep; bestDistance = d; }
+  }
+  glow(clientX, clientY, !!best);
+  if (!best) return;
+  bleat();
+  state.found.add(best.id);
+  if (best.one) {
+    state.phase = 'home';
+    setTimeout(() => { $('finale').hidden = false; $('again').focus(); }, reducedMotion ? 0 : 700);
+  } else if (state.found.size === REGULAR) {
+    state.phase = 'searching';
+  }
+  render();
+  updateUi(best.one ? '' : `Found one. ${state.found.size} of 100 home.`);
+}
+
+// ---------- The Shepherd is the pointer ----------
+// Mouse: the Jesus image IS the system cursor (clicks land on the tip of his crook).
+// Touch: there is no pointer, so he appears above the finger and fades after the tap.
+viewport.style.cursor = `url("${DATA.cursor.src}") ${DATA.cursor.hotspot[0]} ${DATA.cursor.hotspot[1]}, pointer`;
+touchShepherd.src = DATA.cursor.touch;
+let touchFade = null;
+function showTouchShepherd(x, y) {
+  clearTimeout(touchFade);
+  touchShepherd.style.left = x + 'px'; touchShepherd.style.top = y + 'px';
+  touchShepherd.classList.add('shown');
+}
+function hideTouchShepherd(delay) {
+  clearTimeout(touchFade);
+  touchFade = setTimeout(() => touchShepherd.classList.remove('shown'), delay);
+}
+
+// Mouse drag pans a zoomed painting; a drag never counts as a click.
+let drag = null;
+viewport.addEventListener('pointerdown', (e) => {
+  audio(); // the first press unlocks sound in the browser
+  if (e.pointerType === 'mouse') drag = { x: e.clientX, y: e.clientY, left: viewport.scrollLeft, top: viewport.scrollTop, moved: false };
+  else { showTouchShepherd(e.clientX, e.clientY); sound.lastX = e.clientX; sound.lastY = e.clientY; }
+});
+viewport.addEventListener('pointermove', (e) => {
+  if (e.pointerType !== 'mouse' && !touchShepherd.classList.contains('shown')) return;
+  if (e.pointerType !== 'mouse') showTouchShepherd(e.clientX, e.clientY);
+  stepWith(e.clientX, e.clientY);
+});
+viewport.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') hideTouchShepherd(650); });
+viewport.addEventListener('pointercancel', () => hideTouchShepherd(0));
+viewport.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { sound.lastX = null; } });
+window.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
+  if (drag.moved) { viewport.scrollLeft = drag.left - dx; viewport.scrollTop = drag.top - dy; }
+});
+window.addEventListener('pointerup', () => setTimeout(() => { drag = null; }, 0));
+viewport.addEventListener('click', (e) => {
+  if (drag && drag.moved) return;
+  if (!loaded.has(state.scene)) return;
+  tryFind(toScene(e.clientX, e.clientY), e.clientX, e.clientY);
+});
+
+// ---------- Controls ----------
+function setZoom(z) {
+  const cx = (viewport.scrollLeft + viewport.clientWidth / 2) / viewport.scrollWidth;
+  const cy = (viewport.scrollTop + viewport.clientHeight / 2) / viewport.scrollHeight;
+  state.zoom = z;
+  canvas.style.width = z * 100 + '%';
+  $('zoomLabel').textContent = z + '×';
+  requestAnimationFrame(() => {
+    viewport.scrollLeft = cx * viewport.scrollWidth - viewport.clientWidth / 2;
+    viewport.scrollTop = cy * viewport.scrollHeight - viewport.clientHeight / 2;
+  });
+}
+$('zoomIn').onclick = () => setZoom(Math.min(4, state.zoom + 1));
+$('zoomOut').onclick = () => setZoom(Math.max(1, state.zoom - 1));
+$('rehide').onclick = () => { state.seed = newSeed(); startHunt(); };
+$('again').onclick = () => { state.seed = newSeed(); startHunt(); };
+$('sound').onclick = () => {
+  sound.on = !sound.on;
+  $('sound').setAttribute('aria-pressed', String(sound.on));
+  $('sound').textContent = sound.on ? 'Sound on' : 'Sound off';
+  if (sound.on) audio(); else if (sound.ctx) sound.ctx.suspend();
+};
+
+DATA.scenes.forEach((scene, i) => {
+  const b = document.createElement('button');
+  b.className = 'scene-tab';
+  b.innerHTML = '<span class="t"></span><span class="r"></span>';
+  b.querySelector('.t').textContent = scene.title;
+  b.querySelector('.r').textContent = scene.reference;
+  b.onclick = () => { state.scene = i; state.seed = newSeed(); startHunt(); };
+  $('sceneTabs').appendChild(b);
+});
+Object.entries(TIERS).forEach(([key, tier]) => {
+  const b = document.createElement('button');
+  b.className = 'btn'; b.dataset.tier = key; b.textContent = tier.label;
+  b.onclick = () => { state.tier = key; startHunt(); };
+  $('tiers').appendChild(b);
+});
+
+updateUi();
+startHunt();
+</script>

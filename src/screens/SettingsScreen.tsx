@@ -24,6 +24,12 @@ import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsHome'>;
 
+// The Approved Charities and Merch rows are hidden until those pages
+// exist: jesusinteractive.com/charities and /merch both returned 404 in
+// the September 2026 link audit, and the site's homepage links to
+// neither. Restore the two rows (with a Linking.openURL helper) once the
+// pages are live.
+
 export default function SettingsScreen({ navigation }: Props) {
   const { t, language, setLanguage } = useI18n();
   const {

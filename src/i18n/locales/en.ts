@@ -31,7 +31,7 @@ const en = {
   },
   agreement: {
     title: 'User Agreement & Indemnity',
-    checkbox: 'I have read and agree to the User Agreement, Privacy Policy, and Indemnity terms.',
+    checkbox: 'I have read and agree to the User Agreement and Indemnity terms.',
   },
   entrance: {
     verseReference: 'Matthew 7:7',
@@ -45,7 +45,7 @@ const en = {
     tokenSubtitle: 'Buy a gift certificate for someone who can’t afford a plan -- see Buy & Gift in Settings.',
   },
   home: {
-    title: 'Welcome Friend',
+    title: 'Welcome, friend',
     subtitle: 'Where would you like to go?',
   },
   tabs: {

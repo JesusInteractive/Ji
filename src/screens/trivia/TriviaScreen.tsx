@@ -1,6 +1,8 @@
-// Bible Trivia -- reached from a card on Home directly below Bible Word
-// Search (see HomeScreen.tsx), registered as its own root-level modal
-// ('Trivia' in RootNavigator.tsx, same pattern as WordSearch/JIRadio).
+// Bible Trivia -- one of the 9 games on the Jesus Interactive Games Hub
+// (GamesStack.tsx's 'GameTrivia' route). Previously its own paywalled
+// root-level modal reached from a Home card; moved into the free Games
+// Hub and the paywall gate removed accordingly (see GamesHubScreen.tsx's
+// own comment on why nothing in this hub is ever gated).
 //
 // One nav route, many internal views, switched by plain useState rather
 // than nested navigators -- this feature has no existing "one screen,
@@ -21,20 +23,18 @@
 // low-quality mass-translation, was the deliberate call here.
 import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StyleSheet, Text, View } from 'react-native';
 import type { GroupPlayer, GroupSession, TriviaMode, TriviaQuestion } from '../../types/trivia';
 import Colors from '../../theme/colors';
-import { useFeatureAccess } from '../../hooks/useFeatureAccess';
-import PaywallLockScreen from '../../components/PaywallLockScreen';
 import { logEvent } from '../../services/analytics';
-import type { RootStackParamList } from '../../navigation/RootNavigator';
+import { GAMES_CATALOG } from '../../data/gamesCatalog';
 import ModeSelectView from './ModeSelectView';
 import GroupSetupView from './GroupSetupView';
 import QuizView from './QuizView';
 import ScoreView from './ScoreView';
 import LeaderboardView from './LeaderboardView';
+
+const ACCENT = GAMES_CATALOG.find((g) => g.id === 'GameTrivia')!.color;
 
 type TriviaView = 'modeSelect' | 'groupSetup' | 'quiz' | 'score' | 'leaderboard';
 
@@ -52,8 +52,6 @@ export interface GroupResult {
 export type QuizResult = SoloResult | GroupResult;
 
 export default function TriviaScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { hasAccess } = useFeatureAccess();
   const [view, setView] = useState<TriviaView>('modeSelect');
   const [quizQuestions, setQuizQuestions] = useState<TriviaQuestion[]>([]);
   const [quizMode, setQuizMode] = useState<TriviaMode>('practice');
@@ -89,17 +87,15 @@ export default function TriviaScreen() {
   }, []);
 
   useEffect(() => {
-    if (hasAccess) logEvent('feature_used', { feature: 'trivia' });
-  }, [hasAccess]);
-
-  // Placed after every hook above (rules of hooks). A root-level modal
-  // registered directly on RootStack -- zero getParent() hops needed.
-  if (!hasAccess) {
-    return <PaywallLockScreen featureName="Bible Trivia" onSubscribe={() => navigation.navigate('Pricing')} />;
-  }
+    logEvent('feature_used', { feature: 'trivia' });
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom', 'left', 'right']}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Bible Trivia</Text>
+        <Text style={styles.headerSubtitle}>Test your knowledge of Scripture -- solo, daily, or with a group.</Text>
+      </View>
       {view === 'modeSelect' && (
         <ModeSelectView
           onStartPractice={(questions) => startSoloQuiz('practice', questions)}
@@ -134,4 +130,7 @@ export default function TriviaScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.ivory },
+  header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14, backgroundColor: ACCENT },
+  headerTitle: { fontSize: 20, fontWeight: '800', color: Colors.white },
+  headerSubtitle: { fontSize: 12, color: 'rgba(255,255,255,0.9)', marginTop: 6, lineHeight: 16 },
 });

@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
-import { PanResponder, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 import Colors from '../theme/colors';
 
 interface Props {
@@ -13,12 +15,8 @@ interface Props {
   onScrollTo: (offset: number) => void;
   // Fired the instant the thumb is grabbed/released -- every screen using
   // this wires these to its own ScrollView/FlatList's scrollEnabled prop
-  // (false while dragging). Responder-negotiation flags alone
-  // (onShouldBlockNativeResponder etc.) turned out not to reliably stop
-  // the native ScrollView underneath from ALSO recognizing the same
-  // touch as its own scroll gesture -- explicitly disabling it for the
-  // duration of the drag is the only fix that's actually deterministic
-  // rather than racing two gesture recognizers against each other.
+  // (false while dragging), so the native scroll underneath never fights
+  // the thumb drag for the same touch/gesture.
   onDragStart?: () => void;
   onDragEnd?: () => void;
   style?: StyleProp<ViewStyle>;
@@ -34,21 +32,18 @@ const THUMB_MIN_HEIGHT = 32;
 
 // A real draggable scrollbar (track + thumb), not just a jump-to-top/
 // bottom button -- lets someone drag straight to an arbitrary position
-// (e.g. the middle pricing tier) instead of only the two ends. Built on
-// PanResponder (built into React Native, no extra dependency) rather than
-// react-native-gesture-handler, since nothing else in this app pulls that
-// library in yet.
+// (e.g. the middle pricing tier) instead of only the two ends.
 //
-// The PanResponder is built exactly ONCE (useRef initializer), not
-// recreated on every render -- an earlier version rebuilt it every
-// render specifically to avoid stale closures, but since this
-// component's own screen re-renders on every scroll-position update
-// (60fps while dragging), that meant reconstructing the whole
-// PanResponder object every single frame, which read as the drag
-// sticking/catching up rather than following the finger smoothly. The
-// handlers below read maxScroll/trackRange/onScrollTo through refs
-// that are kept fresh on every render instead, so there's no stale-
-// closure problem without paying for per-frame recreation.
+// Built on react-native-gesture-handler's Gesture.Pan(), not the older
+// built-in PanResponder -- PanResponder is a JS-only touch responder and
+// was reported flaky specifically for a real laptop trackpad's
+// click-and-drag (Mac Catalyst's mouse-to-touch translation doesn't
+// reliably fire the same grant/move sequence a finger does). RNGH's
+// native gesture recognizers handle mouse/trackpad drag as a first-class
+// input, not a touch-event translation, and the app root
+// (src/AppRoot.tsx) already wraps everything in GestureHandlerRootView
+// (needed for React Navigation's own gestures), so this is a safe,
+// zero-new-setup swap.
 export default function DraggableScrollbar({
   contentHeight,
   viewportHeight,
@@ -68,6 +63,12 @@ export default function DraggableScrollbar({
   const trackRange = Math.max(viewportHeight - thumbHeight, 1);
   const thumbTop = canScroll ? trackRange * (Math.min(Math.max(scrollOffset, 0), maxScroll) / maxScroll) : 0;
 
+  // Read through refs (kept fresh every render) rather than closing over
+  // props directly -- Gesture.Pan()'s callbacks are set up once and reused
+  // across re-renders (same reasoning the old PanResponder version used:
+  // this component's own screen re-renders on every scroll-position
+  // update, up to 60fps while dragging, so nothing here should force a
+  // gesture object rebuild on every frame).
   const dragStartOffsetRef = useRef(0);
   const scrollOffsetRef = useRef(scrollOffset);
   const maxScrollRef = useRef(maxScroll);
@@ -84,88 +85,60 @@ export default function DraggableScrollbar({
   onDragStartRef.current = onDragStart;
   onDragEndRef.current = onDragEnd;
 
-  // Raw touch-move events can fire faster than the screen can actually
-  // redraw, especially on a FlatList (Scripture's book list and chapter
-  // view) where each imperative scrollToOffset also has to recompute
-  // which rows are virtualized/visible -- calling onScrollTo for every
-  // one of those raw events, faster than frames can render, is what
-  // reads as sticking rather than a fluid drag. Coalescing to at most
-  // one call per animation frame (dropping/superseding anything in
-  // between) keeps the drag following the finger without over-driving
-  // the underlying list.
-  const pendingDyRef = useRef(0);
-  const rafIdRef = useRef<number | null>(null);
-  const flushPendingMove = () => {
-    rafIdRef.current = null;
-    const deltaRatio = pendingDyRef.current / trackRangeRef.current;
+  const handleStart = () => {
+    if (!canScrollRef.current) return;
+    dragStartOffsetRef.current = scrollOffsetRef.current;
+    onDragStartRef.current?.();
+  };
+  const handleUpdate = (translationY: number) => {
+    if (!canScrollRef.current) return;
+    const deltaRatio = translationY / trackRangeRef.current;
     const newOffset = Math.min(
       Math.max(dragStartOffsetRef.current + deltaRatio * maxScrollRef.current, 0),
       maxScrollRef.current
     );
     onScrollToRef.current(newOffset);
   };
+  const handleEnd = () => {
+    onDragEndRef.current?.();
+  };
 
-  const panResponderRef = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => canScrollRef.current,
-      onMoveShouldSetPanResponder: () => canScrollRef.current,
-      // Grabbing the thumb also left the ScrollView sitting underneath it
-      // (a sibling, not a parent -- see this component's own top-of-file
-      // comment) free to recognize the same touch as its own native
-      // scroll gesture, so the drag fought between "move the thumb" and
-      // "scroll the content" at once -- reading as the whole page
-      // dragging along with the thumb. Tried onShouldBlockNativeResponder/
-      // onPanResponderTerminationRequest (the documented RN/iOS API for
-      // exactly this) first, but the native ScrollView still won the
-      // race in practice, ending up on the opposite failure instead: the
-      // thumb stopped responding at all. onDragStart/onDragEnd below,
-      // which every screen wires to its own ScrollView's scrollEnabled
-      // prop, is what actually fixes it deterministically -- there's
-      // nothing left to race once the native scroll is flatly disabled
-      // for the duration of the drag.
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: () => {
-        dragStartOffsetRef.current = scrollOffsetRef.current;
-        onDragStartRef.current?.();
-      },
-      onPanResponderMove: (_evt, gestureState) => {
-        pendingDyRef.current = gestureState.dy;
-        if (rafIdRef.current !== null) return;
-        rafIdRef.current = requestAnimationFrame(flushPendingMove);
-      },
-      onPanResponderRelease: () => {
-        if (rafIdRef.current !== null) {
-          cancelAnimationFrame(rafIdRef.current);
-          flushPendingMove();
-        }
-        onDragEndRef.current?.();
-      },
-      onPanResponderTerminate: () => {
-        if (rafIdRef.current !== null) {
-          cancelAnimationFrame(rafIdRef.current);
-          rafIdRef.current = null;
-        }
-        onDragEndRef.current?.();
-      },
-    })
-  );
+  const panGesture = useRef(
+    Gesture.Pan()
+      // onBegin, not onStart -- fires the instant a touch/click lands on
+      // the thumb, before any movement threshold is met. Disabling the
+      // underlying ScrollView (via onDragStart -> scrollEnabled=false on
+      // the screen) has to happen at THIS earliest possible moment, or
+      // there's a brief window where a touch here could still also be
+      // read as the start of the ScrollView's own native scroll --
+      // exactly the double-movement this callback exists to prevent.
+      .onBegin(() => {
+        runOnJS(handleStart)();
+      })
+      .onUpdate((e) => {
+        runOnJS(handleUpdate)(e.translationY);
+      })
+      .onEnd(() => {
+        runOnJS(handleEnd)();
+      })
+      .onFinalize(() => {
+        runOnJS(handleEnd)();
+      })
+      // Keeps this recognized as a drag even for tiny movements, and lets
+      // a mouse-drag (no real "finger" minimum distance) start instantly.
+      .minDistance(0)
+      .hitSlop({ top: 10, bottom: 10, left: 16, right: 16 })
+  ).current;
 
   if (!canScroll) return null;
 
   return (
     <View style={[styles.track, { height: viewportHeight }, style]} pointerEvents="box-none">
-      <View
-        {...panResponderRef.current.panHandlers}
-        // The thumb is only 5px wide visually (styles.thumb) -- deliberately
-        // thin so it doesn't look like a fat scrollbar, but that's a hard
-        // target to actually land a finger on. hitSlop extends the actual
-        // touch-responder area well past the visible bar without changing
-        // how it looks, the same way a small icon button gets a bigger tap
-        // target elsewhere in this app.
-        hitSlop={{ top: 10, bottom: 10, left: 16, right: 16 }}
-        style={[styles.thumb, { height: thumbHeight, top: thumbTop }, thumbColor ? { backgroundColor: thumbColor } : null]}
-      />
+      <GestureDetector gesture={panGesture}>
+        <View
+          style={[styles.thumb, { height: thumbHeight, top: thumbTop }, thumbColor ? { backgroundColor: thumbColor } : null]}
+        />
+      </GestureDetector>
     </View>
   );
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import StudyToolsScreen from '../screens/StudyToolsScreen';
@@ -25,7 +27,29 @@ const Stack = createNativeStackNavigator<StudyToolsStackParamList>();
 export default function StudyToolsStack() {
   return (
     <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade' }}>
-      <Stack.Screen name="StudyToolsHome" component={StudyToolsScreen} options={{ title: 'Study Tools' }} />
+      <Stack.Screen
+        name="StudyToolsHome"
+        component={StudyToolsScreen}
+        options={({ navigation }) => ({
+          title: 'Study Tools',
+          // First screen of this stack -- no auto back arrow, and this
+          // is also StudyTools' hidden-tab root, so "back" means leaving
+          // the tab entirely. Same explicit navigate('HomeTab') pattern
+          // as GamesHubScreen.tsx's own close button, for the same
+          // "first screen of a nested stack inside a hidden tab" reason.
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.getParent()?.navigate('HomeTab' as never)}
+              accessibilityRole="button"
+              accessibilityLabel="Back to Home"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ paddingHorizontal: 4 }}
+            >
+              <Ionicons name="chevron-back" size={26} color={Colors.royal} />
+            </TouchableOpacity>
+          ),
+        })}
+      />
       <Stack.Screen name="SermonWriter" component={SermonWriterScreen} options={{ title: 'Sermon Writer' }} />
       <Stack.Screen name="GlobalLibrary" component={GlobalLibraryScreen} options={{ title: 'Multi-Language Bible Tools' }} />
       <Stack.Screen

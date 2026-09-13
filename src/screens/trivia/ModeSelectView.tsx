@@ -5,6 +5,15 @@ import Colors from '../../theme/colors';
 import type { TriviaDifficulty, TriviaQuestion, TriviaTestament } from '../../types/trivia';
 import { fetchPracticeQuestions } from '../../services/triviaApi';
 import { getDailyChallenge, hasCompletedDailyChallengeToday } from '../../services/triviaDailyCache';
+import { GAMES_CATALOG } from '../../data/gamesCatalog';
+
+const ACCENT = GAMES_CATALOG.find((g) => g.id === 'GameTrivia')!.color;
+// Each mode gets its own color (reusing other tiles' hues from the hub
+// palette) -- a colorful, game-board-like feel of distinct "wedges"
+// rather than one flat accent repeated on every card.
+const PRACTICE_COLOR = ACCENT;
+const DAILY_COLOR = GAMES_CATALOG.find((g) => g.id === 'GameCrossword')!.color;
+const GROUP_COLOR = GAMES_CATALOG.find((g) => g.id === 'GameMemoryMatch')!.color;
 
 interface Props {
   onStartPractice: (questions: TriviaQuestion[]) => void;
@@ -70,12 +79,11 @@ export default function ModeSelectView({ onStartPractice, onStartDaily, onStartG
 
   return (
     <ScrollView contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Bible Trivia</Text>
-      <Text style={styles.subtitle}>Test your knowledge of Scripture -- solo, daily, or with a group.</Text>
-
-      <View style={styles.card}>
+      <View style={[styles.card, styles.cardPractice]}>
         <View style={styles.cardHeader}>
-          <Ionicons name="school-outline" size={20} color={Colors.gold} />
+          <View style={[styles.iconBadge, { backgroundColor: PRACTICE_COLOR }]}>
+            <Ionicons name="school-outline" size={18} color={Colors.white} />
+          </View>
           <Text style={styles.cardTitle}>Practice</Text>
         </View>
         <Text style={styles.cardSubtitle}>Pick your filters and play a round of ten questions.</Text>
@@ -84,7 +92,7 @@ export default function ModeSelectView({ onStartPractice, onStartDaily, onStartG
           {TESTAMENT_OPTIONS.map((opt) => (
             <TouchableOpacity
               key={opt.label}
-              style={[styles.chip, testament === opt.value && styles.chipActive]}
+              style={[styles.chip, testament === opt.value && { backgroundColor: PRACTICE_COLOR, borderColor: PRACTICE_COLOR }]}
               onPress={() => setTestament(opt.value)}
             >
               <Text style={[styles.chipText, testament === opt.value && styles.chipTextActive]}>{opt.label}</Text>
@@ -96,37 +104,41 @@ export default function ModeSelectView({ onStartPractice, onStartDaily, onStartG
           {DIFFICULTY_OPTIONS.map((opt) => (
             <TouchableOpacity
               key={opt.label}
-              style={[styles.chip, difficulty === opt.value && styles.chipActive]}
+              style={[styles.chip, difficulty === opt.value && { backgroundColor: PRACTICE_COLOR, borderColor: PRACTICE_COLOR }]}
               onPress={() => setDifficulty(opt.value)}
             >
               <Text style={[styles.chipText, difficulty === opt.value && styles.chipTextActive]}>{opt.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
-        <TouchableOpacity style={styles.primaryButton} onPress={startPractice} disabled={loadingPractice}>
-          {loadingPractice ? <ActivityIndicator color={Colors.royal} /> : <Text style={styles.primaryButtonText}>Start Practice</Text>}
+        <TouchableOpacity style={[styles.primaryButton, { backgroundColor: PRACTICE_COLOR }]} onPress={startPractice} disabled={loadingPractice}>
+          {loadingPractice ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.primaryButtonText}>Start Practice</Text>}
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.card} onPress={startDaily} disabled={loadingDaily} accessibilityRole="button">
+      <TouchableOpacity style={[styles.card, styles.cardDaily]} onPress={startDaily} disabled={loadingDaily} accessibilityRole="button">
         <View style={styles.cardHeader}>
-          <Ionicons name="calendar-outline" size={20} color={Colors.gold} />
+          <View style={[styles.iconBadge, { backgroundColor: DAILY_COLOR }]}>
+            <Ionicons name="calendar-outline" size={18} color={Colors.white} />
+          </View>
           <Text style={styles.cardTitle}>Daily Challenge</Text>
         </View>
         <Text style={styles.cardSubtitle}>The same ten questions for everyone today -- see how you rank.</Text>
-        {loadingDaily && <ActivityIndicator color={Colors.royal} style={{ marginTop: 8 }} />}
+        {loadingDaily && <ActivityIndicator color={DAILY_COLOR} style={{ marginTop: 8 }} />}
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.card} onPress={onStartGroupSetup} accessibilityRole="button">
+      <TouchableOpacity style={[styles.card, styles.cardGroup]} onPress={onStartGroupSetup} accessibilityRole="button">
         <View style={styles.cardHeader}>
-          <Ionicons name="people-outline" size={20} color={Colors.gold} />
+          <View style={[styles.iconBadge, { backgroundColor: GROUP_COLOR }]}>
+            <Ionicons name="people-outline" size={18} color={Colors.white} />
+          </View>
           <Text style={styles.cardTitle}>Group Play</Text>
         </View>
         <Text style={styles.cardSubtitle}>Pass the phone -- add players and take turns answering.</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.leaderboardLink} onPress={onViewLeaderboard} accessibilityRole="button">
-        <Ionicons name="trophy-outline" size={18} color={Colors.royal} />
+        <Ionicons name="trophy-outline" size={18} color={Colors.gold} />
         <Text style={styles.leaderboardLinkText}>View Leaderboard</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -135,33 +147,34 @@ export default function ModeSelectView({ onStartPractice, onStartDaily, onStartG
 
 const styles = StyleSheet.create({
   content: { padding: 20, paddingBottom: 40 },
-  title: { fontSize: 24, fontWeight: '800', color: Colors.royal, textAlign: 'center', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: Colors.ink, textAlign: 'center', marginBottom: 20, opacity: 0.75 },
   card: {
     backgroundColor: Colors.white,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(201,162,39,0.25)',
+    borderLeftWidth: 5,
+    borderColor: 'rgba(201,162,39,0.2)',
   },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
+  cardPractice: { borderLeftColor: PRACTICE_COLOR },
+  cardDaily: { borderLeftColor: DAILY_COLOR },
+  cardGroup: { borderLeftColor: GROUP_COLOR },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 6 },
+  iconBadge: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   cardTitle: { fontSize: 17, fontWeight: '700', color: Colors.royal },
   cardSubtitle: { fontSize: 13.5, color: Colors.ink, opacity: 0.7, marginBottom: 10 },
   filterLabel: { fontSize: 12, fontWeight: '700', color: Colors.ink, opacity: 0.6, marginTop: 8, marginBottom: 6, textTransform: 'uppercase' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: Colors.muted },
-  chipActive: { backgroundColor: Colors.royal, borderColor: Colors.royal },
   chipText: { fontSize: 12.5, color: Colors.ink },
-  chipTextActive: { color: Colors.ivory, fontWeight: '700' },
+  chipTextActive: { color: Colors.white, fontWeight: '700' },
   primaryButton: {
     marginTop: 14,
-    backgroundColor: Colors.gold,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
   },
-  primaryButtonText: { color: Colors.royal, fontWeight: '800', fontSize: 15 },
+  primaryButtonText: { color: Colors.white, fontWeight: '800', fontSize: 15 },
   leaderboardLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 8, padding: 10 },
   leaderboardLinkText: { color: Colors.royal, fontWeight: '700', fontSize: 14 },
 });

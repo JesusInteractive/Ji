@@ -13,7 +13,7 @@
 // licensing choice at the time (see git history), made moot now that
 // this app has its own worship radio channel.
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
@@ -48,7 +48,7 @@ export default function JIRadioScreen({ navigation }: Props) {
   // set via the admin route (see backend/db.js's own comment), so a
   // fresh/unconfigured backend always lands here. Drives the "Coming
   // Soon" banner below instead of exposing a play button that would
-  // just hit FALLBACK_STREAM_URL's placeholder radio.co id.
+  // have no stream to play.
   const [comingSoon, setComingSoon] = useState(true);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function JIRadioScreen({ navigation }: Props) {
   const nameToShow = isPlaying && playingStationName ? playingStationName : displayName;
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('../../assets/textures/parchment-navy.jpg')} style={styles.container} resizeMode="cover">
       <View style={styles.iconWrap}>
         <Ionicons name="radio" size={64} color={Colors.gold} />
       </View>
@@ -128,12 +128,12 @@ export default function JIRadioScreen({ navigation }: Props) {
           </View>
         </>
       )}
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.royal, padding: 32 },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
   iconWrap: {
     width: 120,
     height: 120,

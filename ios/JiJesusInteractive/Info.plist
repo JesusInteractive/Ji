@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>(Ji) Jesus Interactive</string>
+	<string>Jesus Interactive</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -51,12 +51,16 @@
 	<string>Allow $(PRODUCT_NAME) to access your camera</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used only when you tap the Emergency SOS button, to include your location in the alert sent to your contacts. Never collected in the background or continuously.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>This app does not use motion or fitness data. This permission is requested only because a location library this app uses references motion APIs to improve accuracy; motion data is never read or stored.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used only when you tap the microphone button to send a voice message in chat. Audio is transcribed to text and discarded; nothing is stored without your consent.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app does not use motion or fitness data. This permission is requested only because a location library this app uses references motion APIs to improve accuracy; motion data is never read or stored.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Used only if you choose to upload a profile photo. Stored on this device only, never uploaded anywhere.</string>
 	<key>RCTMetroPort</key>

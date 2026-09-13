@@ -19,7 +19,7 @@ export default function LanguageSelectScreen({ navigation }: Props) {
   const handleContinue = async () => {
     await setLanguage(selected);
     markLanguageSelected();
-    navigation.replace('Disclaimer');
+    navigation.replace('Agreements');
   };
 
   return (

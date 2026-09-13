@@ -13,9 +13,10 @@
 // resume) -- mounted once in MainTabs.tsx via RadioOverlay, the same
 // "rendered once, survives tab switches" placement RadioContext used.
 import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { Alert } from 'react-native';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer, type AudioStatus } from 'expo-audio';
 import { fetchRadioConfig } from '../services/radioApi';
-import { FALLBACK_STATION_NAME, FALLBACK_STREAM_URL } from '../constants/radioStations';
+import { FALLBACK_STATION_NAME } from '../constants/radioStations';
 
 interface LiveRadioPlaybackContextValue {
   isPlaying: boolean;
@@ -61,15 +62,19 @@ export function LiveRadioPlaybackProvider({ children }: { children: React.ReactN
       interruptionMode: 'duckOthers',
     });
 
-    let streamUrl: string = FALLBACK_STREAM_URL;
+    let streamUrl: string;
     let name: string = FALLBACK_STATION_NAME;
     try {
       const config = await fetchRadioConfig();
       streamUrl = config.streamUrl;
       name = config.stationName;
     } catch {
-      // Backend unreachable or not yet seeded -- fall back to the one
-      // hardcoded default stream rather than play nothing at all.
+      // Backend unreachable or radio_config not seeded yet. There's no
+      // fallback stream (see radioStations.ts), so say so rather than
+      // start a player that would silently play nothing.
+      Alert.alert('Radio is offline', 'The live station isn’t available right now. Please try again in a little while.');
+      setIsPlaying(false);
+      return;
     }
     setStationName(name);
 

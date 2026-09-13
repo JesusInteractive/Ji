@@ -7,16 +7,21 @@ import { useApp } from '../context/AppContext';
 import Colors from '../theme/colors';
 import LogoIntroScreen from '../screens/LogoIntroScreen';
 import LanguageSelectScreen from '../screens/onboarding/LanguageSelectScreen';
-import DisclaimerScreen from '../screens/onboarding/DisclaimerScreen';
-import UserAgreementScreen from '../screens/onboarding/UserAgreementScreen';
+import AgreementsScreen from '../screens/onboarding/AgreementsScreen';
 import EntranceScreen from '../screens/onboarding/EntranceScreen';
 import PricingScreen from '../screens/onboarding/PricingScreen';
 import LegalDocScreen from '../screens/LegalDocScreen';
 import BibleWordSearchScreen from '../screens/BibleWordSearchScreen';
 import BibleTriviaScreen from '../screens/trivia/TriviaScreen';
 import JIRadioScreen from '../screens/JIRadioScreen';
-import ApprovedCharitiesScreen from '../screens/ApprovedCharitiesScreen';
+import SermonsLandingScreen from '../screens/SermonsLandingScreen';
+import NewsWatchScreen from '../screens/NewsWatchScreen';
+import GlobalMapScreen from '../screens/GlobalMapScreen';
+import SiteDossierScreen from '../screens/SiteDossierScreen';
+import PassionRelicsScreen from '../screens/PassionRelicsScreen';
 import GospelTranslatorScreen from '../screens/GospelTranslatorScreen';
+import SermonWriterScreen from '../screens/SermonWriterScreen';
+import ResourcesScreen from '../screens/ResourcesScreen';
 import MainTabs from './MainTabs';
 import type { LegalDocParams } from './SettingsStack';
 
@@ -29,14 +34,14 @@ import type { LegalDocParams } from './SettingsStack';
 // this onboarding stack).
 export type OnboardingStackParamList = {
   LanguageSelect: undefined;
-  Disclaimer: undefined;
-  UserAgreement: undefined;
+  Agreements: undefined;
   Entrance: undefined;
 };
 
 export type RootStackParamList = {
   LogoIntro: undefined;
   Onboarding: undefined;
+  LegalUpdate: undefined;
   Main: undefined;
   // A root-level modal, deliberately NOT nested inside SettingsStack --
   // reachable from both Home and Settings without either one leaving
@@ -69,10 +74,15 @@ export type RootStackParamList = {
   // expo-audio. See JIRadioScreen.tsx's own comment for the
   // backend-hosted stream config this fetches at runtime.
   JIRadio: undefined;
-  // Same root-level-modal pattern as JIRadio/WordSearch above, reached
-  // from a card directly below "About This App" on Home. See
-  // ApprovedCharitiesScreen.tsx's own comment on the stamp marks.
-  ApprovedCharities: undefined;
+  // Same root-level-modal pattern as JIRadio above, reached from a card
+  // directly below it on Home (between JIRadio and SermonsLanding). See
+  // NewsWatchScreen.tsx's own comment for the two source swaps made
+  // after checking each URL.
+  NewsWatch: undefined;
+  // Same root-level-modal pattern as JIRadio above, reached from a card
+  // directly below it on Home. See SermonsLandingScreen.tsx's own
+  // comment on why this is a landing screen, not a raw outbound jump.
+  SermonsLanding: undefined;
   // Same root-level-modal pattern as the others above, reached from a
   // card directly below Quick Scripture Search on Home. See
   // GospelTranslatorScreen.tsx's own comment for the two-pane,
@@ -85,6 +95,26 @@ export type RootStackParamList = {
   // what they meant to read aloud, translated immediately, instead of
   // making them re-type or re-speak it from memory.
   GospelTranslator: { initialText: string; initialLabel: string } | undefined;
+  // Same root-level-modal pattern as the others above, reached from a
+  // card directly below 24/7 News Watch on Home. See GlobalMapScreen.tsx's
+  // own comment -- a reference atlas, not part of the Games Hub.
+  GlobalMap: undefined;
+  // One shared detail screen for every site in src/data/bibleSites.ts,
+  // reused via this single param'd route rather than one route per site.
+  SiteDossier: { siteId: string };
+  // Same root-level-modal pattern as the others above, reached from a
+  // card directly below Journeys Through the Bible on Home.
+  PassionRelics: undefined;
+  // Second entry point into the same SermonWriterScreen already reached
+  // via StudyToolsStack's own internal "SermonWriter" route (Study Tools
+  // -> its own card) -- this one is a direct Home grid tile ("Sermon
+  // Generator"), same dual-entry-point pattern as WordSearch/Trivia
+  // below, which are also reachable both via the Games Hub and directly.
+  SermonWriter: undefined;
+  // Reached from Home's own "Resources" grid tile -- a consolidated list
+  // of features that don't each earn a first-class grid tile. See
+  // ResourcesScreen.tsx's own comment.
+  Resources: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -94,11 +124,22 @@ function OnboardingNavigator() {
   return (
     <OnboardingStack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
       <OnboardingStack.Screen name="LanguageSelect" component={LanguageSelectScreen} />
-      <OnboardingStack.Screen name="Disclaimer" component={DisclaimerScreen} />
-      <OnboardingStack.Screen name="UserAgreement" component={UserAgreementScreen} />
+      <OnboardingStack.Screen name="Agreements" component={OnboardingAgreementsRoute} />
       <OnboardingStack.Screen name="Entrance" component={EntranceScreen} />
     </OnboardingStack.Navigator>
   );
+}
+
+function OnboardingAgreementsRoute({ navigation }: NativeStackScreenProps<OnboardingStackParamList, 'Agreements'>) {
+  return <AgreementsScreen mode="onboarding" onAccepted={() => navigation.replace('Entrance')} />;
+}
+
+// Shown instead of Main when an already-onboarded user's recorded consent
+// is for an older version of any legal document (see AppContext's
+// needsLegalReconsent). Accepting flips that flag, which re-renders this
+// navigator into Main -- the same conditional-screen swap onboarding uses.
+function LegalUpdateRoute() {
+  return <AgreementsScreen mode="update" />;
 }
 
 // A thin wrapper so LogoIntroScreen (which just needs a plain onFinish
@@ -112,14 +153,16 @@ function OnboardingNavigator() {
 // away from it goes through the same native-stack fade as every other
 // screen change in the app.
 function LogoIntroRoute({ navigation }: NativeStackScreenProps<RootStackParamList, 'LogoIntro'>) {
-  const { onboardingComplete } = useApp();
+  const { onboardingComplete, needsLegalReconsent } = useApp();
   return (
-    <LogoIntroScreen onFinish={() => navigation.replace(onboardingComplete ? 'Main' : 'Onboarding')} />
+    <LogoIntroScreen
+      onFinish={() => navigation.replace(!onboardingComplete ? 'Onboarding' : needsLegalReconsent ? 'LegalUpdate' : 'Main')}
+    />
   );
 }
 
 export default function RootNavigator() {
-  const { onboardingComplete, ready } = useApp();
+  const { onboardingComplete, needsLegalReconsent, ready } = useApp();
 
   // Navy, not null -- an empty render here left a plain white flash
   // between the native splash screen ending and the logo video starting
@@ -137,7 +180,9 @@ export default function RootNavigator() {
           the tree instead of Onboarding, and React Navigation treats
           that as a screen change (still animated via `animation: 'fade'`
           above), with no explicit navigate() call needed anywhere. */}
-      {onboardingComplete ? (
+      {onboardingComplete && needsLegalReconsent ? (
+        <Stack.Screen name="LegalUpdate" component={LegalUpdateRoute} />
+      ) : onboardingComplete ? (
         <>
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen
@@ -221,13 +266,29 @@ export default function RootNavigator() {
             })}
           />
           <Stack.Screen
-            name="ApprovedCharities"
-            component={ApprovedCharitiesScreen}
+            name="NewsWatch"
+            component={NewsWatchScreen}
             options={({ navigation }) => ({
               headerShown: true,
               presentation: 'modal',
               animation: 'slide_from_bottom',
-              title: 'Approved Charities',
+              title: '24/7 News Watch',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="SermonsLanding"
+            component={SermonsLandingScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: '24/7 Sermons and Teaching',
               headerTintColor: Colors.royal,
               headerRight: () => (
                 <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
@@ -250,6 +311,85 @@ export default function RootNavigator() {
               headerRight: () => (
                 <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
                   <Ionicons name="close" size={26} color={Colors.gold} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="GlobalMap"
+            component={GlobalMapScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Journeys Through the Bible',
+              headerStyle: { backgroundColor: Colors.royal },
+              headerTitleStyle: { color: Colors.ivory },
+              headerTintColor: Colors.ivory,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.ivory} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="SiteDossier"
+            component={SiteDossierScreen}
+            options={{
+              headerShown: false,
+              presentation: 'transparentModal',
+              animation: 'slide_from_bottom',
+            }}
+          />
+          <Stack.Screen
+            name="PassionRelics"
+            component={PassionRelicsScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'The Passion Relics',
+              headerStyle: { backgroundColor: Colors.royal },
+              headerTitleStyle: { color: Colors.ivory },
+              headerTintColor: Colors.ivory,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.ivory} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="SermonWriter"
+            component={SermonWriterScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Sermon Writer',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="Resources"
+            component={ResourcesScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Resources',
+              headerStyle: { backgroundColor: Colors.royal },
+              headerTitleStyle: { color: Colors.ivory },
+              headerTintColor: Colors.ivory,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.ivory} />
                 </TouchableOpacity>
               ),
             })}

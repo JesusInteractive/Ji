@@ -8,6 +8,7 @@ import { useApp } from '../context/AppContext';
 import { generateSermon, exportSermonAsFile, type SermonLength } from '../services/sermonWriter';
 import { presentProPaywall } from '../services/purchases';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import AiGeneratedLabel from '../components/AiGeneratedLabel';
 import { useI18n } from '../i18n';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import PaywallLockScreen from '../components/PaywallLockScreen';
@@ -133,7 +134,7 @@ export default function SermonWriterScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
+      <ImageBackground source={require('../../assets/textures/parchment-navy.jpg')} style={styles.container} resizeMode="cover">
       <ScrollView
         ref={scrollRef}
         style={{ flex: 1 }}
@@ -253,6 +254,7 @@ export default function SermonWriterScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
+            <AiGeneratedLabel text="AI-generated draft. Review it against Scripture before you preach it." style={{ marginBottom: 10 }} />
             <Text style={styles.resultText} selectable>
               {result}
             </Text>
@@ -276,10 +278,23 @@ export default function SermonWriterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4F6FA' },
+  // Royal, not the old light-gray '#F4F6FA' -- this is the fallback
+  // paint behind the navy parchment image (before it loads, or if it
+  // fails), so it should match the image's own tone, not the previous
+  // light-parchment background this screen used before.
+  container: { flex: 1, backgroundColor: Colors.royal },
   content: { padding: 20, paddingBottom: 40 },
-  helpText: { fontSize: 13.5, lineHeight: 20, color: '#718096', marginBottom: 20 },
-  label: { fontSize: 13, fontWeight: '700', color: Colors.royal, marginBottom: 6, marginTop: 4 },
+  // Both colors below were tuned for the old light/tan parchment
+  // background -- Colors.royal text (label) would be invisible and
+  // '#718096' gray (helpText) would read poorly against the navy
+  // parchment background now used here. Colors.gold/Colors.muted are
+  // this app's own established navy-background text colors (see
+  // HomeScreen.tsx/ResourcesScreen.tsx's own card text for the same
+  // pairing) -- the white input/result cards below keep their own
+  // dark-on-white text untouched, since those aren't sitting directly on
+  // the navy background.
+  helpText: { fontSize: 13.5, lineHeight: 20, color: Colors.muted, marginBottom: 20 },
+  label: { fontSize: 13, fontWeight: '700', color: Colors.gold, marginBottom: 6, marginTop: 4 },
   input: {
     backgroundColor: '#fff',
     borderRadius: 12,

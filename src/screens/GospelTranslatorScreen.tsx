@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  ImageBackground,
   Modal,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import { useI18n } from '../i18n';
 import { LANGUAGES, languageDisplayName } from '../i18n/languages';
 import type { LanguageCode } from '../types';
 import LanguagePicker from '../components/LanguagePicker';
+import AiGeneratedLabel from '../components/AiGeneratedLabel';
 import { withAuthRetry } from '../services/backendAuth';
 import { transcribeSpeech } from '../services/stt';
 import { translateText } from '../services/translateApi';
@@ -269,7 +271,7 @@ export default function GospelTranslatorScreen({ route, navigation }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('../../assets/textures/parchment-navy.jpg')} style={styles.container} resizeMode="cover">
       <View style={{ flex: 1 }}>{renderPane('theirs')}</View>
 
       <View style={styles.centerBar}>
@@ -286,6 +288,7 @@ export default function GospelTranslatorScreen({ route, navigation }: Props) {
           <Ionicons name={autoSpeak ? 'volume-high' : 'volume-mute'} size={20} color={Colors.gold} />
         </TouchableOpacity>
       </View>
+      <AiGeneratedLabel tone="dark" text="Translations are AI-generated and may contain mistakes." style={{ alignSelf: 'center', paddingBottom: 6 }} />
 
       {renderPane('mine')}
 
@@ -304,12 +307,12 @@ export default function GospelTranslatorScreen({ route, navigation }: Props) {
           </View>
         </TouchableOpacity>
       </Modal>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.royal },
+  container: { flex: 1 },
   pane: { flex: 1, padding: 16, justifyContent: 'space-between' },
   langButton: { flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'center' },
   langButtonText: { color: Colors.gold, fontWeight: '700', fontSize: 13 },

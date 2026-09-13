@@ -2,16 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ImageBackground, InteractionManager, PanResponder, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
-import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import PaywallLockScreen from '../components/PaywallLockScreen';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { logEvent } from '../services/analytics';
 import { useI18n, interpolate } from '../i18n';
-import type { RootStackParamList } from '../navigation/RootNavigator';
+import { GAMES_CATALOG } from '../data/gamesCatalog';
 import {
   DIRECTIONS,
   GRID_SIZE,
@@ -28,6 +25,24 @@ interface Cell {
 }
 
 const cellKey = (c: Cell) => `${c.row}-${c.col}`;
+
+const ACCENT = GAMES_CATALOG.find((g) => g.id === 'GameWordSearch')!.color;
+
+// Each still-to-find word chip gets its own [background, text/border] color
+// pair, cycling through this palette -- a colorful "word soup" instead of
+// a flat single-tone list. A chip greys out (see wordChipFound) once found,
+// so color always means "still looking for this one."
+const WORD_COLOR_PALETTE: [string, string][] = [
+  ['#FFE3E3', '#E4534A'],
+  ['#DFF7F5', '#2A9D93'],
+  ['#F1E6FA', '#8E4FC2'],
+  ['#FFF1DE', '#D98A2B'],
+  ['#FFE6EE', '#D9557B'],
+  ['#E7EEFD', '#3E68C9'],
+  ['#DFF7EA', '#2E9C63'],
+  ['#FFF6DC', '#C99A1E'],
+  ['#F7E0E2', '#96323F'],
+];
 
 // Snaps a raw finger-drag (start -> current cell) to the nearest of the
 // puzzle's 8 straight-line directions, then walks that direction out to
@@ -92,8 +107,7 @@ function pathMatchesWord(path: Cell[], word: PlacedWord): boolean {
 }
 
 export default function BibleWordSearchScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { hasAccess } = useFeatureAccess();
+  const navigation = useNavigation();
   const { t } = useI18n();
   const { completedWordSearchPuzzles, addCompletedWordSearchPuzzle } = useApp();
   const [puzzle, setPuzzle] = useState<WordSearchPuzzle>(() => getPuzzleForDate());
@@ -264,14 +278,8 @@ export default function BibleWordSearchScreen() {
   ).current;
 
   useEffect(() => {
-    if (hasAccess) logEvent('feature_used', { feature: 'wordSearch' });
-  }, [hasAccess]);
-
-  // Placed after every hook above (rules of hooks). A root-level modal
-  // registered directly on RootStack -- zero getParent() hops needed.
-  if (!hasAccess) {
-    return <PaywallLockScreen featureName="Bible Word Search" onSubscribe={() => navigation.navigate('Pricing')} />;
-  }
+    logEvent('feature_used', { feature: 'wordSearch' });
+  }, []);
 
   const handleNextPuzzle = () => {
     setPuzzle(getNextPuzzle(puzzle.seed));
@@ -295,7 +303,7 @@ export default function BibleWordSearchScreen() {
         <View style={styles.progressRowRight}>
           {alreadyCompletedBefore && (
             <View style={styles.completedBadge}>
-              <Ionicons name="checkmark-circle" size={14} color={Colors.gold} />
+              <Ionicons name="checkmark-circle" size={14} color={Colors.white} />
               <Text style={styles.completedBadgeText}>{t.wordSearch.completedBadge}</Text>
             </View>
           )}
@@ -309,7 +317,7 @@ export default function BibleWordSearchScreen() {
             accessibilityRole="button"
             accessibilityLabel="New puzzle"
           >
-            <Ionicons name="shuffle" size={16} color={Colors.royal} />
+            <Ionicons name="shuffle" size={16} color={Colors.white} />
           </TouchableOpacity>
         </View>
       </View>
@@ -364,11 +372,19 @@ export default function BibleWordSearchScreen() {
           {puzzle.words
             .slice()
             .sort((a, b) => a.word.localeCompare(b.word))
-            .map((w) => {
+            .map((w, i) => {
               const found = foundWords.has(w.word);
+              const [bg, fg] = WORD_COLOR_PALETTE[i % WORD_COLOR_PALETTE.length];
               return (
-                <View key={w.word} style={[styles.wordChip, found && styles.wordChipFound]}>
-                  <Text style={[styles.wordChipText, found && styles.wordChipTextFound]}>{w.word}</Text>
+                <View
+                  key={w.word}
+                  style={[
+                    styles.wordChip,
+                    !found && { backgroundColor: bg, borderColor: fg },
+                    found && styles.wordChipFound,
+                  ]}
+                >
+                  <Text style={[styles.wordChipText, !found && { color: fg }, found && styles.wordChipTextFound]}>{w.word}</Text>
                 </View>
               );
             })}
@@ -389,7 +405,7 @@ export default function BibleWordSearchScreen() {
       {isComplete && (
         <View style={styles.completionOverlay}>
           <View style={styles.completionCard}>
-            <Ionicons name="checkmark-circle" size={48} color={Colors.gold} />
+            <Ionicons name="checkmark-circle" size={48} color={ACCENT} />
             <Text style={styles.completionTitle}>
               {interpolate(t.wordSearch.completionTitle, { total: puzzle.words.length })}
             </Text>
@@ -414,7 +430,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     borderWidth: 5,
-    borderColor: Colors.royal,
+    borderColor: ACCENT,
   },
   container: {
     flex: 1,
@@ -428,13 +444,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    backgroundColor: '#B8933E',
+    backgroundColor: ACCENT,
     borderRadius: 18,
   },
   progressText: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.royal,
+    color: Colors.white,
   },
   progressRowRight: {
     flexDirection: 'row',
@@ -450,13 +466,13 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.4)',
+    backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
   completedBadgeText: {
     fontSize: 11,
-    color: Colors.royal,
+    color: Colors.white,
     fontWeight: '600',
   },
   gridWrapper: {
@@ -480,13 +496,13 @@ const styles = StyleSheet.create({
     margin: 0.5,
   },
   cellSelected: {
-    backgroundColor: Colors.gold,
+    backgroundColor: ACCENT,
   },
   cellIncorrect: {
     backgroundColor: Colors.danger,
   },
   cellFound: {
-    backgroundColor: Colors.goldLight,
+    backgroundColor: '#D8F5E3',
   },
   cellText: {
     fontSize: 11,
@@ -494,10 +510,10 @@ const styles = StyleSheet.create({
     color: Colors.royal,
   },
   cellTextSelected: {
-    color: Colors.royal,
+    color: Colors.white,
   },
   cellTextFound: {
-    color: Colors.goldDark,
+    color: '#1F6B45',
   },
   wordListWrapper: {
     flex: 1,
@@ -517,18 +533,18 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   wordChipFound: {
-    backgroundColor: 'transparent',
+    backgroundColor: '#DCE3E8',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#DCE3E8',
   },
   wordChipText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     color: Colors.royal,
     letterSpacing: 0.3,
   },
   wordChipTextFound: {
-    color: Colors.royal,
+    color: '#9AA5B1',
     textDecorationLine: 'line-through',
   },
   completionOverlay: {
@@ -569,26 +585,26 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   completionBtnPrimary: {
-    backgroundColor: Colors.gold,
+    backgroundColor: ACCENT,
     borderRadius: 22,
     paddingVertical: 12,
     paddingHorizontal: 22,
   },
   completionBtnPrimaryText: {
-    color: Colors.royal,
+    color: Colors.white,
     fontWeight: '800',
     fontSize: 14,
   },
   completionBtnSecondary: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: Colors.gold,
+    borderColor: ACCENT,
     borderRadius: 22,
     paddingVertical: 12,
     paddingHorizontal: 22,
   },
   completionBtnSecondaryText: {
-    color: Colors.gold,
+    color: ACCENT,
     fontWeight: '700',
     fontSize: 14,
   },

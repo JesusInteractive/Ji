@@ -1,53 +1,47 @@
-Jesus Interactive is a premium Global AI Bible Companion — Multi-Language Bible Tools in 117 languages, Sermon & Bible Study Writer, Ask Jesus, Gospel Translator, prayer, study, and worship in one app.
-
-Read Bibles by language. Open Christian books and testimonies. Generate a full sermon or Bible study on any topic or passage. Ask Jesus questions, translate the gospel for someone in their own language, keep a Journal, post on the Prayer Wall, and start the day with Daily Devotions and Daily Promises.
-
-A PREMIUM BIBLE COMPANION
-Subscribe to unlock the full toolkit: Multi-Language Bible Tools, Sermon & Bible Study Writer, Ask Jesus, Gospel Translator, study library, prayer, and worship. Pricing is shown on the purchase screen before you confirm.
-
-WHAT'S INCLUDED IN 2.0
-• Multi-Language Bible Tools — Bibles by language, Christian books & testimonies
-• 117 languages
-• Sermon & Bible Study Writer — full sermon or study on any topic or passage
-• Gospel Translator — live, two-way speech translation for sharing the gospel
-• Study Tools library — 243 books
-• Ask Jesus
-• Daily Devotions and Daily Promises
-• Prayer Wall
-• Journal
-• Bible Word Search
-• Audio Jesus
-• 24/7 Praise and Worship Radio
-
-MULTI-LANGUAGE BIBLE TOOLS
-Choose a Bible in your language. Explore Christian books and testimonies. Built for a global church.
-
-SERMON & BIBLE STUDY WRITER
-Enter a topic or passage and generate a full sermon or Bible study. For pastors, teachers, and students of the Word. Edit it, pray over it, and make it your own.
-
-GOSPEL TRANSLATOR
-Live, two-way speech translation for sharing the gospel across languages — speak or type on either side, and it translates and reads back instantly. Built for missions and cross-language conversations.
-
-ASK JESUS
-Ask Jesus is a Scripture-rooted companion — not a substitute for the Bible, prayer, or your local church.
-
-PRAYER, JOURNAL, WORSHIP
-Prayer Wall. Private Journal. Audio Jesus and 24/7 Praise and Worship Radio.
-
-Always test what you read against Scripture.
+Name
+Jesus Interactive
 
 ---
-What's New
-Premium 2.0
-
-• Multi-Language Bible Tools — Bibles by language, Christian books & testimonies
-• 117 languages
-• Sermon & Bible Study Writer
-• Gospel Translator — live, two-way speech translation for sharing the gospel
-• 243 study books
-• Ask Jesus, Daily Devotions & Promises, Prayer Wall, Journal
-• Bible Word Search, Audio Jesus, 24/7 Praise & Worship Radio
+Subtitle (30 char limit)
+Ask Jesus. Atlas. Games. Word.
 
 ---
-Promotional Text (170 char limit)
-Premium 2.0: Multi-Language Bible Tools in 117 languages, Sermon & Bible Study Writer, Ask Jesus, Gospel Translator, Daily Devotions, Prayer Wall, Journal, Worship Radio.
+Promotional text (170 char limit)
+Ask Jesus. Journeys Through the Bible. Live Gospel Translator. Ten games we built, free. 24/7 praise & sermons, free. Plus unlocks the full atlas and unlimited Ask Jesus.
+
+---
+Description
+
+Ask Jesus is your AI companion in the Word.
+
+PLUS
+• Ask Jesus — unlimited
+• Journeys Through the Bible — full interactive atlas, satellite, offline packs
+• Gospel Translator — live two-way speech
+
+FREE
+• 10 games we created
+• 24/7 Praise and Worship radio
+• 24/7 Sermons and Teaching
+• Prayer Wall, Scripture, journal, daily promise, search
+• JESUS film
+• Study links, including The Passion Relics
+
+The Bible, worship, sermons, and games stay open. Plus is the map, the translator, and Ask Jesus without the cap.
+
+Heaven at your fingertips. Ask, and it will be given to you.
+
+---
+Keywords (comma-separated, no spaces after commas, 100 char limit)
+ask jesus,jesus ai,bible,atlas,translator,games,sermons,worship,prayer,gospel,holy land
+
+---
+Pricing note (do not put in the listing copy itself)
+NEEDS FINAL CONFIRMATION -- three different numbers have come up in conversation (this file's own $7.99/mo-$59.99/yr; src/constants/pricing.ts's actual live code, which has Free/Basic $5.99/mo/Pro $9.99/mo/Platinum $19.99/mo plus separate Basic gift certificates at $5.99/$14.99/$59.99 for 1/3/12 months; and a third verbal mention of Basic $5.99/Plus $14.99/$59.99 yearly). Do not treat any of these as final until confirmed against src/constants/pricing.ts and App Store Connect / Play Console's actual configured in-app-purchase products. Never paywall Scripture, sermons, praise radio, games, film, Prayer Wall, or relics regardless of which numbers are final. Pricing itself is shown on the purchase screen, not asserted in the listing.
+
+---
+What's New (v2.0.1)
+• Journeys Through the Bible — a real interactive biblical atlas: pinch-zoom satellite map, prophets, and the Holy Land
+• The Passion Relics — the Shroud of Turin and other traditional relics, with sourced history and an honest science file
+• 10 free Bible games in the new Games Hub
+• Assorted fixes and polish

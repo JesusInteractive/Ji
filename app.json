@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "(Ji) Jesus Interactive",
+    "name": "Jesus Interactive",
     "slug": "jesus-me-inc-ji",
     "owner": "ajames0624",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "jesusinteractive",
@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jesusinteractive.app",
-      "buildNumber": "9",
+      "buildNumber": "10",
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Used only when you tap the microphone button to send a voice message in chat. Audio is transcribed to text and discarded; nothing is stored without your consent.",
         "NSLocationWhenInUseUsageDescription": "Used only when you tap the Emergency SOS button, to include your location in the alert sent to your contacts. Never collected in the background or continuously.",

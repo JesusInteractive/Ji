@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { getDevotion, type Devotion } from '../services/devotions';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import AiGeneratedLabel from '../components/AiGeneratedLabel';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import PaywallLockScreen from '../components/PaywallLockScreen';
 import { useI18n } from '../i18n';
@@ -143,6 +144,8 @@ export default function DailyDevotionsScreen() {
       </View>
 
       <Text style={styles.sectionTitle}>Reflection</Text>
+      {/* The passage above is Scripture; only the reflection and prayer are AI output. */}
+      <AiGeneratedLabel text="The reflection and prayer below are AI-generated." style={{ marginBottom: 10 }} />
       {devotion.reflection.split('\n\n').map((para, i) => (
         <Text key={i} style={styles.paragraph}>{para}</Text>
       ))}

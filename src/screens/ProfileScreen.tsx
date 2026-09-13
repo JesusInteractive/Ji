@@ -242,9 +242,95 @@ export default function ProfileScreen() {
             <Text style={styles.removeText}>{t.profile.removePhotoText}</Text>
           </TouchableOpacity>
         )}
-        {!!displayName && <Text style={styles.photoName}>{displayName}</Text>}
+        {/* Same greeting as Home: "Welcome, friend" (t.home.title) until
+            a name is saved below, then the first name. */}
+        <Text style={styles.photoName}>
+          {displayName.trim() ? `Welcome, ${displayName.trim().split(/\s+/)[0]}` : t.home.title}
+        </Text>
       </View>
 
+      <View style={styles.nameSection}>
+        <Text style={styles.label}>{t.profile.nameLabel}</Text>
+        <TextInput
+          style={styles.nameInput}
+          value={nameInput}
+          onChangeText={setNameInput}
+          onBlur={handleNameBlur}
+          placeholder={t.profile.namePlaceholder}
+          placeholderTextColor="#A0AEC0"
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t.profile.accountSectionTitle}</Text>
+        <Row
+          icon="card-outline"
+          label={t.profile.planLabel}
+          value={interpolate(t.profile.planValue, { name: currentPlan.name, price: currentPlan.priceLabel })}
+          onPress={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
+        />
+        {isInTrial && (
+          // Plain English, not run through t. -- new copy for the 5-day
+          // trial that replaced the old "questions left" quota; adding
+          // it to the i18n system means backfilling all 117 other locale
+          // files by hand (see src/screens/trivia's own note on this
+          // exact tradeoff), which isn't worth blocking this on.
+          <Row icon="hourglass-outline" label="Free trial" value={`${Math.max(5 - daysSinceFirstOpen, 0)} days left`} />
+        )}
+      </View>
+
+      {__DEV__ && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t.profile.devOnlySectionTitle}</Text>
+          <TouchableOpacity
+            style={styles.devButton}
+            onPress={() => selectPlan('platinum')}
+            accessibilityRole="button"
+            accessibilityLabel={t.profile.unlockUnlimitedA11yLabel}
+          >
+            <Ionicons name="infinite-outline" size={18} color={Colors.white} style={styles.rowIcon} />
+            <Text style={styles.devButtonText}>{t.profile.unlockUnlimitedButton}</Text>
+          </TouchableOpacity>
+          <Text style={styles.devNote}>
+            {t.profile.devNote}
+          </Text>
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t.profile.savedSectionTitle}</Text>
+        <Row
+          icon="bookmark-outline"
+          label={t.profile.favoritesLabel}
+          value={String(favorites.length)}
+          onPress={() => navigation.navigate('ChatTab', { screen: 'Favorites' })}
+        />
+        <Row
+          icon="book-outline"
+          label={t.profile.journalEntriesLabel}
+          value={String(journalEntries.length)}
+          onPress={() => navigation.navigate('Journal')}
+        />
+        <Row
+          icon="hand-left-outline"
+          iconElement={<MaterialCommunityIcons name="hands-pray" size={18} color={Colors.gold} style={styles.rowIcon} />}
+          label={t.profile.prayerNotesLabel}
+          value={String(prayerNotes.length)}
+          onPress={() => navigation.navigate('PrayerWall')}
+        />
+      </View>
+
+      {/* Moved to the bottom of the page, below the routine account/saved
+          sections -- leading with a red SOS button felt alarming as the
+          first thing on the screen. Still its own section, just no
+          longer the first impression.
+
+          IMPORTANT: this section must never be gated behind
+          useFeatureAccess()/PaywallLockScreen -- Emergency SOS is free on
+          every plan (including an expired trial), by explicit decision.
+          See pricing.ts's MONETIZATION_EXPLAINER.free for the same
+          commitment in the pricing copy. Don't add a paywall check here
+          just because most other screens in src/screens/ have one. */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Emergency</Text>
 
@@ -343,77 +429,6 @@ export default function ProfileScreen() {
         {!emergencyContactsComplete && (
           <Text style={styles.sosHint}>Fill in both contacts above to enable the SOS button.</Text>
         )}
-      </View>
-
-      <View style={styles.nameSection}>
-        <Text style={styles.label}>{t.profile.nameLabel}</Text>
-        <TextInput
-          style={styles.nameInput}
-          value={nameInput}
-          onChangeText={setNameInput}
-          onBlur={handleNameBlur}
-          placeholder={t.profile.namePlaceholder}
-          placeholderTextColor="#A0AEC0"
-        />
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t.profile.accountSectionTitle}</Text>
-        <Row
-          icon="card-outline"
-          label={t.profile.planLabel}
-          value={interpolate(t.profile.planValue, { name: currentPlan.name, price: currentPlan.priceLabel })}
-          onPress={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
-        />
-        {isInTrial && (
-          // Plain English, not run through t. -- new copy for the 5-day
-          // trial that replaced the old "questions left" quota; adding
-          // it to the i18n system means backfilling all 117 other locale
-          // files by hand (see src/screens/trivia's own note on this
-          // exact tradeoff), which isn't worth blocking this on.
-          <Row icon="hourglass-outline" label="Free trial" value={`${Math.max(5 - daysSinceFirstOpen, 0)} days left`} />
-        )}
-      </View>
-
-      {__DEV__ && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t.profile.devOnlySectionTitle}</Text>
-          <TouchableOpacity
-            style={styles.devButton}
-            onPress={() => selectPlan('platinum')}
-            accessibilityRole="button"
-            accessibilityLabel={t.profile.unlockUnlimitedA11yLabel}
-          >
-            <Ionicons name="infinite-outline" size={18} color={Colors.white} style={styles.rowIcon} />
-            <Text style={styles.devButtonText}>{t.profile.unlockUnlimitedButton}</Text>
-          </TouchableOpacity>
-          <Text style={styles.devNote}>
-            {t.profile.devNote}
-          </Text>
-        </View>
-      )}
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t.profile.savedSectionTitle}</Text>
-        <Row
-          icon="bookmark-outline"
-          label={t.profile.favoritesLabel}
-          value={String(favorites.length)}
-          onPress={() => navigation.navigate('ChatTab', { screen: 'Favorites' })}
-        />
-        <Row
-          icon="book-outline"
-          label={t.profile.journalEntriesLabel}
-          value={String(journalEntries.length)}
-          onPress={() => navigation.navigate('Journal')}
-        />
-        <Row
-          icon="hand-left-outline"
-          iconElement={<MaterialCommunityIcons name="hands-pray" size={18} color={Colors.gold} style={styles.rowIcon} />}
-          label={t.profile.prayerNotesLabel}
-          value={String(prayerNotes.length)}
-          onPress={() => navigation.navigate('PrayerWall')}
-        />
       </View>
 
       <Text style={styles.footerNote}>

@@ -4,15 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
 import { useApp } from '../context/AppContext';
-import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import PaywallLockScreen from '../components/PaywallLockScreen';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
-import type { RootStackParamList } from '../navigation/RootNavigator';
 
 // Journaling of conversations (spec section 7). Entries are stored
 // locally today (AppContext -> AsyncStorage); a real build should also
@@ -37,13 +33,24 @@ type Folder = 'entries' | 'jesus';
 // separate, parallel save mechanism.
 export default function JournalScreen() {
   const { journalEntries, addJournalEntry, removeJournalEntry, favorites, removeFavorite } = useApp();
-  const { hasAccess } = useFeatureAccess();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const { t } = useI18n();
   const [folder, setFolder] = useState<Folder>('entries');
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  // Optional attach-to-entry fields -- surfaced in My Library's Notes
+  // filter (LibraryScreen.tsx), which only picks up entries carrying one
+  // of these two fields. Verse comes from an existing favorited verse
+  // (no free-text reference typing, so it can't drift from what's
+  // actually favorited); sermon is a plain title+URL pair since we don't
+  // scrape outbound sermon pages for metadata -- same reasoning as
+  // SavedSermon's own user-entered title.
+  const [linkedVerseReference, setLinkedVerseReference] = useState<string | undefined>(undefined);
+  const [linkedSermonTitle, setLinkedSermonTitle] = useState('');
+  const [linkedSermonUrl, setLinkedSermonUrl] = useState('');
+  const [versePickerOpen, setVersePickerOpen] = useState(false);
+  const savedVerses = favorites.filter((f) => f.type === 'verse');
 
   // One scrollbar per folder's own FlatList -- only one is ever mounted
   // at a time (the other folder's list isn't rendered), so there's no
@@ -65,15 +72,24 @@ export default function JournalScreen() {
   const handleSave = () => {
     if (!title.trim() && !body.trim()) return;
     const now = new Date().toISOString();
+    const linkedSermon =
+      linkedSermonTitle.trim() && linkedSermonUrl.trim()
+        ? { title: linkedSermonTitle.trim(), url: linkedSermonUrl.trim() }
+        : undefined;
     addJournalEntry({
       id: `${Date.now()}`,
       title: title.trim() || t.journal.untitledEntry,
       body: body.trim(),
+      linkedVerseReference,
+      linkedSermon,
       createdAt: now,
       updatedAt: now,
     });
     setTitle('');
     setBody('');
+    setLinkedVerseReference(undefined);
+    setLinkedSermonTitle('');
+    setLinkedSermonUrl('');
     setModalVisible(false);
   };
 
@@ -93,17 +109,6 @@ export default function JournalScreen() {
       // User cancelled or share failed silently -- non-critical.
     }
   };
-
-  // Placed after every hook above (rules of hooks). A direct MainTabs
-  // tab screen -- one getParent() hop reaches RootStack's Pricing route.
-  if (!hasAccess) {
-    return (
-      <PaywallLockScreen
-        featureName="Journal"
-        onSubscribe={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
-      />
-    );
-  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -151,6 +156,16 @@ export default function JournalScreen() {
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.card} onLongPress={() => confirmDelete(item.id)}>
                 <Text style={styles.cardTitle}>{item.title}</Text>
+                {item.linkedVerseReference && (
+                  <Text style={styles.linkedMeta}>
+                    <Ionicons name="bookmark" size={11} color={Colors.gold} /> {item.linkedVerseReference}
+                  </Text>
+                )}
+                {item.linkedSermon && (
+                  <Text style={styles.linkedMeta}>
+                    <Ionicons name="mic" size={11} color={Colors.gold} /> {item.linkedSermon.title}
+                  </Text>
+                )}
                 <Text style={styles.cardBody} numberOfLines={3}>{item.body}</Text>
                 <Text style={styles.cardDate}>{new Date(item.createdAt).toLocaleDateString()}</Text>
               </TouchableOpacity>
@@ -237,6 +252,46 @@ export default function JournalScreen() {
               textAlignVertical="top"
             />
           </View>
+
+          <View style={styles.attachSection}>
+            <TouchableOpacity style={styles.attachRow} onPress={() => setVersePickerOpen(true)}>
+              <Ionicons name="bookmark-outline" size={16} color={Colors.royal} />
+              <Text style={styles.attachRowText}>
+                {linkedVerseReference ? linkedVerseReference : 'Attach a saved verse'}
+              </Text>
+              {linkedVerseReference ? (
+                <TouchableOpacity onPress={() => setLinkedVerseReference(undefined)} accessibilityLabel="Remove attached verse">
+                  <Ionicons name="close-circle" size={18} color="#A0AEC0" />
+                </TouchableOpacity>
+              ) : (
+                <Ionicons name="chevron-forward" size={16} color="#A0AEC0" />
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.sermonAttachRow}>
+              <Ionicons name="mic-outline" size={16} color={Colors.royal} />
+              <View style={styles.sermonAttachInputs}>
+                <TextInput
+                  style={styles.sermonAttachInput}
+                  placeholder="Sermon title (optional)"
+                  placeholderTextColor="#A0AEC0"
+                  value={linkedSermonTitle}
+                  onChangeText={setLinkedSermonTitle}
+                />
+                <TextInput
+                  style={styles.sermonAttachInput}
+                  placeholder="Sermon URL (optional)"
+                  placeholderTextColor="#A0AEC0"
+                  value={linkedSermonUrl}
+                  onChangeText={setLinkedSermonUrl}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="url"
+                />
+              </View>
+            </View>
+          </View>
+
           <View style={styles.modalActions}>
             <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
               <Text style={styles.cancelText}>{t.journal.cancel}</Text>
@@ -246,6 +301,40 @@ export default function JournalScreen() {
             </TouchableOpacity>
           </View>
         </ImageBackground>
+      </Modal>
+
+      <Modal
+        visible={versePickerOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setVersePickerOpen(false)}
+      >
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setVersePickerOpen(false)}>
+          <View style={styles.modalSheet}>
+            <Text style={styles.modalSheetTitle}>Attach a saved verse</Text>
+            {savedVerses.length === 0 ? (
+              <Text style={styles.empty}>Favorite a verse on the Bible screen first, then it'll show up here.</Text>
+            ) : (
+              <FlatList
+                data={savedVerses}
+                keyExtractor={(f) => f.id}
+                style={{ maxHeight: 360 }}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.verseOptionRow}
+                    onPress={() => {
+                      setLinkedVerseReference(item.reference ?? item.text);
+                      setVersePickerOpen(false);
+                    }}
+                  >
+                    {item.reference && <Text style={styles.reference}>{item.reference}</Text>}
+                    <Text style={styles.cardBody} numberOfLines={2}>{item.text}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+          </View>
+        </TouchableOpacity>
       </Modal>
     </ImageBackground>
     </SafeAreaView>
@@ -294,6 +383,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 15, fontWeight: '700', color: Colors.royal, marginBottom: 4 },
   cardBody: { fontSize: 13.5, color: '#4A5568', lineHeight: 19 },
   cardDate: { fontSize: 11, color: '#A0AEC0', marginTop: 8 },
+  linkedMeta: { fontSize: 12, fontWeight: '600', color: Colors.gold, marginBottom: 3 },
   reference: { fontSize: 12, fontWeight: '700', color: Colors.gold, marginBottom: 4 },
   actions: { flexDirection: 'row', gap: 16, marginTop: 10 },
   iconBtn: { padding: 4 },
@@ -308,4 +398,23 @@ const styles = StyleSheet.create({
   cancelText: { fontWeight: '700', color: '#4A5568' },
   saveBtn: { flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 22, backgroundColor: Colors.royal },
   saveText: { fontWeight: '700', color: '#fff' },
+  attachSection: { gap: 8, marginTop: 14 },
+  attachRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 12,
+  },
+  attachRowText: { flex: 1, fontSize: 13.5, color: Colors.royal, fontWeight: '600' },
+  sermonAttachRow: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 8,
+    backgroundColor: '#fff', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 12,
+  },
+  sermonAttachInputs: { flex: 1, gap: 8 },
+  sermonAttachInput: { fontSize: 13.5, color: Colors.royal, paddingVertical: 2 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  modalSheet: {
+    backgroundColor: '#fff', borderTopLeftRadius: 18, borderTopRightRadius: 18,
+    paddingTop: 16, paddingBottom: 32, paddingHorizontal: 20,
+  },
+  modalSheetTitle: { fontSize: 16, fontWeight: '800', color: Colors.royal, marginBottom: 10 },
+  verseOptionRow: { paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
 });

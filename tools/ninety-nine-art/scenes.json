@@ -1,0 +1,63 @@
+[
+  {
+    "id": "temple-study-1",
+    "title": "The Temple Courts",
+    "reference": "John 2",
+    "set": "test3",
+    "style": "study",
+    "setting": "The Court of the Gentiles at the temple in Jerusalem on a busy festival morning, seen from a slightly raised viewpoint. Colonnades of worn limestone columns cast long shadows across the paving. Pilgrims in homespun wool and linen crowd the broad stone steps; Levites carry baskets; money changers sit at low wooden tables with scales and coin boxes; dove sellers tend stacked wicker cages; empty wooden animal pens hold fresh straw and hay bales. Water jars, reed mats, low benches, sacks of grain, a two-wheeled handcart, rolled rugs, a canvas awning with deep folds, children and old men resting in the shade by the column bases, and the great bronze-plated doors of the sanctuary in the distance."
+  },
+  {
+    "id": "temple-study-2",
+    "title": "The Temple Courts",
+    "reference": "John 2",
+    "set": "test3",
+    "style": "study",
+    "setting": "The Court of the Gentiles at the temple in Jerusalem on a busy festival morning, seen from a slightly raised viewpoint. Colonnades of worn limestone columns cast long shadows across the paving. Pilgrims in homespun wool and linen crowd the broad stone steps; Levites carry baskets; money changers sit at low wooden tables with scales and coin boxes; dove sellers tend stacked wicker cages; empty wooden animal pens hold fresh straw and hay bales. Water jars, reed mats, low benches, sacks of grain, a two-wheeled handcart, rolled rugs, a canvas awning with deep folds, children and old men resting in the shade by the column bases, and the great bronze-plated doors of the sanctuary in the distance."
+  },
+  {
+    "id": "eden",
+    "title": "The Garden of Eden",
+    "reference": "Genesis 2",
+    "set": "test2",
+    "light": "soft radiant golden morning light falling from the upper left through dewy mist",
+    "setting": "The Garden of Eden at golden morning, a lush paradise with no people in it. Towering fruit trees heavy with pomegranates, figs and golden apples; the Tree of Life glowing at the center, and the tree of the knowledge of good and evil with a serpent coiled in its branches. A river divides into four streams over mossy rocks and small waterfalls. Dense flowering bushes, ferns, lilies and hanging vines; peacocks, a lion lying beside a deer, doves, rabbits, a leopard resting in dappled shade, fallen fruit in the grass, mist over distant hills, and radiant clouds."
+  },
+  {
+    "id": "temple",
+    "title": "The Temple in Jerusalem",
+    "reference": "Luke 2",
+    "set": "test2",
+    "light": "warm golden sunlight streaming diagonally through incense haze, with bright highlights and deep shadows",
+    "setting": "The courts of the temple in Jerusalem crowded with worshippers at the time of Jesus. Priests in white linen and blue robes, Levites singing with harps and silver trumpets, smoke rising from the great bronze altar, the golden menorah glowing through the open doorway of the sanctuary, massive carved cedar doors and gilded columns, great veils of blue, purple and scarlet with deep folds, families carrying doves in wicker cages, baskets of offerings, clay oil lamps, bronze incense censers, and wide stone steps crowded with pilgrims in jewel-toned robes, with shafts of light cutting through the haze."
+  },
+  {
+    "id": "manger",
+    "title": "The Manger in Bethlehem",
+    "reference": "Luke 2",
+    "set": "test2",
+    "light": "warm golden lantern light glowing from the manger at the center, with deep blue moonlit shadows toward the edges",
+    "setting": "The nativity at night in a lantern-lit Bethlehem stable cave. Mary in a blue mantle and Joseph in brown kneel beside the infant Jesus lying in a wooden manger filled with straw. A gentle ox and a donkey, heaps of golden hay and straw bales, rough wooden beams and a ladder, a hanging oil lantern, clay pots, a feed trough, woven baskets, a heavy woven blanket with deep folds, and shepherds holding crooks at the cave entrance, with the brilliant star shining over the rooftops of Bethlehem in the deep blue night sky outside. The shepherds have come without their flocks."
+  },
+  {
+    "id": "ruth-fields",
+    "title": "Ruth in the Fields of Boaz",
+    "reference": "Ruth 2",
+    "set": "test1",
+    "setting": "Ruth gleaning barley in the golden harvest fields of Boaz outside Bethlehem in late afternoon light. Reapers with sickles, women binding sheaves, tall haystacks and stacked sheaves, a wooden ox cart piled with grain, clay water jars, woven baskets, pairs of worn leather sandals left in the stubble, a shade tent of striped crimson and indigo cloth with deep folds, gnarled olive trees, low stone walls, a threshing floor with oxen, and distant Bethlehem on a hill beneath towering sunlit clouds."
+  },
+  {
+    "id": "daniel-lions-den",
+    "title": "Daniel in the Lions' Den",
+    "reference": "Daniel 6",
+    "set": "test1",
+    "setting": "Daniel kneeling in prayer at the heart of a vast torch-lit stone lions' den in Babylon, bathed in a shaft of golden angelic light falling from an opening above. Many lions resting and prowling among fallen columns, heaps of straw, broken pottery, hanging iron chains, carved Babylonian reliefs of winged bulls, walls of glazed lapis-blue brick with golden lions, flickering bronze lanterns, deep shadowed alcoves, and Persian officials in jeweled robes peering down from the rim at dawn."
+  },
+  {
+    "id": "wedding-cana",
+    "title": "The Wedding at Cana",
+    "reference": "John 2",
+    "set": "test1",
+    "setting": "The wedding feast at Cana in a lantern-lit Galilean courtyard at dusk. Jesus in a white robe and deep red mantle stands beside his mother Mary near six large stone water jars being filled by servants. A joyful crowd of guests in jewel-toned robes dances and feasts at long tables heaped with bread, figs, pomegranates, grapes and apples, beside a fruit cart, wineskins, draped canopies of crimson and gold cloth with deep folds, garlands, musicians with lyres and tambourines, sandals kicked off by the dancers, potted palms, and a starry sky with glowing clouds."
+  }
+]

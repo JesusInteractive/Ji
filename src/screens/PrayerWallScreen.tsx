@@ -9,14 +9,10 @@ import Colors from '../theme/colors';
 import { playFadedWindCue } from '../services/audioFade';
 import { WALL_WIDTH, mulberry32, hashStringToSeed } from '../components/WesternWallBackground';
 import PrayerNote, { NOTE_WIDTH } from '../components/PrayerNote';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useApp } from '../context/AppContext';
-import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import PaywallLockScreen from '../components/PaywallLockScreen';
 import { useI18n } from '../i18n';
 import type { PrayerNote as PrayerNoteType } from '../types';
 import type { MainTabParamList } from '../navigation/MainTabs';
-import type { RootStackParamList } from '../navigation/RootNavigator';
 
 // How much vertical space each prayer note gets on the wall. Notes used
 // to be scattered randomly across a FIXED-height wall (WALL_ROWS=16,
@@ -54,8 +50,6 @@ export default function PrayerWallScreen() {
   const { t } = useI18n();
   const { prayerNotes, addPrayerNote } = useApp();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
-  const { hasAccess } = useFeatureAccess();
-
   const [prayerText, setPrayerText] = useState('');
   const [prayerAnonymous, setPrayerAnonymous] = useState(true);
   const [prayerShared, setPrayerShared] = useState(false);
@@ -128,18 +122,6 @@ export default function PrayerWallScreen() {
 
     Alert.alert(t.prayerWall.placed);
   };
-
-  // Placed after every hook above (rules of hooks). A direct MainTabs
-  // tab screen -- one getParent() hop reaches RootStack's Pricing route,
-  // same as HomeScreen.tsx's own cards.
-  if (!hasAccess) {
-    return (
-      <PaywallLockScreen
-        featureName="Prayer Wall"
-        onSubscribe={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
-      />
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

@@ -1,0 +1,428 @@
+<meta charset="utf-8">
+<title>99 and the One Proofs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+  [hidden] { display: none !important; }
+  /* One deliberate look: the painting is the product; the UI is small type on it. */
+  :root {
+    color-scheme: dark;
+    --ink: #0e0c0a;
+    --text: #eee6d6;
+    --text-dim: rgba(238, 230, 214, .62);
+    --ochre: #c9a66b;
+    --serif: 'EB Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  }
+  html, body { height: 100%; background: var(--ink); color: var(--text); overflow: hidden; }
+  body { font-family: var(--serif); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 1px solid var(--ochre); outline-offset: 3px; }
+
+  #stage { position: fixed; inset: 0; touch-action: none; }
+  #stage.playing { cursor: none; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* HUD: small, quiet, legible over any paint. */
+  .hud, .corner { position: fixed; top: 16px; z-index: 5; text-shadow: 0 1px 2px rgba(0, 0, 0, .75), 0 0 12px rgba(0, 0, 0, .45); }
+  .hud { left: 20px; display: grid; gap: 1px; }
+  .count { font-size: 17px; letter-spacing: .02em; font-variant-numeric: lining-nums tabular-nums; }
+  .count b { font-weight: 500; }
+  .count .of { color: var(--text-dim); margin-left: 3px; }
+  .count-label { font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-dim); }
+  .hint { font-style: italic; font-size: 15px; color: var(--text); max-width: 34ch; margin-top: 4px; }
+  .corner { right: 16px; display: flex; gap: 6px; }
+  .icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--text); opacity: .82; }
+  .icon:hover { opacity: 1; background: rgba(0, 0, 0, .28); }
+  .icon svg { width: 19px; height: 19px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .7)); }
+
+  /* The Shepherd follows the pointer; his crook tip is the hotspot. */
+  .shepherd {
+    position: fixed; left: 0; top: 0; z-index: 4; height: 58px; width: auto; pointer-events: none;
+    will-change: transform; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .55));
+  }
+  .shepherd.walking { animation: sway .34s ease-in-out infinite alternate; }
+  @keyframes sway { from { rotate: -3deg; } to { rotate: 3deg; } }
+
+  /* Menu: title lives here, never on the play screen. */
+  .menu { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; }
+  .menu-bg { position: absolute; inset: -30px; width: calc(100% + 60px); height: calc(100% + 60px); object-fit: cover; filter: blur(7px) brightness(.38) saturate(.9); }
+  .menu-inner { position: relative; display: grid; justify-items: center; gap: 14px; text-align: center; max-width: 520px; }
+  .eyebrow { margin: 0; font-size: 12.5px; letter-spacing: .24em; text-transform: uppercase; color: var(--ochre); }
+  .menu h1 { margin: 0; font-weight: 400; font-size: clamp(40px, 6vw, 60px); line-height: 1; letter-spacing: .01em; text-wrap: balance; }
+  .tagline { margin: 0; font-size: 17px; color: var(--text-dim); text-wrap: balance; }
+  .tiers { display: flex; gap: 22px; margin-top: 10px; }
+  .tier { font-size: 16px; color: var(--text-dim); padding: 4px 0; border-bottom: 1px solid transparent; }
+  .tier[aria-checked="true"] { color: var(--text); border-bottom-color: var(--ochre); }
+  .begin {
+    margin-top: 10px; padding: 10px 34px; font-size: 17px; letter-spacing: .12em; text-transform: uppercase;
+    border: 1px solid rgba(238, 230, 214, .55); border-radius: 2px;
+  }
+  .begin:hover { border-color: var(--text); background: rgba(238, 230, 214, .06); }
+  .fine { margin: 18px 0 0; font-size: 12.5px; color: rgba(238, 230, 214, .4); letter-spacing: .04em; }
+
+  /* Ending: the verse is set on the painting, no card. */
+  .finale {
+    position: fixed; inset: 0; z-index: 8; display: grid; align-content: end; justify-items: center; gap: 12px;
+    padding: 0 24px 9vh; text-align: center;
+    background: linear-gradient(to top, rgba(8, 6, 4, .88) 0%, rgba(8, 6, 4, .55) 45%, rgba(8, 6, 4, .15) 100%);
+    animation: fade 1.2s ease-out both;
+  }
+  .finale blockquote { margin: 0; max-width: 40ch; font-style: italic; font-size: clamp(19px, 2.2vw, 24px); line-height: 1.5; text-wrap: pretty; }
+  .finale cite { font-style: normal; font-size: 12.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ochre); }
+  .textbtn { margin-top: 8px; font-size: 15px; color: var(--text-dim); border-bottom: 1px solid rgba(238, 230, 214, .35); }
+  .textbtn:hover { color: var(--text); }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shepherd.walking { animation: none; }
+    .finale { animation: none; }
+  }
+</style>
+
+<div id="stage"><canvas id="canvas" aria-label="A painting with one hundred hidden sheep"></canvas></div>
+
+<div class="hud" id="hud" hidden>
+  <span class="count-label">Found</span>
+  <span class="count"><b id="found">0</b><span class="of">/ 100</span></span>
+  <span class="hint" id="hint" hidden></span>
+</div>
+<div class="corner" id="corner" hidden>
+  <button class="icon" id="mute" aria-label="Mute sound" aria-pressed="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/>
+      <path id="waves" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/>
+      <path id="cross" d="M16 9.5l5 5M21 9.5l-5 5" hidden/>
+    </svg>
+  </button>
+  <button class="icon" id="toMenu" aria-label="Back to menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14"/></svg>
+  </button>
+</div>
+
+<img class="shepherd" id="shepherd" alt="" hidden>
+
+<section class="menu" id="menu">
+  <img class="menu-bg" id="menuBg" alt="">
+  <div class="menu-inner">
+    <p class="eyebrow" id="sceneLine"></p>
+    <h1>99 and the One</h1>
+    <p class="tagline">One hundred sheep are hidden in this painting. Find the ninety-nine, then go after the one that was lost.</p>
+    <div class="tiers" role="radiogroup" aria-label="Difficulty" id="tiers"></div>
+    <button class="begin" id="begin">Begin</button>
+    <p class="fine" id="fineprint"></p>
+  </div>
+</section>
+
+<div class="finale" id="finale" hidden>
+  <blockquote>“Which of you men, if you had one hundred sheep and lost one of them, wouldn’t leave the ninety-nine in the wilderness and go after the one that was lost, until he found it? When he has found it, he carries it on his shoulders, rejoicing.”</blockquote>
+  <cite>Luke 15:4–5</cite>
+  <button class="textbtn" id="again">Play again</button>
+</div>
+
+<script>
+const DATA = __DATA__;
+const TOTAL = 100; // 99 + the one that was lost
+const TIERS = {
+  beginner: { label: 'Beginner', bias: 1, oneRank: 0.5, oneAlpha: 1 },
+  intermediate: { label: 'Intermediate', bias: 0, oneRank: 0.2, oneAlpha: 1 },
+  hard: { label: 'Hard', bias: -1, oneRank: 0, oneAlpha: 0.55 },
+};
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const $ = (id) => document.getElementById(id);
+const stage = $('stage'), canvas = $('canvas'), ctx = canvas.getContext('2d'), shepherd = $('shepherd');
+const SW = DATA.scene.width, SH = DATA.scene.height;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const loadImage = (src) => new Promise((resolve, reject) => { const i = new Image(); i.onload = () => resolve(i); i.onerror = reject; i.src = src; });
+
+const state = { tier: 'intermediate', flock: [], found: 0, phase: 'menu', one: null, fading: [] };
+let painting = null;
+
+// ---------- Choosing 100 of the painted sheep: each run hides a different flock ----------
+function overlapShare(a, b) {
+  const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x), h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+  return w > 0 && h > 0 ? (w * h) / Math.min(a.w * a.h, b.w * b.h) : 0;
+}
+function chooseFlock(tierKey, seed) {
+  const tier = TIERS[tierKey], rnd = mulberry32(seed);
+  const pool = DATA.patches.map((p) => ({ ...p, luck: rnd() }));
+  [...pool].sort((a, b) => a.visible - b.visible).forEach((p, rank, all) => { p.rank = rank / Math.max(1, all.length - 1); });
+  pool.forEach((p) => { p.score = p.luck + tier.bias * (p.rank - 0.5) * 0.7; }); // easier tiers favor the more visible sheep
+  pool.sort((a, b) => b.score - a.score);
+  const chosen = [];
+  for (const limit of [0.12, 0.35, 1.01]) {
+    for (const p of pool) {
+      if (chosen.length >= TOTAL) break;
+      if (chosen.includes(p) || chosen.some((q) => overlapShare(p, q) > limit)) continue;
+      chosen.push(p);
+    }
+  }
+  const byVisibility = [...chosen].sort((a, b) => a.visible - b.visible);
+  const one = byVisibility[Math.round(tier.oneRank * (byVisibility.length - 1))];
+  one.one = true; one.alpha = tier.oneAlpha;
+  return chosen.map((p) => ({ ...p, found: false, alpha: p.alpha ?? 1 }));
+}
+
+// ---------- View: fit the painting to the window; zoom about the pointer ----------
+const view = { fit: 1, scale: 1, x: 0, y: 0 };
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(innerWidth * dpr); canvas.height = Math.round(innerHeight * dpr);
+  const wasFit = Math.abs(view.scale - view.fit) < 1e-6;
+  view.fit = Math.min(innerWidth / SW, innerHeight / SH);
+  if (wasFit || view.scale < view.fit) view.scale = view.fit;
+  clampView(); draw();
+}
+function clampView() {
+  const w = SW * view.scale, h = SH * view.scale;
+  view.x = w <= innerWidth ? (innerWidth - w) / 2 : Math.min(0, Math.max(innerWidth - w, view.x));
+  view.y = h <= innerHeight ? (innerHeight - h) / 2 : Math.min(0, Math.max(innerHeight - h, view.y));
+}
+function zoomAt(cx, cy, factor) {
+  const next = Math.min(view.fit * 5, Math.max(view.fit, view.scale * factor)), k = next / view.scale;
+  view.x = cx - (cx - view.x) * k; view.y = cy - (cy - view.y) * k; view.scale = next;
+  clampView(); draw();
+}
+const toScene = (cx, cy) => ({ x: (cx - view.x) / view.scale, y: (cy - view.y) / view.scale });
+
+// ---------- Drawing ----------
+function draw(now = performance.now()) {
+  if (!painting) return;
+  const dpr = canvas.width / innerWidth;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#0e0c0a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(dpr * view.scale, 0, 0, dpr * view.scale, dpr * view.x, dpr * view.y);
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(painting, 0, 0);
+  for (const s of state.flock) {
+    if (s.found || (s.one && state.phase !== 'searching')) continue;
+    ctx.globalAlpha = s.alpha;
+    ctx.drawImage(s.img, s.x, s.y);
+  }
+  ctx.globalAlpha = 1;
+  // A found sheep brightens once, then fades back into the untouched painting.
+  state.fading = state.fading.filter((f) => {
+    const t = reducedMotion ? 1 : Math.min(1, (now - f.start) / 520);
+    if (t >= 1) return false;
+    ctx.globalAlpha = 1 - t; ctx.drawImage(f.s.img, f.s.x, f.s.y);
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = Math.max(0, 0.55 * (1 - t * 1.8)); ctx.drawImage(f.s.img, f.s.x, f.s.y);
+    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    return true;
+  });
+  if (state.fading.length) requestAnimationFrame(draw);
+}
+
+// ---------- Finding ----------
+function hitTest(p, radius) {
+  let best = null, bestD = Infinity;
+  for (const s of state.flock) {
+    if (s.found || (s.one ? state.phase !== 'searching' : state.phase !== 'flock')) continue;
+    if (p.x < s.x - radius || p.y < s.y - radius || p.x > s.x + s.w + radius || p.y > s.y + s.h + radius) continue;
+    for (const [ox, oy] of [[0, 0], [radius, 0], [-radius, 0], [0, radius], [0, -radius]]) {
+      const lx = Math.floor(p.x + ox - s.x), ly = Math.floor(p.y + oy - s.y);
+      if (lx < 0 || ly < 0 || lx >= s.w || ly >= s.h || s.alphaMap[ly * s.w + lx] < 110) continue;
+      const d = Math.hypot(p.x - (s.x + s.w / 2), p.y - (s.y + s.h / 2));
+      if (d < bestD) { best = s; bestD = d; }
+      break;
+    }
+  }
+  return best;
+}
+function tryFind(clientX, clientY) {
+  if (state.phase !== 'flock' && state.phase !== 'searching') return;
+  const s = hitTest(toScene(clientX, clientY), 6 / view.scale);
+  if (!s) return;
+  s.found = true; state.found += 1;
+  state.fading.push({ s, start: performance.now() });
+  bleat();
+  if (s.one) { state.phase = 'home'; setTimeout(showFinale, reducedMotion ? 0 : 900); }
+  else if (state.found === TOTAL - 1) { state.phase = 'searching'; }
+  updateHud(); requestAnimationFrame(draw);
+}
+function updateHud() {
+  $('found').textContent = state.found;
+  const hint = $('hint');
+  hint.hidden = state.phase !== 'searching';
+  hint.textContent = 'The ninety-nine are safe. One is still lost.';
+}
+function showFinale() { $('finale').hidden = false; $('hud').hidden = true; shepherd.hidden = true; stage.classList.remove('playing'); }
+
+// ---------- The Shepherd is the pointer ----------
+let lastX = 0, idle = null, facing = 1;
+function placeShepherd(x, y) {
+  if (Math.abs(x - lastX) > 1.5) facing = x < lastX ? -1 : 1;
+  lastX = x;
+  const hx = facing === 1 ? DATA.shepherd.hotspot[0] : DATA.shepherd.displayWidth - DATA.shepherd.hotspot[0];
+  shepherd.style.transform = `translate3d(${x - hx}px, ${y - DATA.shepherd.hotspot[1]}px, 0) scaleX(${facing})`;
+  shepherd.hidden = false;
+  shepherd.classList.add('walking');
+  clearTimeout(idle);
+  idle = setTimeout(() => shepherd.classList.remove('walking'), 150);
+}
+
+// ---------- Sound: soft footsteps while he moves, a lamb's bleat on a find ----------
+const sound = { ctx: null, muted: false, noise: null, travel: 0, lastX: null, lastY: null, lastStep: 0, foot: 0 };
+function audio() {
+  if (sound.muted) return null;
+  if (!sound.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    sound.ctx = new AC();
+    const n = Math.floor(sound.ctx.sampleRate * 0.25);
+    sound.noise = sound.ctx.createBuffer(1, n, sound.ctx.sampleRate);
+    const d = sound.noise.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+  }
+  if (sound.ctx.state === 'suspended') sound.ctx.resume();
+  return sound.ctx;
+}
+function footstep() {
+  const ac = sound.ctx;
+  if (sound.muted || !ac || ac.state !== 'running') return;
+  const t = ac.currentTime, src = ac.createBufferSource(), lp = ac.createBiquadFilter(), g = ac.createGain();
+  src.buffer = sound.noise; src.playbackRate.value = 0.7 + Math.random() * 0.25;
+  lp.type = 'lowpass'; lp.frequency.value = 380 + Math.random() * 140;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.014); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+  src.connect(lp).connect(g);
+  if (ac.createStereoPanner) { const pan = ac.createStereoPanner(); pan.pan.value = (sound.foot ^= 1) ? -0.15 : 0.15; g.connect(pan).connect(ac.destination); }
+  else g.connect(ac.destination);
+  src.start(t); src.stop(t + 0.2);
+}
+function stepWith(x, y) {
+  if (sound.lastX !== null) sound.travel += Math.hypot(x - sound.lastX, y - sound.lastY);
+  sound.lastX = x; sound.lastY = y;
+  const now = performance.now();
+  if (sound.travel > 60 && now - sound.lastStep > 290) { sound.travel = 0; sound.lastStep = now; footstep(); }
+}
+function bleat() {
+  const ac = audio();
+  if (!ac) return;
+  const t = ac.currentTime + 0.02, dur = 0.58;
+  const voice = ac.createOscillator(), flutter = ac.createOscillator(), depth = ac.createGain(), trem = ac.createGain();
+  voice.type = 'sawtooth';
+  voice.frequency.setValueAtTime(540, t); voice.frequency.linearRampToValueAtTime(590, t + 0.1); voice.frequency.exponentialRampToValueAtTime(420, t + dur);
+  flutter.frequency.value = 24; depth.gain.value = 0.42; trem.gain.value = 0.55;
+  flutter.connect(depth).connect(trem.gain);
+  const f1 = ac.createBiquadFilter(), f2 = ac.createBiquadFilter(), env = ac.createGain();
+  f1.type = 'bandpass'; f1.frequency.value = 900; f1.Q.value = 4;
+  f2.type = 'bandpass'; f2.frequency.value = 2200; f2.Q.value = 6;
+  env.gain.setValueAtTime(0.0001, t); env.gain.exponentialRampToValueAtTime(0.45, t + 0.05);
+  env.gain.setValueAtTime(0.45, t + dur - 0.16); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  voice.connect(trem); trem.connect(f1); trem.connect(f2); f1.connect(env); f2.connect(env); env.connect(ac.destination);
+  voice.start(t); flutter.start(t); voice.stop(t + dur + 0.05); flutter.stop(t + dur + 0.05);
+}
+
+// ---------- Input: move = shepherd + footsteps, tap = find, drag/scroll = pan, pinch = zoom ----------
+const pointers = new Map();
+let press = null, pinch = null;
+stage.addEventListener('pointerdown', (e) => {
+  if (!stage.classList.contains('playing')) return;
+  audio();
+  stage.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 2) {
+    const [a, b] = [...pointers.values()];
+    pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) }; press = null;
+  } else {
+    press = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: false };
+  }
+  placeShepherd(e.clientX, e.clientY);
+});
+stage.addEventListener('pointermove', (e) => {
+  if (!stage.classList.contains('playing')) return;
+  placeShepherd(e.clientX, e.clientY);
+  stepWith(e.clientX, e.clientY);
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pinch && pointers.size === 2) {
+    const [a, b] = [...pointers.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+    zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, d / pinch.d); pinch.d = d;
+  } else if (press) {
+    const dx = e.clientX - press.x, dy = e.clientY - press.y;
+    if (Math.hypot(dx, dy) > 6) press.moved = true;
+    if (press.moved) { view.x = press.vx + dx; view.y = press.vy + dy; clampView(); draw(); }
+  }
+});
+function release(e) {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinch = null;
+  if (press && !press.moved && e.type === 'pointerup') tryFind(e.clientX, e.clientY);
+  press = null;
+  if (e.pointerType !== 'mouse') setTimeout(() => { if (!pointers.size) shepherd.hidden = true; }, 700);
+}
+stage.addEventListener('pointerup', release);
+stage.addEventListener('pointercancel', release);
+stage.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') { shepherd.hidden = true; sound.lastX = null; } });
+stage.addEventListener('wheel', (e) => {
+  if (!stage.classList.contains('playing')) return;
+  e.preventDefault();
+  if (e.ctrlKey) zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.01)); // trackpad pinch
+  else { view.x -= e.deltaX; view.y -= e.deltaY; clampView(); draw(); }
+}, { passive: false });
+window.addEventListener('keydown', (e) => {
+  if (!stage.classList.contains('playing')) return;
+  if (e.key === '+' || e.key === '=') zoomAt(innerWidth / 2, innerHeight / 2, 1.25);
+  if (e.key === '-' || e.key === '_') zoomAt(innerWidth / 2, innerHeight / 2, 0.8);
+});
+window.addEventListener('resize', resize);
+
+// ---------- Menu / game flow ----------
+async function begin() {
+  audio();
+  state.flock = chooseFlock(state.tier, Math.floor(Math.random() * 1e9));
+  state.found = 0; state.phase = 'flock'; state.fading = [];
+  $('menu').hidden = true; $('finale').hidden = true; $('hud').hidden = false; $('corner').hidden = false;
+  stage.classList.add('playing');
+  view.scale = view.fit; clampView(); updateHud(); draw();
+}
+function toMenu() {
+  state.phase = 'menu';
+  $('menu').hidden = false; $('hud').hidden = true; $('corner').hidden = true; $('finale').hidden = true;
+  shepherd.hidden = true; stage.classList.remove('playing');
+}
+$('begin').onclick = begin;
+$('again').onclick = begin;
+$('toMenu').onclick = toMenu;
+$('mute').onclick = () => {
+  sound.muted = !sound.muted;
+  $('mute').setAttribute('aria-pressed', String(sound.muted));
+  $('mute').setAttribute('aria-label', sound.muted ? 'Unmute sound' : 'Mute sound');
+  $('waves').toggleAttribute('hidden', sound.muted); $('cross').toggleAttribute('hidden', !sound.muted);
+  if (sound.muted && sound.ctx) sound.ctx.suspend(); else audio();
+};
+Object.entries(TIERS).forEach(([key, tier]) => {
+  const b = document.createElement('button');
+  b.className = 'tier'; b.setAttribute('role', 'radio'); b.dataset.tier = key; b.textContent = tier.label;
+  b.onclick = () => { state.tier = key; document.querySelectorAll('.tier').forEach((t) => t.setAttribute('aria-checked', String(t.dataset.tier === key))); };
+  $('tiers').appendChild(b);
+});
+document.querySelector(`.tier[data-tier="${state.tier}"]`).setAttribute('aria-checked', 'true');
+$('sceneLine').textContent = `${DATA.scene.title} · ${DATA.scene.reference}`;
+$('fineprint').textContent = `Art proof, round three · ${SW} × ${SH}`;
+$('menuBg').src = DATA.scene.img;
+shepherd.src = DATA.shepherd.src;
+shepherd.style.height = DATA.shepherd.displayHeight + 'px';
+
+(async () => {
+  const [img, ...sheep] = await Promise.all([loadImage(DATA.scene.img), ...DATA.patches.map((p) => loadImage(p.src))]);
+  painting = img;
+  DATA.patches.forEach((p, i) => {
+    p.img = sheep[i];
+    const c = document.createElement('canvas'); c.width = p.w; c.height = p.h;
+    const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(p.img, 0, 0);
+    const d = g.getImageData(0, 0, p.w, p.h).data, alpha = new Uint8ClampedArray(p.w * p.h);
+    for (let k = 0; k < alpha.length; k++) alpha[k] = d[k * 4 + 3];
+    p.alphaMap = alpha;
+  });
+  resize();
+})();
+</script>

@@ -81,6 +81,11 @@ export interface JournalEntry {
   title: string;
   body: string;
   linkedMessageIds?: string[];
+  // Optional attachments so a Notes entry can show up on My Library's
+  // "tied to Scripture"/sermon shelves without a separate store -- see
+  // LibraryScreen.tsx.
+  linkedVerseReference?: string; // e.g. "Isaiah 53:5", same shape as FavoriteItem.reference
+  linkedSermon?: { title: string; url: string };
   createdAt: string;
   updatedAt: string;
 }
@@ -90,6 +95,38 @@ export interface FavoriteItem {
   type: 'verse' | 'message';
   reference?: string; // e.g. "Isaiah 53:5"
   text: string;
+  createdAt: string;
+}
+
+// A user's own bookmark of an outbound sermon link (SermonAudio, etc.) --
+// title is user-entered since we never scrape/host the third-party page,
+// only the link itself. See LibraryScreen.tsx / SermonsLandingScreen.tsx.
+export interface SavedSermon {
+  id: string;
+  title: string;
+  url: string;
+  createdAt: string;
+}
+
+// The 5 highlighter pen colors -- see HighlighterToolbar.tsx.
+export type HighlightColor = 'yellow' | 'green' | 'blue' | 'pink' | 'orange';
+
+// What a single highlight is anchored to. A Bible verse carries no
+// book/chapter/translation of its own (see bibleApi.ts's BibleVerse), so
+// the coordinate below is what "re-opening the same passage" matches
+// against -- the same ad hoc reference-building ScriptureSearchScreen's
+// addFavorite call already does. A journal highlight is anchored to a
+// paragraph index within that entry's body (split on blank lines each
+// time it's opened -- see JournalScreen.tsx), since journal text has no
+// fixed verse-like unit of its own.
+export type HighlightTarget =
+  | { kind: 'verse'; translationId: string; bookId: string; chapter: number; verseNumber: number }
+  | { kind: 'journalParagraph'; journalEntryId: string; paragraphIndex: number };
+
+export interface Highlight {
+  id: string;
+  target: HighlightTarget;
+  color: HighlightColor;
   createdAt: string;
 }
 

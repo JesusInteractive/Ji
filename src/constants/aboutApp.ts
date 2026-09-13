@@ -21,14 +21,30 @@
 export const ABOUT_APP = {
   title: 'Jesus Interactive App',
   intro:
-    'Jesus Interactive is a premium Global AI Bible Companion -- Multi-Language Bible Tools in 117 languages, a Sermon & Bible Study Writer, Ask Jesus, prayer, study, and worship in one app.\n\n' +
-    'Read Bibles by language. Open Christian books and testimonies. Generate a full sermon or Bible study on any topic or passage. Ask Jesus questions, keep a Journal, post on the Prayer Wall, and start the day with Daily Devotions and a daily promise.\n\n' +
-    'Built for people who want the full toolkit in one place: Scripture, study, sermon prep, prayer, and worship. No clutter. Dedicated to Jesus for His glory.',
+    'Jesus Interactive is your companion in the Word -- Ask Jesus, an interactive biblical atlas, Bible games, sermons, prayer, study, and worship in one app.\n\n' +
+    'Read Bibles by language. Open Christian books and testimonies. Generate a full sermon or Bible study on any topic or passage. Ask Jesus questions, translate the gospel for someone in their own language, keep a Journal, post on the Prayer Wall, and start the day with Daily Devotions and a daily promise.\n\n' +
+    'Scripture, sermons, the Games Hub, Prayer Wall, and The Passion Relics are free to everyone. Jesus Interactive Plus unlocks unlimited Ask Jesus, the full Journeys Through the Bible atlas, and the Gospel Translator. Dedicated to Jesus for His glory.',
   sectionsHeading: 'App Features',
   sections: [
     {
       heading: 'Ask Jesus',
       body: 'A Scripture-rooted companion for your questions, burdens, and needs -- not a substitute for the Bible, prayer, or your local church. Always test what you read against Scripture.',
+    },
+    {
+      heading: 'Journeys Through the Bible',
+      body: 'An interactive biblical atlas -- real satellite map, biblical sites, prophets, and journeys through the Holy Land, each with scripture and sourced background.',
+    },
+    {
+      heading: 'The Passion Relics',
+      body: 'The Shroud of Turin, crown of thorns, and other traditional relics of the crucifixion -- scripture, tradition, and an honest science file, clearly labeled as to which is which.',
+    },
+    {
+      heading: 'Gospel Translator',
+      body: 'Live, two-way speech translation for sharing the gospel with someone in their own language.',
+    },
+    {
+      heading: 'Jesus Interactive Games Hub',
+      body: 'Ten free Bible word and trivia games -- crossword, word search, trivia, memory match, and more -- generated from Scripture, no ads or paywall.',
     },
     {
       heading: 'Guided Prayer',
@@ -45,10 +61,6 @@ export const ABOUT_APP = {
     {
       heading: 'Scripture',
       body: 'Open the Bible and stay in the text.',
-    },
-    {
-      heading: 'Bible Word Search',
-      body: 'Find hidden biblical names, places, and words in a letter grid.',
     },
     {
       heading: 'Journal',
@@ -73,11 +85,11 @@ export const ABOUT_APP = {
     },
     {
       heading: 'Audio Jesus',
-      body: 'Platinum members can hear AI Jesus read select Study Tools titles aloud, in their language.',
+      body: 'Subscribers can hear AI Jesus read select Study Tools titles aloud, in their language.',
     },
     {
       heading: '24/7 Praise and Worship',
-      body: 'Worship radio from licensed Christian radio stations -- tap a station to listen. Availability outside the United States isn\'t guaranteed yet.',
+      body: 'Worship radio from licensed Christian radio stations. Launching soon -- not live yet.',
     },
     {
       heading: 'Watching on a Bigger Screen',

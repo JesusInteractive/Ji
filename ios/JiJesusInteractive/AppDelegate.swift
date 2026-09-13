@@ -26,11 +26,6 @@ class AppDelegate: ExpoAppDelegate {
       withModuleName: "main",
       in: window,
       launchOptions: launchOptions)
-    // See ArrowKeyScrollModule.swift's own comment -- this is what makes
-    // a hardware keyboard's up/down arrows scroll the app.
-    if let window = window {
-      ArrowKeyResponderView.shared.install(in: window)
-    }
 #endif
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

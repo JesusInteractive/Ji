@@ -1,44 +1,55 @@
-// A single unlock code, just for you (the founder), to get free
-// Platinum access without going through the (currently unwired) real
-// payment flow. Checked client-side in TokenGiftScreen's redeem box,
-// ahead of the regular token gift-code path -- entering it calls
-// selectPlan('platinum') directly instead of adding tokens.
-//
-// SECURITY: EXPO_PUBLIC_ values are inlined into the client bundle in
-// plain text, so this is NOT a real secret; anyone who decompiles the app
-// can read it. That's an acceptable trade-off only because there's no real
-// billing wired up yet (selecting Platinum from Pricing is already free
-// for everyone right now -- see constants/pricing.ts). Once you wire a
-// real payment processor (RevenueCat/StoreKit/Play Billing) to
-// PricingScreen, revisit this: move the check server-side (e.g. the
-// backend validates the code and returns a signed entitlement) so it
-// can't be lifted out of the bundle and shared.
-//
-// Change EXPO_PUBLIC_FOUNDER_CODE in .env to whatever you want; this
-// fallback only applies if that's unset.
-export const FOUNDER_UNLOCK_CODE = (process.env.EXPO_PUBLIC_FOUNDER_CODE ?? 'JESUSFOUNDER').toUpperCase();
+// Client for backend/server.js's POST /v1/founder-access/redeem --
+// checks a founder/family/dev free-Platinum code. The codes themselves
+// used to live here as EXPO_PUBLIC_ values, which are inlined into the
+// client bundle in plain text and readable by decompiling the app; now
+// the backend holds them (server-only env vars, never EXPO_PUBLIC_*)
+// and this file just asks it whether a code is valid. See server.js's
+// own comment on that route for the full reasoning.
+import { withAuthRetry } from './backendAuth';
+import { getDeviceId } from './deviceId';
 
-export function isFounderCode(code: string): boolean {
-  return code.trim().toUpperCase() === FOUNDER_UNLOCK_CODE;
+const API_BASE_URL: string = process.env.EXPO_PUBLIC_API_BASE ?? 'https://api.jesusinteractive.com';
+
+async function request<T>(path: string, authToken: string, options: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`API request failed (${res.status}): ${path} ${body}`);
+  }
+  return res.json() as Promise<T>;
 }
 
-// Same trade-off as FOUNDER_UNLOCK_CODE above -- a second shared code so
-// family members can get free Platinum access without handing out the
-// founder code itself. Change EXPO_PUBLIC_FAMILY_CODE in .env to whatever
-// you want; this fallback only applies if that's unset.
-export const FAMILY_UNLOCK_CODE = (process.env.EXPO_PUBLIC_FAMILY_CODE ?? 'JESUSFAMILY').toUpperCase();
+export type FounderAccessKind = 'founder' | 'family' | 'dev';
 
-export function isFamilyCode(code: string): boolean {
-  return code.trim().toUpperCase() === FAMILY_UNLOCK_CODE;
+export interface FounderAccessResult {
+  success: boolean;
+  kind?: FounderAccessKind;
 }
 
-// Third shared code, for testers/devs -- same trade-off and same effect
-// (free Platinum) as FOUNDER_UNLOCK_CODE/FAMILY_UNLOCK_CODE above, just a
-// separate word so it can be handed to a different group without reusing
-// the other two. Change EXPO_PUBLIC_DEV_CODE in .env to whatever you
-// want; this fallback only applies if that's unset.
-export const DEV_UNLOCK_CODE = (process.env.EXPO_PUBLIC_DEV_CODE ?? 'JESUSDEV').toUpperCase();
-
-export function isDevCode(code: string): boolean {
-  return code.trim().toUpperCase() === DEV_UNLOCK_CODE;
+// Looks like any other code to a caller until it succeeds -- doesn't
+// distinguish "wrong code" from "network error" beyond success: false,
+// since TokenGiftScreen falls through to the regular gift-code path
+// either way (see its own comment on handleRedeem).
+export async function redeemFounderAccessCode(code: string): Promise<FounderAccessResult> {
+  const trimmed = code.trim();
+  if (!trimmed) return { success: false };
+  try {
+    const deviceId = await getDeviceId();
+    const data = await withAuthRetry((token) =>
+      request<{ ok: boolean; plan: string; kind: FounderAccessKind }>('/v1/founder-access/redeem', token, {
+        method: 'POST',
+        body: JSON.stringify({ deviceId, code: trimmed }),
+      })
+    );
+    return { success: true, kind: data.kind };
+  } catch {
+    return { success: false };
+  }
 }

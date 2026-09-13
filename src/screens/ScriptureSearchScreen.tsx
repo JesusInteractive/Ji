@@ -29,13 +29,15 @@ import {
   type BibleTranslation,
 } from '../services/bibleApi';
 import { useApp } from '../context/AppContext';
-import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import PaywallLockScreen from '../components/PaywallLockScreen';
 import { logEvent } from '../services/analytics';
 import { useI18n, interpolate } from '../i18n';
 import MagnifyButton from '../components/MagnifyButton';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { parseScriptureReference } from '../utils/parseScriptureReference';
+import HighlighterToolbar from '../components/HighlighterToolbar';
+import HighlightableText from '../components/HighlightableText';
+import HighlightEditSheet from '../components/HighlightEditSheet';
+import type { Highlight, HighlightColor } from '../types';
 
 const DEFAULT_TRANSLATION_ID = 'BSB';
 
@@ -48,8 +50,9 @@ type Filter = 'all' | 'torah';
 type Props = BottomTabScreenProps<MainTabParamList, 'Bible'>;
 
 export default function ScriptureSearchScreen({ route, navigation }: Props) {
-  const { addFavorite, textZoom } = useApp();
-  const { hasAccess } = useFeatureAccess();
+  const { addFavorite, textZoom, highlights, addHighlight, removeHighlight, setHighlightColor } = useApp();
+  const [activeHighlightColor, setActiveHighlightColor] = useState<HighlightColor | null>(null);
+  const [editingHighlight, setEditingHighlight] = useState<Highlight | null>(null);
   const { t } = useI18n();
   const [query, setQuery] = useState(route.params?.initialQuery ?? '');
   const [filter, setFilter] = useState<Filter>('all');
@@ -193,19 +196,8 @@ export default function ScriptureSearchScreen({ route, navigation }: Props) {
   }, [books, route.params?.initialQuery, translation, loadChapter]);
 
   useEffect(() => {
-    if (hasAccess) logEvent('feature_used', { feature: 'scriptureSearch' });
-  }, [hasAccess]);
-
-  // Placed after every hook above (rules of hooks) and before this
-  // screen's own conditional render branches below.
-  if (!hasAccess) {
-    return (
-      <PaywallLockScreen
-        featureName="Scripture Search"
-        onSubscribe={() => navigation.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
-      />
-    );
-  }
+    logEvent('feature_used', { feature: 'scriptureSearch' });
+  }, []);
 
   const selectTranslation = (id: string) => {
     setTranslation(id);
@@ -328,6 +320,12 @@ export default function ScriptureSearchScreen({ route, navigation }: Props) {
           </TouchableOpacity>
         )}
 
+        {chapter && chapter.verses.length > 0 && (
+          <View style={styles.highlighterBar}>
+            <HighlighterToolbar activeColor={activeHighlightColor} onSelectColor={setActiveHighlightColor} />
+          </View>
+        )}
+
         {chapterLoading ? (
           <ActivityIndicator style={{ marginTop: 40 }} color={Colors.royal} />
         ) : chapterError ? (
@@ -338,23 +336,61 @@ export default function ScriptureSearchScreen({ route, navigation }: Props) {
               ref={verseListRef}
               data={chapter?.verses ?? []}
               keyExtractor={(v) => String(v.number)}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[styles.verseRow, item.number === highlightVerseNum && styles.verseRowHighlight]}
-                  onLongPress={() =>
-                    addFavorite({
-                      id: `${Date.now()}`,
-                      type: 'verse',
-                      reference: `${selectedBook.name} ${chapterNum}:${item.number}`,
-                      text: item.text,
-                      createdAt: new Date().toISOString(),
-                    })
-                  }
-                >
-                  <Text style={styles.verseNum}>{item.number}</Text>
-                  <Text style={styles.verseText}>{item.text}</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const verseHighlight = highlights.find(
+                  (h) =>
+                    h.target.kind === 'verse' &&
+                    h.target.translationId === translation &&
+                    h.target.bookId === selectedBook.id &&
+                    h.target.chapter === chapterNum &&
+                    h.target.verseNumber === item.number
+                );
+                return (
+                  <TouchableOpacity
+                    style={[styles.verseRow, item.number === highlightVerseNum && styles.verseRowHighlight]}
+                    onLongPress={() =>
+                      addFavorite({
+                        id: `${Date.now()}`,
+                        type: 'verse',
+                        reference: `${selectedBook.name} ${chapterNum}:${item.number}`,
+                        text: item.text,
+                        createdAt: new Date().toISOString(),
+                      })
+                    }
+                  >
+                    <Text style={styles.verseNum}>{item.number}</Text>
+                    {/* Wrapped in a flex:1 View here (rather than inside
+                        HighlightableText itself) since that component's
+                        outer touchable only takes a style when a highlight
+                        is present -- this row's flexDirection:'row' layout
+                        needs the flex:1 unconditionally so verse text still
+                        wraps correctly with no highlight applied. */}
+                    <View style={{ flex: 1 }}>
+                      <HighlightableText
+                        text={item.text}
+                        highlight={verseHighlight}
+                        activeColor={activeHighlightColor}
+                        style={styles.verseText}
+                        onApply={() =>
+                          addHighlight({
+                            id: `${Date.now()}`,
+                            target: {
+                              kind: 'verse',
+                              translationId: translation,
+                              bookId: selectedBook.id,
+                              chapter: chapterNum,
+                              verseNumber: item.number,
+                            },
+                            color: activeHighlightColor!,
+                            createdAt: new Date().toISOString(),
+                          })
+                        }
+                        onEditExisting={() => verseHighlight && setEditingHighlight(verseHighlight)}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
               contentContainerStyle={styles.list}
               onLayout={({ nativeEvent }) => {
                 setVerseViewportHeight(nativeEvent.layout.height);
@@ -396,6 +432,15 @@ export default function ScriptureSearchScreen({ route, navigation }: Props) {
           </View>
         )}
         {translationModal}
+        <HighlightEditSheet
+          highlight={editingHighlight}
+          onChangeColor={(id, color) => setHighlightColor(id, color)}
+          onRemove={(id) => {
+            removeHighlight(id);
+            setEditingHighlight(null);
+          }}
+          onClose={() => setEditingHighlight(null)}
+        />
         </View>
         <MagnifyButton style={{ bottom: 80 }} />
       </ImageBackground>
@@ -430,10 +475,9 @@ export default function ScriptureSearchScreen({ route, navigation }: Props) {
           <Text style={[styles.filterChipText, filter === 'torah' && styles.filterChipTextActive]}>{t.scriptureSearch.filterTorah}</Text>
         </TouchableOpacity>
         {/* Opens Blue Letter Bible's own site in the device browser -- a
-            plain outbound link (same as ApprovedCharitiesScreen's charity
-            links), not embedded/reproduced content, for anyone who wants
-            to cross-reference translations or study tools beyond what
-            this app's own translation picker offers. */}
+            plain outbound link, not embedded/reproduced content, for
+            anyone who wants to cross-reference translations or study
+            tools beyond what this app's own translation picker offers. */}
         <TouchableOpacity
           style={[styles.filterChip, styles.blueLetterBibleChip]}
           onPress={() => Linking.openURL('https://www.blueletterbible.org/')}
@@ -556,6 +600,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.royal,
   },
   translateChapterButtonText: { fontSize: 12.5, fontWeight: '700', color: Colors.gold },
+  highlighterBar: { paddingHorizontal: 16, marginBottom: 8 },
   commonQuestionsCard: {
     flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff',
     marginHorizontal: 16, marginBottom: 12, borderRadius: 10, paddingHorizontal: 14,

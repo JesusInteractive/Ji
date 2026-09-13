@@ -3,9 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
   ChatMessage,
   FavoriteItem,
+  Highlight,
   JournalEntry,
   PlanId,
   PrayerNote,
+  SavedSermon,
   TestimonyNote,
 } from '../types';
 import { encryptLocalText, decryptLocalText } from '../services/security';
@@ -13,6 +15,7 @@ import { sendDeviceHeartbeat } from '../services/testimonyApi';
 import { getDeviceId } from '../services/deviceId';
 import { initPurchases } from '../services/purchases';
 import { logEvent } from '../services/analytics';
+import { AI_DISCLOSURE, USER_AGREEMENT, PRIVACY_POLICY } from '../constants/legal';
 
 // Shared by MagnifyButton (Chat/Scripture/Study Tools) and Settings'
 // "Larger text" row, so both read/write the same textZoom scale and stay
@@ -48,6 +51,10 @@ export const STORAGE_KEYS = {
   trialStartedLogged: 'ji_trial_started_logged_v1',
   trialDayReturnedLoggedDate: 'ji_trial_day_returned_logged_date_v1',
   trialExpiredLogged: 'ji_trial_expired_logged_v1',
+  // Plain (unencrypted) like `favorites` above -- a highlight carries no
+  // private free text, just a verse/paragraph coordinate and a color.
+  highlights: 'ji_highlights_v1',
+  savedSermons: 'ji_saved_sermons_v1',
 };
 
 // Local calendar date (not UTC) as YYYY-MM-DD -- keys the persisted daily
@@ -98,6 +105,24 @@ interface AppContextValue {
   acceptDisclosure: () => void;
   hasAcceptedAgreement: boolean;
   acceptAgreement: () => void;
+  hasAcceptedPrivacy: boolean;
+  acceptPrivacy: () => void;
+  // Accepts all three documents at once, for the single-scroll Agreements
+  // screen: one state update and one storage write, so the three consent
+  // records can't overwrite each other the way three back-to-back
+  // accept* calls would (each persists from the same stale consentRecords).
+  acceptAllAgreements: () => void;
+  // True when the recorded consent for any document is missing or for an
+  // older version (its lastUpdated changed since). RootNavigator shows the
+  // Agreements screen again before Main while this is true.
+  needsLegalReconsent: boolean;
+  // Audit trail for the three consent checkboxes above -- when each was
+  // accepted and which doc version (the legal doc's own `lastUpdated`
+  // string) was shown at the time, so a future doc revision can tell
+  // whether a given user consented to the current text or a stale one.
+  // Purely additive: onboardingComplete/gating logic still runs off the
+  // plain booleans above, this is just the record of what was agreed to.
+  consentRecords: Partial<Record<'disclosure' | 'agreement' | 'privacy', { acceptedAt: string; docVersion: string }>>;
   hasSeenEntrance: boolean;
   markEntranceSeen: () => void;
   hasSelectedPlan: boolean;
@@ -141,6 +166,19 @@ interface AppContextValue {
   favorites: FavoriteItem[];
   addFavorite: (f: FavoriteItem) => void;
   removeFavorite: (id: string) => void;
+
+  // Highlighter marks -- Bible verses and Journal paragraphs. Centralized
+  // here (not screen-local) since both the Bible screen and My Library
+  // need to read across the same array. See types/index.ts's Highlight.
+  highlights: Highlight[];
+  addHighlight: (h: Highlight) => void;
+  removeHighlight: (id: string) => void;
+  setHighlightColor: (id: string, color: Highlight['color']) => void;
+
+  // My Library's bookmarked outbound sermon links (SermonAudio, etc.)
+  savedSermons: SavedSermon[];
+  addSavedSermon: (s: SavedSermon) => void;
+  removeSavedSermon: (id: string) => void;
 
   // Prayer wall (local-first; see PrayerWallScreen for the privacy model)
   prayerNotes: PrayerNote[];
@@ -214,6 +252,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [hasSelectedLanguage, setHasSelectedLanguage] = useState(false);
   const [hasAcceptedDisclosure, setHasAcceptedDisclosure] = useState(false);
   const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false);
+  const [hasAcceptedPrivacy, setHasAcceptedPrivacy] = useState(false);
+  const [consentRecords, setConsentRecords] = useState<AppContextValue['consentRecords']>({});
   const [hasSeenEntrance, setHasSeenEntrance] = useState(false);
   const [plan, setPlan] = useState<PlanId | null>(null);
   const [planExpiresAt, setPlanExpiresAtState] = useState<string | null>(null);
@@ -221,6 +261,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const [savedSermons, setSavedSermons] = useState<SavedSermon[]>([]);
   const [prayerNotes, setPrayerNotes] = useState<PrayerNote[]>([]);
   const [testimonyNotes, setTestimonyNotes] = useState<TestimonyNote[]>([]);
   const [completedWordSearchPuzzles, setCompletedWordSearchPuzzles] = useState<number[]>([]);
@@ -245,7 +287,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       let heartbeatPlan: PlanId = 'free';
       let heartbeatExpiresAt: string | null = null;
       try {
-        const [onboardingRaw, planRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, wordSearchCompletedRaw, planExpiresAtRaw, cachedTrialStartedAt, emergencyContactsRaw] =
+        const [onboardingRaw, planRaw, messagesRaw, journalRaw, favRaw, prayersRaw, testimoniesRaw, profileRaw, wordSearchCompletedRaw, planExpiresAtRaw, cachedTrialStartedAt, emergencyContactsRaw, highlightsRaw, savedSermonsRaw] =
           await Promise.all([
             AsyncStorage.getItem(STORAGE_KEYS.onboarding),
             AsyncStorage.getItem(STORAGE_KEYS.plan),
@@ -259,6 +301,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             AsyncStorage.getItem(STORAGE_KEYS.planExpiresAt),
             AsyncStorage.getItem(STORAGE_KEYS.trialStartedAt),
             AsyncStorage.getItem(STORAGE_KEYS.emergencyContacts),
+            AsyncStorage.getItem(STORAGE_KEYS.highlights),
+            AsyncStorage.getItem(STORAGE_KEYS.savedSermons),
           ]);
         if (cachedTrialStartedAt) setTrialStartedAt(cachedTrialStartedAt);
 
@@ -267,6 +311,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setHasSelectedLanguage(!!parsed.hasSelectedLanguage);
           setHasAcceptedDisclosure(!!parsed.hasAcceptedDisclosure);
           setHasAcceptedAgreement(!!parsed.hasAcceptedAgreement);
+          setHasAcceptedPrivacy(!!parsed.hasAcceptedPrivacy);
+          setConsentRecords(parsed.consentRecords ?? {});
           setHasSeenEntrance(!!parsed.hasSeenEntrance);
         }
         if (planRaw) {
@@ -293,6 +339,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const journal = await readEncryptedJson<JournalEntry[]>(journalRaw);
         if (journal) setJournalEntries(journal);
         if (favRaw) setFavorites(JSON.parse(favRaw));
+        if (highlightsRaw) setHighlights(JSON.parse(highlightsRaw));
+        if (savedSermonsRaw) setSavedSermons(JSON.parse(savedSermonsRaw));
         if (profileRaw) {
           const parsed = JSON.parse(profileRaw);
           setDisplayNameState(parsed.displayName ?? '');
@@ -393,13 +441,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [ready, trialStartedAt, isInTrial]);
 
   const persistOnboarding = useCallback(
-    (patch: Partial<{ hasSelectedLanguage: boolean; hasAcceptedDisclosure: boolean; hasAcceptedAgreement: boolean; hasSeenEntrance: boolean }>) => {
+    (
+      patch: Partial<{
+        hasSelectedLanguage: boolean;
+        hasAcceptedDisclosure: boolean;
+        hasAcceptedAgreement: boolean;
+        hasAcceptedPrivacy: boolean;
+        consentRecords: AppContextValue['consentRecords'];
+        hasSeenEntrance: boolean;
+      }>
+    ) => {
       AsyncStorage.setItem(
         STORAGE_KEYS.onboarding,
-        JSON.stringify({ hasSelectedLanguage, hasAcceptedDisclosure, hasAcceptedAgreement, hasSeenEntrance, ...patch })
+        JSON.stringify({
+          hasSelectedLanguage,
+          hasAcceptedDisclosure,
+          hasAcceptedAgreement,
+          hasAcceptedPrivacy,
+          consentRecords,
+          hasSeenEntrance,
+          ...patch,
+        })
       ).catch(() => {});
     },
-    [hasSelectedLanguage, hasAcceptedDisclosure, hasAcceptedAgreement, hasSeenEntrance]
+    [hasSelectedLanguage, hasAcceptedDisclosure, hasAcceptedAgreement, hasAcceptedPrivacy, consentRecords, hasSeenEntrance]
   );
 
   const markLanguageSelected = useCallback(() => {
@@ -407,14 +472,45 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     persistOnboarding({ hasSelectedLanguage: true });
   }, [persistOnboarding]);
 
+  // Each accept* function below records both the plain boolean gate
+  // (unchanged, still what onboardingComplete/RootNavigator branch on)
+  // and a consentRecords entry with when + which doc version was shown --
+  // an audit trail, not a gating mechanism. docVersion reads each legal
+  // doc's own `lastUpdated` string, so a future text revision naturally
+  // produces a new version stamp without any extra bookkeeping here.
   const acceptDisclosure = useCallback(() => {
     setHasAcceptedDisclosure(true);
-    persistOnboarding({ hasAcceptedDisclosure: true });
-  }, [persistOnboarding]);
+    const record = { acceptedAt: new Date().toISOString(), docVersion: AI_DISCLOSURE.lastUpdated };
+    setConsentRecords((prev) => ({ ...prev, disclosure: record }));
+    persistOnboarding({ hasAcceptedDisclosure: true, consentRecords: { ...consentRecords, disclosure: record } });
+  }, [persistOnboarding, consentRecords]);
 
   const acceptAgreement = useCallback(() => {
     setHasAcceptedAgreement(true);
-    persistOnboarding({ hasAcceptedAgreement: true });
+    const record = { acceptedAt: new Date().toISOString(), docVersion: USER_AGREEMENT.lastUpdated };
+    setConsentRecords((prev) => ({ ...prev, agreement: record }));
+    persistOnboarding({ hasAcceptedAgreement: true, consentRecords: { ...consentRecords, agreement: record } });
+  }, [persistOnboarding, consentRecords]);
+
+  const acceptPrivacy = useCallback(() => {
+    setHasAcceptedPrivacy(true);
+    const record = { acceptedAt: new Date().toISOString(), docVersion: PRIVACY_POLICY.lastUpdated };
+    setConsentRecords((prev) => ({ ...prev, privacy: record }));
+    persistOnboarding({ hasAcceptedPrivacy: true, consentRecords: { ...consentRecords, privacy: record } });
+  }, [persistOnboarding, consentRecords]);
+
+  const acceptAllAgreements = useCallback(() => {
+    const acceptedAt = new Date().toISOString();
+    const records = {
+      disclosure: { acceptedAt, docVersion: AI_DISCLOSURE.lastUpdated },
+      agreement: { acceptedAt, docVersion: USER_AGREEMENT.lastUpdated },
+      privacy: { acceptedAt, docVersion: PRIVACY_POLICY.lastUpdated },
+    };
+    setHasAcceptedDisclosure(true);
+    setHasAcceptedAgreement(true);
+    setHasAcceptedPrivacy(true);
+    setConsentRecords(records);
+    persistOnboarding({ hasAcceptedDisclosure: true, hasAcceptedAgreement: true, hasAcceptedPrivacy: true, consentRecords: records });
   }, [persistOnboarding]);
 
   const markEntranceSeen = useCallback(() => {
@@ -479,6 +575,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setFavorites((prev) => {
       const next = prev.filter((f) => f.id !== id);
       AsyncStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const addHighlight = useCallback((h: Highlight) => {
+    setHighlights((prev) => {
+      const next = [h, ...prev];
+      AsyncStorage.setItem(STORAGE_KEYS.highlights, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const removeHighlight = useCallback((id: string) => {
+    setHighlights((prev) => {
+      const next = prev.filter((h) => h.id !== id);
+      AsyncStorage.setItem(STORAGE_KEYS.highlights, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const setHighlightColor = useCallback((id: string, color: Highlight['color']) => {
+    setHighlights((prev) => {
+      const next = prev.map((h) => (h.id === id ? { ...h, color } : h));
+      AsyncStorage.setItem(STORAGE_KEYS.highlights, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const addSavedSermon = useCallback((s: SavedSermon) => {
+    setSavedSermons((prev) => {
+      const next = [s, ...prev];
+      AsyncStorage.setItem(STORAGE_KEYS.savedSermons, JSON.stringify(next)).catch(() => {});
+      return next;
+    });
+  }, []);
+
+  const removeSavedSermon = useCallback((id: string) => {
+    setSavedSermons((prev) => {
+      const next = prev.filter((s) => s.id !== id);
+      AsyncStorage.setItem(STORAGE_KEYS.savedSermons, JSON.stringify(next)).catch(() => {});
       return next;
     });
   }, []);
@@ -590,6 +726,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setHasSelectedLanguage(false);
     setHasAcceptedDisclosure(false);
     setHasAcceptedAgreement(false);
+    setHasAcceptedPrivacy(false);
+    setConsentRecords({});
     setHasSeenEntrance(false);
     setPlan(null);
     setPlanExpiresAtState(null);
@@ -601,6 +739,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setMessages([]);
     setJournalEntries([]);
     setFavorites([]);
+    setHighlights([]);
+    setSavedSermons([]);
     setPrayerNotes([]);
     setTestimonyNotes([]);
     setCompletedWordSearchPuzzles([]);
@@ -620,6 +760,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       acceptDisclosure,
       hasAcceptedAgreement,
       acceptAgreement,
+      hasAcceptedPrivacy,
+      acceptPrivacy,
+      acceptAllAgreements,
+      consentRecords,
+      needsLegalReconsent:
+        consentRecords.disclosure?.docVersion !== AI_DISCLOSURE.lastUpdated ||
+        consentRecords.agreement?.docVersion !== USER_AGREEMENT.lastUpdated ||
+        consentRecords.privacy?.docVersion !== PRIVACY_POLICY.lastUpdated,
       hasSeenEntrance,
       markEntranceSeen,
       hasSelectedPlan: plan !== null,
@@ -627,7 +775,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       selectPlan,
       planExpiresAt,
       onboardingComplete:
-        hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasSeenEntrance,
+        hasSelectedLanguage && hasAcceptedDisclosure && hasAcceptedAgreement && hasAcceptedPrivacy && hasSeenEntrance,
       trialStartedAt,
       daysSinceFirstOpen,
       isInTrial,
@@ -641,6 +789,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       favorites,
       addFavorite,
       removeFavorite,
+      highlights,
+      addHighlight,
+      removeHighlight,
+      setHighlightColor,
+      savedSermons,
+      addSavedSermon,
+      removeSavedSermon,
       prayerNotes,
       addPrayerNote,
       testimonyNotes,
@@ -672,10 +827,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       hasSelectedLanguage, markLanguageSelected, hasAcceptedDisclosure, acceptDisclosure,
-      hasAcceptedAgreement, acceptAgreement, hasSeenEntrance, markEntranceSeen, plan, selectPlan,
+      hasAcceptedAgreement, acceptAgreement, hasAcceptedPrivacy, acceptPrivacy, acceptAllAgreements, consentRecords,
+      hasSeenEntrance, markEntranceSeen, plan, selectPlan,
       planExpiresAt, trialStartedAt, daysSinceFirstOpen, isInTrial, hasFullAccess,
       messages, addMessage, clearMessages,
       journalEntries, addJournalEntry, removeJournalEntry, favorites, addFavorite, removeFavorite,
+      highlights, addHighlight, removeHighlight, setHighlightColor,
+      savedSermons, addSavedSermon, removeSavedSermon,
       prayerNotes, addPrayerNote, testimonyNotes, addTestimonyNote,
       completedWordSearchPuzzles, addCompletedWordSearchPuzzle,
       wipeAllLocalData, ageAppropriateMode, offlineMode,

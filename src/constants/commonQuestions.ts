@@ -90,6 +90,16 @@ export const COMMON_QUESTIONS = {
       body:
         'Communion is the meal that heals. The bread represents Christ\'s broken body, the cup His shed blood. Taken in faith, it brings forgiveness, emotional healing, and physical restoration. It\'s also a proclamation of His death until He returns -- the most powerful expression of God\'s release to man in the Bible.',
     },
+    {
+      heading: '17. How Can I Receive Jesus Christ as Savior?',
+      body:
+        'The Bible is clear: we are saved by grace through faith in Jesus Christ, not by reciting a formula (Ephesians 2:8-9; Romans 10:9-13). A prayer does not save us. Christ does. Prayer is simply how a repentant heart speaks to God when it turns to Him.\n\n' +
+        'Billy Graham often invited people to come to Christ just as they were -- admitting their need, turning from sin, believing that Jesus died and rose again, and receiving Him as Lord and Savior. If that is the desire of your heart, you may pray in your own words, or use a prayer like this:\n\n' +
+        'A Prayer of Salvation\n' +
+        '"Dear Lord Jesus, I know that I am a sinner and that I need Your forgiveness. I believe You died for my sins and rose again. I am willing to turn from my sin. I now invite You to come into my heart and life. I want to trust You and follow You as my Lord and Savior. In Jesus\' name, Amen."\n\n' +
+        'If you prayed this from the heart, the Bible\'s promise is for you: "Everyone who calls on the name of the Lord will be saved" (Romans 10:13). Tell a trusted believer. Begin reading the Gospel of John. Pray daily. Find a church that teaches the Bible, and take your next step of obedience in baptism.\n\n' +
+        'Scripture to remember: John 1:12 - John 3:16 - Acts 16:31 - Romans 10:9-13 - Ephesians 2:8-9',
+    },
   ],
   closing:
     'These are starting points, not the full picture. Bring these questions to Scripture, to prayer, and to a pastor or teacher in a local church who can walk through them with you in person.',

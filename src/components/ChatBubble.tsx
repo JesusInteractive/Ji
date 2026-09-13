@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ChatMessage } from '../types';
 import Colors from '../theme/colors';
 import JesusAvatar from './JesusAvatar';
+import AiGeneratedLabel from './AiGeneratedLabel';
 import { INTERNATIONAL_DIRECTORY_URL } from '../constants/crisisResources';
 
 interface Props {
@@ -75,6 +76,8 @@ export default function ChatBubble({ message, onLongPressReport, onFavorite, sho
           >
             {message.text}
           </Text>
+          {/* Every reply is marked as AI output -- AI Disclosure section 6. */}
+          {isJesus && <AiGeneratedLabel style={styles.aiLabel} />}
           {isJesus && onFavorite && (
             <TouchableOpacity style={styles.favoriteBtn} onPress={() => onFavorite(message)} accessibilityRole="button" accessibilityLabel="Save to favorites">
               <Ionicons name="bookmark-outline" size={14} color={Colors.gold} />
@@ -112,6 +115,7 @@ const styles = StyleSheet.create({
   userBubble: { backgroundColor: Colors.royal, borderTopRightRadius: 4, maxWidth: '88%' },
   text: {},
   jesusText: { color: Colors.ink },
+  aiLabel: { marginTop: 5 },
   userText: { color: Colors.white },
   favoriteBtn: {
     marginTop: 6,

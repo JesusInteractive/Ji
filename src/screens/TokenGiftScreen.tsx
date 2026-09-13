@@ -5,7 +5,7 @@ import Colors from '../theme/colors';
 import { GIFT_CERTIFICATES, MONETIZATION_EXPLAINER, PLANS } from '../constants/pricing';
 import { useApp } from '../context/AppContext';
 import { generateGiftCodeLocally, redeemGiftCode } from '../services/tokenGifting';
-import { isFounderCode, isFamilyCode, isDevCode } from '../services/founderAccess';
+import { redeemFounderAccessCode, type FounderAccessKind } from '../services/founderAccess';
 import { purchaseGiftCertificate } from '../services/purchases';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import { useI18n, interpolate } from '../i18n';
@@ -38,6 +38,13 @@ export default function TokenGiftScreen() {
   const [redeemInput, setRedeemInput] = useState('');
   const [lastGiftCode, setLastGiftCode] = useState<string | null>(null);
   const [purchasingCertId, setPurchasingCertId] = useState<string | null>(null);
+  const [redeeming, setRedeeming] = useState(false);
+
+  const founderWelcomeTitle: Record<FounderAccessKind, string> = {
+    founder: t.tokenGift.founderWelcomeTitle,
+    family: t.tokenGift.familyWelcomeTitle,
+    dev: t.tokenGift.redeemedTitle,
+  };
 
   const scrollRef = useRef<ScrollView>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
@@ -108,27 +115,18 @@ export default function TokenGiftScreen() {
   };
 
   const handleRedeem = async () => {
-    if (isFounderCode(redeemInput)) {
+    setRedeeming(true);
+    const founderResult = await redeemFounderAccessCode(redeemInput);
+    setRedeeming(false);
+    if (founderResult.success && founderResult.kind) {
       selectPlan('platinum');
-      Alert.alert(t.tokenGift.founderWelcomeTitle, t.tokenGift.platinumUnlockedMessage);
+      Alert.alert(founderWelcomeTitle[founderResult.kind], t.tokenGift.platinumUnlockedMessage);
       setRedeemInput('');
       return;
     }
 
-    if (isFamilyCode(redeemInput)) {
-      selectPlan('platinum');
-      Alert.alert(t.tokenGift.familyWelcomeTitle, t.tokenGift.platinumUnlockedMessage);
-      setRedeemInput('');
-      return;
-    }
-
-    if (isDevCode(redeemInput)) {
-      selectPlan('platinum');
-      Alert.alert(t.tokenGift.redeemedTitle, t.tokenGift.platinumUnlockedMessage);
-      setRedeemInput('');
-      return;
-    }
-
+    // Not a founder/family/dev code (or the backend call failed) --
+    // fall through to the regular gift-code path exactly as before.
     const result = await redeemGiftCode(redeemInput.trim());
     if (result.success && result.planId) {
       const planId = result.planId;
@@ -234,8 +232,8 @@ export default function TokenGiftScreen() {
           value={redeemInput}
           onChangeText={setRedeemInput}
         />
-        <TouchableOpacity style={styles.redeemBtn} onPress={handleRedeem}>
-          <Text style={styles.redeemBtnText}>{t.tokenGift.redeemButton}</Text>
+        <TouchableOpacity style={styles.redeemBtn} onPress={handleRedeem} disabled={redeeming}>
+          <Text style={styles.redeemBtnText}>{redeeming ? '...' : t.tokenGift.redeemButton}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

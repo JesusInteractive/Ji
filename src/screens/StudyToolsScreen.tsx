@@ -522,16 +522,9 @@ export const CATEGORIES: StudyCategory[] = [
     ],
   },
   {
-    heading: 'Apocrypha & Ancient Jewish Texts',
-    note: "Ancient Jewish writings outside the Protestant canon (some, like Maccabees, are part of the Catholic and Orthodox canons). Linked out rather than reproduced here -- reproducing an ancient text from memory risks getting it subtly wrong, which isn't acceptable to present as scripture. Only entries with a confirmed public-domain translation (or, for the Dead Sea Scrolls, an official free viewer rather than a copyrighted modern translation) are included.",
+    heading: 'Ancient Jewish Texts & Historical Sources',
+    note: "Ancient Jewish writings and histories outside the Protestant canon. Linked out rather than reproduced here -- reproducing an ancient text from memory risks getting it subtly wrong, which isn't acceptable to present as scripture. Only entries with a confirmed public-domain translation (or, for the Dead Sea Scrolls, an official free viewer rather than a copyrighted modern translation) are included.",
     resources: [
-      {
-        title: 'The Book of Enoch',
-        author: 'trans. R.H. Charles, 1917',
-        era: 'public domain translation',
-        description: 'A well-known scholarly English translation of 1 Enoch, the Ethiopic apocalyptic text quoted in the New Testament book of Jude.',
-        url: 'https://sacred-texts.com/bib/boe/index.htm',
-      },
       {
         title: 'The Book of Jubilees',
         author: 'trans. R.H. Charles, 1902',
@@ -554,25 +547,11 @@ export const CATEGORIES: StudyCategory[] = [
         url: 'https://ccel.org/ccel/philo',
       },
       {
-        title: '1 & 2 Maccabees',
-        author: 'trans. R.H. Charles, 1913 (Old Testament Apocrypha)',
-        era: 'public domain translation',
-        description: "The actual story of \"the Greeks and the Jews\": the Maccabean revolt against the Hellenistic Seleucid empire's attempt to suppress Jewish worship, and the rededication of the Temple that Hanukkah commemorates.",
-        url: 'https://sacred-texts.com/bib/apo/index.htm',
-      },
-      {
         title: 'The Epistle of Aristeas',
         author: 'trans. H.T. Andrews, early 20th century',
         era: 'public domain translation',
         description: 'The legendary account of the Septuagint\'s origin -- 72 Jewish scholars in Ptolemaic Alexandria translating the Hebrew Scriptures into Greek -- the founding document of Hellenistic Judaism.',
         url: 'https://sacred-texts.com/bib/aristeas.htm',
-      },
-      {
-        title: 'The Septuagint (LXX) with Apocrypha',
-        author: 'trans. Sir Lancelot C.L. Brenton, 1851',
-        era: 'public domain translation',
-        description: 'The Greek Old Testament used by Hellenistic Jews (including Philo) and quoted throughout the New Testament -- the actual text where Jewish scripture and Greek language met.',
-        url: 'https://ccel.org/ccel/brenton',
       },
       {
         title: 'Leon Levy Dead Sea Scrolls Digital Library',
@@ -780,7 +759,7 @@ export const CATEGORIES: StudyCategory[] = [
   },
   {
     heading: 'Canonical',
-    note: "\"Canon\" means the books a tradition accepts as inspired Scripture -- and that boundary differs by tradition. The Hebrew Bible (Tanakh) has three divisions: Torah, Prophets (Nevi'im), and Writings (Ketuvim). Protestants accept 66 books (39 Old Testament + 27 New Testament). Catholics accept those same 66 plus 7 more (the Deuterocanon, listed separately below) for 73 total. Eastern Orthodox churches go further still, generally following the broader Greek Septuagint Old Testament. Each link below opens that tradition's full text.",
+    note: "\"Canon\" means the books a tradition accepts as inspired Scripture -- and that boundary differs by tradition. The Hebrew Bible (Tanakh) has three divisions: Torah, Prophets (Nevi'im), and Writings (Ketuvim). Protestants accept 66 books (39 Old Testament + 27 New Testament). Catholics accept those same 66 plus 7 more (the Deuterocanon, filed separately below as reference, not Scripture) for 73 total. Eastern Orthodox churches go further still, generally following the broader Greek Septuagint Old Testament. Each link below opens that tradition's full text.",
     resources: [
       {
         title: 'The Torah (Torat Moshe)',
@@ -814,7 +793,7 @@ export const CATEGORIES: StudyCategory[] = [
         title: 'The Catholic Bible (73 Books)',
         author: '46 Old Testament + 27 New Testament',
         era: 'canon affirmed at the Council of Trent, 1546',
-        description: 'The Protestant 66 plus the 7 Deuterocanonical books (listed in their own section below), reflecting the broader canon in use since the early Church.',
+        description: 'The Protestant 66 plus the 7 Deuterocanonical books (filed separately below as reference, not Scripture), reflecting the broader canon in use since the early Church.',
         url: 'https://bible.usccb.org',
       },
       {
@@ -827,8 +806,8 @@ export const CATEGORIES: StudyCategory[] = [
     ],
   },
   {
-    heading: 'Deuterocanonical',
-    note: 'The 7 books accepted as Scripture by Catholic and Orthodox tradition but not by Protestants (who call them "the Apocrypha" and generally regard them as valuable history and literature, not inspired Scripture). Linked here in the Douay-Rheims translation, the classic English Catholic Bible -- old enough to be fully public domain.',
+    heading: 'Apocrypha / Deuterocanonical Books (Reference)',
+    note: 'Not part of the Protestant canon -- Catholics and Orthodox receive these 7 books as Scripture; Protestants do not. Filed here as reference for history (especially 1-2 Maccabees, on Jewish life under Greek rule) and background, not as the Word of God. Early Protestant Bibles often printed them between the Testaments with exactly this note. Linked in the Douay-Rheims translation, the classic English Catholic Bible -- old enough to be fully public domain.',
     resources: [
       {
         title: 'Tobit',

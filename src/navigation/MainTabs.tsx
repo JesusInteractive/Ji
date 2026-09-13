@@ -1,7 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { NavigatorScreenParams } from '@react-navigation/native';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
@@ -12,8 +13,10 @@ import TestimonyStreamScreen from '../screens/TestimonyStreamScreen';
 import ScriptureSearchScreen from '../screens/ScriptureSearchScreen';
 import JournalScreen from '../screens/JournalScreen';
 import StudyToolsStack from './StudyToolsStack';
+import GamesStack from './GamesStack';
 import ProfileScreen from '../screens/ProfileScreen';
 import DailyDevotionsScreen from '../screens/DailyDevotionsScreen';
+import LibraryScreen from '../screens/LibraryScreen';
 import SettingsStack, { type SettingsStackParamList } from './SettingsStack';
 import { withFadeIn } from './withFadeIn';
 import DedicationFooter from '../components/DedicationFooter';
@@ -30,8 +33,10 @@ const FadedTestimonyStream = withFadeIn(TestimonyStreamScreen);
 const FadedBible = withFadeIn(ScriptureSearchScreen);
 const FadedJournal = withFadeIn(JournalScreen);
 const FadedStudyToolsStack = withFadeIn(StudyToolsStack);
+const FadedGamesStack = withFadeIn(GamesStack);
 const FadedProfile = withFadeIn(ProfileScreen);
 const FadedDailyDevotions = withFadeIn(DailyDevotionsScreen);
+const FadedLibrary = withFadeIn(LibraryScreen);
 const FadedSettingsStack = withFadeIn(SettingsStack);
 
 export type MainTabParamList = {
@@ -56,6 +61,17 @@ export type MainTabParamList = {
   StudyTools: undefined;
   Profile: undefined;
   DailyDevotions: undefined;
+  // Hidden tab (tabBarButton: () => null below), reached from the "My
+  // Library" card on Home -- the user's own saved sermons/verses/notes.
+  // Named "Library" as the route (not "My Library") since the route id
+  // is never user-facing; the screen's own header title is what shows.
+  Library: undefined;
+  // Hidden tab (tabBarButton: () => null below), reached from the
+  // "Jesus Interactive Bible Games" Home card -- a hub + 9 flat sibling
+  // game screens (GamesStack.tsx), same hidden-tab-wrapping-a-nested-
+  // stack pattern StudyTools uses above. headerShown:false since the
+  // nested stack draws its own headers per screen.
+  GamesTab: undefined;
   // Allows jumping directly into a screen nested inside the Settings
   // stack (e.g. ProfileScreen linking straight to TokenGift) from a
   // sibling tab, not just landing on the stack's own home screen.
@@ -80,8 +96,35 @@ const ICONS: Record<keyof MainTabParamList, keyof typeof Ionicons.glyphMap> = {
   StudyTools: 'library',
   Profile: 'person-circle',
   DailyDevotions: 'sunny',
+  Library: 'albums',
+  // Hidden tab, so this icon is never actually rendered -- kept only so
+  // this Record stays total over every route.
+  GamesTab: 'game-controller',
   SettingsTab: 'settings',
 };
+
+// Shared headerLeft for every hidden tab below (TestimonyStream, Profile,
+// DailyDevotions, Library) -- createBottomTabNavigator never generates a
+// back arrow on its own the way a native-stack does, and these four are
+// only ever reached by navigating in from Home/PrayerWall/Resources, not
+// from the tab bar itself, so without this they had no way back at all.
+// Goes straight to HomeTab rather than navigation.goBack() -- a tab
+// navigator doesn't keep the kind of screen history "back" would need,
+// so this matches GamesHubScreen.tsx's own close button, which does the
+// same explicit navigate('HomeTab') for the same reason.
+function HeaderBackToHome({ navigation }: { navigation: BottomTabScreenProps<MainTabParamList>['navigation'] }) {
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('HomeTab')}
+      accessibilityRole="button"
+      accessibilityLabel="Back to Home"
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      style={{ paddingHorizontal: 4 }}
+    >
+      <Ionicons name="chevron-back" size={26} color={Colors.royal} />
+    </TouchableOpacity>
+  );
+}
 
 export default function MainTabs() {
   const { t } = useI18n();
@@ -112,12 +155,13 @@ export default function MainTabs() {
       <Tab.Screen
         name="TestimonyStream"
         component={FadedTestimonyStream}
-        options={{
+        options={({ navigation }) => ({
           title: 'Testimony Stream',
           headerShown: true,
           headerTintColor: Colors.royal,
+          headerLeft: () => <HeaderBackToHome navigation={navigation} />,
           tabBarButton: () => null,
-        }}
+        })}
       />
       <Tab.Screen name="Bible" component={FadedBible} options={{ title: t.tabs.bible }} />
       <Tab.Screen name="Journal" component={FadedJournal} options={{ title: t.tabs.journal }} />
@@ -133,20 +177,42 @@ export default function MainTabs() {
       <Tab.Screen
         name="Profile"
         component={FadedProfile}
-        options={{
+        options={({ navigation }) => ({
           title: t.tabs.profile,
           headerShown: true,
           headerTintColor: Colors.royal,
+          headerLeft: () => <HeaderBackToHome navigation={navigation} />,
           tabBarButton: () => null,
-        }}
+        })}
       />
       <Tab.Screen
         name="DailyDevotions"
         component={FadedDailyDevotions}
-        options={{
+        options={({ navigation }) => ({
           title: t.tabs.devotions,
           headerShown: true,
           headerTintColor: Colors.royal,
+          headerLeft: () => <HeaderBackToHome navigation={navigation} />,
+          tabBarButton: () => null,
+        })}
+      />
+      <Tab.Screen
+        name="Library"
+        component={FadedLibrary}
+        options={({ navigation }) => ({
+          title: 'My Library',
+          headerShown: true,
+          headerTintColor: Colors.royal,
+          headerLeft: () => <HeaderBackToHome navigation={navigation} />,
+          tabBarButton: () => null,
+        })}
+      />
+      <Tab.Screen
+        name="GamesTab"
+        component={FadedGamesStack}
+        options={{
+          title: 'Jesus Interactive Games Hub',
+          headerShown: false,
           tabBarButton: () => null,
         }}
       />
