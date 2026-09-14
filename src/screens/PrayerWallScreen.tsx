@@ -8,7 +8,7 @@ import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import Colors from '../theme/colors';
 import { playFadedWindCue } from '../services/audioFade';
 import { WALL_WIDTH, mulberry32, hashStringToSeed } from '../components/WesternWallBackground';
-import PrayerNote, { NOTE_WIDTH } from '../components/PrayerNote';
+import PrayerNote, { NOTE_HEIGHT, NOTE_WIDTH } from '../components/PrayerNote';
 import { useApp } from '../context/AppContext';
 import { useI18n } from '../i18n';
 import type { PrayerNote as PrayerNoteType } from '../types';
@@ -22,7 +22,10 @@ import type { MainTabParamList } from '../navigation/MainTabs';
 // NOTE_WIDTH-ish card with room to breathe, and the wall's total height
 // is simply notes.length * this -- it genuinely grows as more people
 // place prayers, the way a real wall fills up and gets extended.
-const NOTE_BAND_HEIGHT = 90;
+const NOTE_BAND_HEIGHT = 100;
+// How far a note may drift down inside its band -- the band minus the
+// note's own height and a little air, so neighbors never overlap.
+const NOTE_DRIFT = NOTE_BAND_HEIGHT - NOTE_HEIGHT - 12;
 // Minimum height so an empty or near-empty wall still fills the screen
 // reasonably instead of rendering as a tiny sliver.
 const WALL_MIN_HEIGHT = 640;
@@ -48,7 +51,10 @@ const WALL_MIN_HEIGHT = 640;
 // view and has room for tap-to-react emoji.
 export default function PrayerWallScreen() {
   const { t } = useI18n();
-  const { prayerNotes, addPrayerNote } = useApp();
+  const { prayerNotes, addPrayerNote, displayName } = useApp();
+  // Every note on this wall was placed on this device, so a signed note is
+  // signed with this user's first name.
+  const firstName = displayName.trim().split(/\s+/)[0] || '';
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const [prayerText, setPrayerText] = useState('');
   const [prayerAnonymous, setPrayerAnonymous] = useState(true);
@@ -69,7 +75,7 @@ export default function PrayerWallScreen() {
     return oldestFirst.map((note, index) => {
       const rand = mulberry32(hashStringToSeed(note.id));
       const x = 8 + rand() * (WALL_WIDTH - NOTE_WIDTH - 16);
-      const y = 20 + index * NOTE_BAND_HEIGHT + rand() * (NOTE_BAND_HEIGHT - 55);
+      const y = 20 + index * NOTE_BAND_HEIGHT + rand() * NOTE_DRIFT;
       const rotateDeg = (rand() - 0.5) * 16;
       return { note, x, y, rotateDeg };
     });
@@ -115,7 +121,7 @@ export default function PrayerWallScreen() {
     // prayer visibly does something.
     const rand = mulberry32(hashStringToSeed(note.id));
     rand(); // consumes the x draw first, matching the memo's draw order
-    const y = 20 + prayerNotes.length * NOTE_BAND_HEIGHT + rand() * (NOTE_BAND_HEIGHT - 55);
+    const y = 20 + prayerNotes.length * NOTE_BAND_HEIGHT + rand() * NOTE_DRIFT;
     requestAnimationFrame(() => {
       wallScrollRef.current?.scrollTo({ y: Math.max(0, y - 150), animated: true });
     });
@@ -150,7 +156,15 @@ export default function PrayerWallScreen() {
             resizeMode="repeat"
           />
           {positions.map(({ note, x, y, rotateDeg }) => (
-            <PrayerNote key={note.id} note={note} x={x} y={y} rotateDeg={rotateDeg} onPress={() => setOpenNote(note)} />
+            <PrayerNote
+              key={note.id}
+              note={note}
+              x={x}
+              y={y}
+              rotateDeg={rotateDeg}
+              signature={note.isAnonymous ? undefined : firstName || undefined}
+              onPress={() => setOpenNote(note)}
+            />
           ))}
           {prayerNotes.length === 0 && (
             <View style={styles.emptyOverlay}>
