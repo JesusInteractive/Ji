@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
+import CloseToHomeButton from '../components/CloseToHomeButton';
 import ChatScreen from '../screens/ChatScreen';
 import AboutScreen from '../screens/AboutScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
@@ -17,7 +18,7 @@ const Stack = createNativeStackNavigator<ChatStackParamList>();
 
 export default function ChatStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade' }}>
+    <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade', headerRight: () => <CloseToHomeButton /> }}>
       <Stack.Screen name="ChatHome" component={ChatScreen} options={{ headerShown: false }} />
       <Stack.Screen name="About" component={AboutScreen} options={{ title: 'About Jesus' }} />
       <Stack.Screen name="Favorites" component={FavoritesScreen} options={{ title: 'Favorites' }} />

@@ -5,6 +5,7 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
+import CloseToHomeButton from '../components/CloseToHomeButton';
 import { useI18n } from '../i18n';
 import HomeScreen from '../screens/HomeScreen';
 import ChatStack, { type ChatStackParamList } from './ChatStack';
@@ -134,6 +135,8 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        // Only visible on the hidden tabs that turn their header on below.
+        headerRight: () => <CloseToHomeButton />,
         tabBarActiveTintColor: Colors.gold,
         tabBarInactiveTintColor: Colors.gold,
         tabBarStyle: { backgroundColor: Colors.royal, borderTopColor: Colors.royalLight },

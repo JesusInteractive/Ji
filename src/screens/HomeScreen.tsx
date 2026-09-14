@@ -16,7 +16,8 @@ import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
 
 // Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
 // below) instead of sitting inline in the header -- was 34.
-const PROFILE_SIZE = 82;
+// 64, down from 82 -- the profile circle was overpowering the greeting.
+const PROFILE_SIZE = 64;
 
 // Same default translation the rest of the app's devotional features use
 // (see services/devotions.ts) -- keeps this card's text in the same
@@ -322,8 +323,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.gold,
   },
+  // "Welcome, friend" -- same 28pt as the named greeting (titleGreeting) below.
   title: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: '700',
     color: Colors.ivory,
     textAlign: 'center',

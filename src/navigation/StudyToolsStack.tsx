@@ -3,6 +3,7 @@ import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
+import CloseToHomeButton from '../components/CloseToHomeButton';
 import StudyToolsScreen from '../screens/StudyToolsScreen';
 import SermonWriterScreen from '../screens/SermonWriterScreen';
 import GlobalLibraryScreen from '../screens/GlobalLibraryScreen';
@@ -26,7 +27,7 @@ const Stack = createNativeStackNavigator<StudyToolsStackParamList>();
 
 export default function StudyToolsStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade' }}>
+    <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade', headerRight: () => <CloseToHomeButton /> }}>
       <Stack.Screen
         name="StudyToolsHome"
         component={StudyToolsScreen}

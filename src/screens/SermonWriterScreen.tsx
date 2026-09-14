@@ -119,8 +119,8 @@ export default function SermonWriterScreen() {
 
   if (!hasProAccess) {
     return (
-      <View style={styles.upsellContainer}>
-        <Ionicons name="create-outline" size={40} color={Colors.gold} />
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.upsellContainer} resizeMode="cover">
+        <Ionicons name="create-outline" size={40} color={Colors.goldOnLight} />
         <Text style={styles.upsellTitle}>{t.sermonWriter.upsellTitle}</Text>
         <Text style={styles.upsellBody}>
           {t.sermonWriter.upsellBody}
@@ -128,13 +128,13 @@ export default function SermonWriterScreen() {
         <TouchableOpacity style={styles.upsellBtn} onPress={handleUpgrade} disabled={upgrading}>
           {upgrading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.upsellBtnText}>{t.sermonWriter.upgradeButton}</Text>}
         </TouchableOpacity>
-      </View>
+      </ImageBackground>
     );
   }
 
   return (
     <View style={{ flex: 1 }}>
-      <ImageBackground source={require('../../assets/textures/parchment-navy.jpg')} style={styles.container} resizeMode="cover">
+      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.container} resizeMode="cover">
       <ScrollView
         ref={scrollRef}
         style={{ flex: 1 }}
@@ -278,23 +278,17 @@ export default function SermonWriterScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Royal, not the old light-gray '#F4F6FA' -- this is the fallback
-  // paint behind the navy parchment image (before it loads, or if it
-  // fails), so it should match the image's own tone, not the previous
-  // light-parchment background this screen used before.
-  container: { flex: 1, backgroundColor: Colors.royal },
+  // Tan parchment (same texture as Profile, Library, and the legal
+  // pages). Ivory is the fallback paint behind the image before it loads,
+  // matching its tone.
+  container: { flex: 1, backgroundColor: Colors.ivory },
   content: { padding: 20, paddingBottom: 40 },
-  // Both colors below were tuned for the old light/tan parchment
-  // background -- Colors.royal text (label) would be invisible and
-  // '#718096' gray (helpText) would read poorly against the navy
-  // parchment background now used here. Colors.gold/Colors.muted are
-  // this app's own established navy-background text colors (see
-  // HomeScreen.tsx/ResourcesScreen.tsx's own card text for the same
-  // pairing) -- the white input/result cards below keep their own
-  // dark-on-white text untouched, since those aren't sitting directly on
-  // the navy background.
-  helpText: { fontSize: 13.5, lineHeight: 20, color: Colors.muted, marginBottom: 20 },
-  label: { fontSize: 13, fontWeight: '700', color: Colors.gold, marginBottom: 6, marginTop: 4 },
+  // Dark text for the tan parchment: royal labels and a warm dark gray
+  // for the help text (gold/muted were only readable on the navy
+  // parchment this screen briefly used). The white input/result cards
+  // below keep their own dark-on-white text.
+  helpText: { fontSize: 13.5, lineHeight: 20, color: '#5C5446', marginBottom: 20 },
+  label: { fontSize: 13, fontWeight: '700', color: Colors.royal, marginBottom: 6, marginTop: 4 },
   input: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -360,14 +354,14 @@ const styles = StyleSheet.create({
   downloadBtnText: { fontSize: 12.5, fontWeight: '700', color: Colors.royal },
   upsellContainer: {
     flex: 1,
-    backgroundColor: '#F4F6FA',
+    backgroundColor: Colors.ivory,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
     gap: 12,
   },
   upsellTitle: { fontSize: 19, fontWeight: '800', color: Colors.royal, textAlign: 'center' },
-  upsellBody: { fontSize: 14, lineHeight: 21, color: '#718096', textAlign: 'center' },
+  upsellBody: { fontSize: 14, lineHeight: 21, color: '#5C5446', textAlign: 'center' },
   upsellBtn: {
     backgroundColor: Colors.royal,
     borderRadius: 22,

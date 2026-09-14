@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
+import CloseToHomeButton from '../components/CloseToHomeButton';
 import GamesHubScreen from '../screens/games/GamesHubScreen';
 import ComingSoonGameScreen from '../screens/games/ComingSoonGameScreen';
 import BibleWordSearchScreen from '../screens/BibleWordSearchScreen';
@@ -41,7 +42,7 @@ const Stack = createNativeStackNavigator<GamesStackParamList>();
 
 export default function GamesStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade' }}>
+    <Stack.Navigator screenOptions={{ headerTintColor: Colors.royal, animation: 'fade', headerRight: () => <CloseToHomeButton /> }}>
       <Stack.Screen name="GamesHub" component={GamesHubScreen} options={{ headerShown: false }} />
       <Stack.Screen name="GameCrossword" component={CrosswordScreen} options={{ title: 'Bible Crossword' }} />
       <Stack.Screen name="GameVerseRebuild" component={VerseRebuildScreen} options={{ title: 'Verse Rebuild' }} />
