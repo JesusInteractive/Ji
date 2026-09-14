@@ -12,6 +12,7 @@ import type { MainTabParamList } from '../navigation/MainTabs';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { getDailyPromise, type DailyPromise } from '../services/devotions';
 import DraggableScrollbar from '../components/DraggableScrollbar';
+import NewsTvPreview from '../components/NewsTvPreview';
 import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
 
 // Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
@@ -269,6 +270,11 @@ export default function HomeScreen() {
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_4.map((tile) => renderTile(tile))}</View>
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_5.map((tile) => renderTile(tile))}</View>
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_6.map((tile) => renderTile(tile))}</View>
+
+      {/* The planned 24/7 News TV player, reached by scrolling down.
+          Development builds only until the affiliate agreement is signed --
+          see NewsTvPreview.tsx. */}
+      {__DEV__ && <NewsTvPreview />}
       </ScrollView>
       <DraggableScrollbar
         contentHeight={contentHeight}
