@@ -7,7 +7,7 @@ import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import { useApp } from '../context/AppContext';
 import type { StudyToolsStackParamList } from '../navigation/StudyToolsStack';
-import { READ_ALOUD_TITLES, SCHOLAR_FALLBACK_VOICE_ID, voiceFor, type LibraryVoice } from '../constants/studyLibraryAudio';
+import { READ_ALOUD_TITLES, SCHOLAR_VOICE_ID, voiceFor, type LibraryVoice } from '../constants/studyLibraryAudio';
 import { getReadAloudPages, type ReadAloudPage } from '../services/studyLibraryReader';
 import { synthesizeSpeech, playSpeech } from '../services/tts';
 import { withAuthRetry } from '../services/backendAuth';
@@ -74,7 +74,7 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
   // The books are English, so they're voiced in English whatever language
   // the app is set to.
   const speak = useCallback(async (text: string, voice: LibraryVoice) => {
-    const voiceId = voice === 'scholar' ? SCHOLAR_FALLBACK_VOICE_ID : undefined;
+    const voiceId = voice === 'scholar' ? SCHOLAR_VOICE_ID : undefined;
     const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, text, 'en', voiceId, voice));
     if (cancelledRef.current) return;
     const stop = await playSpeech(audioUrl, {

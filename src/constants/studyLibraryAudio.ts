@@ -20,15 +20,15 @@
 // reference.
 export type LibraryVoice = 'jesus' | 'scholar';
 
-// The Scholar's voice. backend/server.js uses its own
-// ELEVENLABS_SCHOLAR_VOICE_ID when that's set; this premade British voice
-// is what the app sends as the fallback, so the Scholar never falls back
-// to Jesus's voice. Direction for designing his real voice: "A young
+// The Scholar's ElevenLabs voice, designed from this direction: "A young
 // British male, mid-twenties to early thirties. Clear Received
 // Pronunciation with a slight warmth -- not a newsreader, not a vicar.
 // Think a junior fellow reading aloud in a college library. Measured
-// pace, slight lift at the end of sentences, never theatrical."
-export const SCHOLAR_FALLBACK_VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb';
+// pace, slight lift at the end of sentences, never theatrical." The app
+// sends it with every Scholar request; backend/server.js's
+// ELEVENLABS_SCHOLAR_VOICE_ID overrides it when set. Either way the
+// Scholar never falls back to Jesus's voice.
+export const SCHOLAR_VOICE_ID = 'JmPRMU8qOJ1ijbVU16Ob';
 
 // Shelves the Scholar reads by default; a title's own `voice` wins.
 const SCHOLAR_SHELVES = new Set(['Church Fathers & History', 'Lives & Testimonies', 'Home & Family']);

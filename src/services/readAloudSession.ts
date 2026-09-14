@@ -25,7 +25,7 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer, type AudioStatus } from 'expo-audio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { File } from 'expo-file-system';
-import { SCHOLAR_FALLBACK_VOICE_ID, type LibraryVoice, type ReadAloudTitle } from '../constants/studyLibraryAudio';
+import { SCHOLAR_VOICE_ID, type LibraryVoice, type ReadAloudTitle } from '../constants/studyLibraryAudio';
 import { getReadAloudPages } from './studyLibraryReader';
 import { buildPassages, type Passage } from './readAloudText';
 import { synthesizeSpeech } from './tts';
@@ -63,7 +63,7 @@ function wait(ms: number) {
 }
 
 async function synthesize(text: string, voice: LibraryVoice): Promise<string> {
-  const voiceId = voice === 'scholar' ? SCHOLAR_FALLBACK_VOICE_ID : undefined;
+  const voiceId = voice === 'scholar' ? SCHOLAR_VOICE_ID : undefined;
   const request = () => withAuthRetry((token) => synthesizeSpeech(token, text, 'en', voiceId, voice));
   try {
     return await request();
