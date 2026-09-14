@@ -50,7 +50,10 @@ export async function synthesizeSpeech(
   authToken: string,
   text: string,
   languageCode = 'en',
-  voiceId?: string
+  voiceId?: string,
+  // 'scholar' asks the backend for the Study Library's second reader
+  // (backend/server.js); omitted, it's Jesus's voice.
+  voice?: 'jesus' | 'scholar'
 ): Promise<string> {
   const res = await fetch(`${API_BASE_URL}/v1/tts/synthesize`, {
     method: 'POST',
@@ -58,7 +61,7 @@ export async function synthesizeSpeech(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${authToken}`,
     },
-    body: JSON.stringify({ text, languageCode, voiceId }),
+    body: JSON.stringify({ text, languageCode, voiceId, voice }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');

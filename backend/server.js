@@ -1827,12 +1827,22 @@ app.post('/v1/chat/messages', chatLimiter, requireAuth, async (req, res) => {
 // server's memory.
 app.post('/v1/tts/synthesize', ttsLimiter, requireAuth, async (req, res) => {
   try {
-    const { text, voiceId, modelId, languageCode } = req.body || {};
+    const { text, voiceId, voice, modelId, languageCode } = req.body || {};
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
       return res.status(400).json({ error: 'text is required' });
     }
 
-    const VOICE_ID = voiceId || ELEVENLABS_DEFAULT_VOICE_ID;
+    // The Study Library's second reader, the Scholar (see the app's
+    // src/constants/studyLibraryAudio.ts), reads everything Jesus AI
+    // doesn't. ELEVENLABS_SCHOLAR_VOICE_ID is his designed voice; until
+    // it's set, the fallback voiceId the app sends is used -- never
+    // Jesus's voice. Voice direction for designing it: "A young British
+    // male, mid-twenties to early thirties. Clear Received Pronunciation
+    // with a slight warmth -- not a newsreader, not a vicar. Think a
+    // junior fellow reading aloud in a college library. Measured pace,
+    // slight lift at the end of sentences, never theatrical."
+    const scholar = voice === 'scholar';
+    const VOICE_ID = (scholar && process.env.ELEVENLABS_SCHOLAR_VOICE_ID) || voiceId || ELEVENLABS_DEFAULT_VOICE_ID;
     if (!elevenlabs || !VOICE_ID) {
       return res.status(500).json({ error: 'TTS not configured' });
     }
@@ -1859,7 +1869,11 @@ app.post('/v1/tts/synthesize', ttsLimiter, requireAuth, async (req, res) => {
         // already ISO 639-1, which is what this field expects.
         ...(typeof languageCode === 'string' && languageCode ? { languageCode } : {}),
         outputFormat: 'mp3_44100_128',
-        voiceSettings: { stability: 0.4, similarityBoost: 0.75, style: 0.35, useSpeakerBoost: true },
+        // The Scholar reads steadier and plainer than Jesus's voice:
+        // measured, never theatrical.
+        voiceSettings: scholar
+          ? { stability: 0.6, similarityBoost: 0.75, style: 0.1, useSpeakerBoost: true }
+          : { stability: 0.4, similarityBoost: 0.75, style: 0.35, useSpeakerBoost: true },
       },
       { timeoutInSeconds: 30 }
     );

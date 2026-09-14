@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as Speech from 'expo-speech';
 import type { NativeStackScreenProps, NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import Colors from '../theme/colors';
 import { useI18n } from '../i18n';
 import { useApp } from '../context/AppContext';
 import type { StudyToolsStackParamList } from '../navigation/StudyToolsStack';
-import { READ_ALOUD_TITLES, jesusVoiceSupportsLanguage } from '../constants/studyLibraryAudio';
+import { READ_ALOUD_TITLES, SCHOLAR_FALLBACK_VOICE_ID, voiceFor, type LibraryVoice } from '../constants/studyLibraryAudio';
 import { getReadAloudPages, type ReadAloudPage } from '../services/studyLibraryReader';
 import { synthesizeSpeech, playSpeech } from '../services/tts';
 import { withAuthRetry } from '../services/backendAuth';
@@ -19,20 +18,20 @@ import PaywallLockScreen from '../components/PaywallLockScreen';
 type Props = NativeStackScreenProps<StudyToolsStackParamList, 'StudyLibraryReader'>;
 
 type VoiceState = 'idle' | 'playing';
-// 'locked' = Platinum-only, language IS Jesus-voice-supported, user isn't Platinum.
-// 'jesus' = Platinum + language supported -> AI Jesus voice.
-// 'narration' = any tier, language NOT in the Jesus-voice set -> free on-device voice.
-type SpeakerMode = 'locked' | 'jesus' | 'narration';
+// 'locked' = not Platinum -- both read-aloud voices are Platinum-only.
+// 'jesus' / 'scholar' = this book's reader, the same voice the shelves'
+// in-place reading uses (constants/studyLibraryAudio.ts's voiceFor).
+type SpeakerMode = 'locked' | LibraryVoice;
 
 export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
-  const { titleId } = route.params;
+  const { titleId, page: startPage } = route.params;
   const title = READ_ALOUD_TITLES.find((t) => t.id === titleId);
-  const { t, language } = useI18n();
+  const { t } = useI18n();
   const { plan, textZoom } = useApp();
   const { hasAccess } = useFeatureAccess();
 
   const [pages, setPages] = useState<ReadAloudPage[] | null>(null);
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(startPage ?? 0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [voiceState, setVoiceState] = useState<VoiceState>('idle');
@@ -40,29 +39,28 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
   const stopFnRef = useRef<(() => void) | null>(null);
   const cancelledRef = useRef(false);
 
-  const speakerMode: SpeakerMode = jesusVoiceSupportsLanguage(language)
-    ? plan === 'platinum'
-      ? 'jesus'
-      : 'locked'
-    : 'narration';
+  const bookVoice: LibraryVoice = title ? voiceFor(title) : 'jesus';
+  const speakerMode: SpeakerMode = plan === 'platinum' ? bookVoice : 'locked';
 
   useEffect(() => {
     if (!title) return;
     setLoading(true);
     setError(null);
     getReadAloudPages(title)
-      .then(setPages)
+      .then((loaded) => {
+        setPages(loaded);
+        setPageIndex((index) => Math.min(index, Math.max(loaded.length - 1, 0)));
+      })
       .catch(() => setError(t.studyLibrary.readerLoadError))
       .finally(() => setLoading(false));
   }, [title, t.studyLibrary.readerLoadError]);
 
   // Stop any in-flight voice when leaving the screen or switching pages
-  // manually -- never let a stale utterance keep talking over a new one.
+  // manually -- never let a stale clip keep talking over a new one.
   useEffect(() => {
     return () => {
       cancelledRef.current = true;
       stopFnRef.current?.();
-      Speech.stop();
     };
   }, []);
 
@@ -70,39 +68,22 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
     cancelledRef.current = true;
     stopFnRef.current?.();
     stopFnRef.current = null;
-    Speech.stop();
     setVoiceState('idle');
   }, []);
 
-  const speakJesusVoice = useCallback(
-    async (text: string) => {
-      const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, text, language));
-      if (cancelledRef.current) return;
-      const stop = await playSpeech(audioUrl, {
-        onFinish: () => {
-          if (!cancelledRef.current) setVoiceState('idle');
-        },
-      });
-      stopFnRef.current = () => stop();
-    },
-    [language]
-  );
-
-  const speakNarration = useCallback(
-    (text: string) => {
-      Speech.speak(text, {
-        language,
-        onDone: () => {
-          if (!cancelledRef.current) setVoiceState('idle');
-        },
-        onStopped: () => {
-          if (!cancelledRef.current) setVoiceState('idle');
-        },
-      });
-      stopFnRef.current = () => Speech.stop();
-    },
-    [language]
-  );
+  // The books are English, so they're voiced in English whatever language
+  // the app is set to.
+  const speak = useCallback(async (text: string, voice: LibraryVoice) => {
+    const voiceId = voice === 'scholar' ? SCHOLAR_FALLBACK_VOICE_ID : undefined;
+    const audioUrl = await withAuthRetry((token) => synthesizeSpeech(token, text, 'en', voiceId, voice));
+    if (cancelledRef.current) return;
+    const stop = await playSpeech(audioUrl, {
+      onFinish: () => {
+        if (!cancelledRef.current) setVoiceState('idle');
+      },
+    });
+    stopFnRef.current = () => stop();
+  }, []);
 
   const handleSpeakerTap = () => {
     if (speakerMode === 'locked') {
@@ -117,9 +98,7 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
     if (!page) return;
     cancelledRef.current = false;
     setVoiceState('playing');
-    const text = page.paragraphs.join(' ');
-    const speak = speakerMode === 'jesus' ? speakJesusVoice(text) : Promise.resolve(speakNarration(text));
-    speak.catch(() => {
+    speak(page.paragraphs.join(' '), speakerMode).catch(() => {
       if (!cancelledRef.current) setVoiceState('idle');
     });
   };
@@ -129,8 +108,8 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
   // Placed after every hook above (rules of hooks), before this
   // screen's own render. Gates the reader itself, not the shelf/browsing
   // screens ahead of it. Nested StudyToolsStack -> MainTabs -> RootStack --
-  // two getParent() hops, same as the existing Platinum-voice-lock
-  // navigation just above.
+  // two getParent() hops, same as the Platinum voice-lock navigation
+  // just above.
   if (!hasAccess) {
     return (
       <PaywallLockScreen
@@ -176,10 +155,10 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
           <Ionicons
             name={speakerMode === 'locked' ? 'lock-closed' : voiceState === 'playing' ? 'volume-high' : 'volume-medium-outline'}
             size={20}
-            color={speakerMode === 'jesus' ? Colors.gold : speakerMode === 'narration' ? Colors.ink : '#8A6A16'}
+            color={speakerMode === 'jesus' ? Colors.gold : speakerMode === 'scholar' ? Colors.ink : '#8A6A16'}
           />
           <Text style={styles.speakerLabel}>
-            {speakerMode === 'locked' ? t.studyLibrary.speakerLockedLabel : speakerMode === 'jesus' ? '' : t.studyLibrary.narrationLabel}
+            {speakerMode === 'locked' ? t.studyLibrary.speakerLockedLabel : speakerMode === 'jesus' ? t.studyLibrary.jesusVoiceTag : t.studyLibrary.scholarVoiceTag}
           </Text>
         </TouchableOpacity>
 
@@ -192,7 +171,9 @@ export default function StudyLibraryReaderScreen({ route, navigation }: Props) {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.disclosure}>{t.studyLibrary.jesusVoiceDisclosure}</Text>
+      <Text style={styles.disclosure}>
+        {bookVoice === 'scholar' ? t.studyLibrary.scholarDisclosure : t.studyLibrary.jesusVoiceDisclosure}
+      </Text>
 
       {/* Floating overlay, same positioning convention as every other
           screen that uses this control (Scripture, Chat) -- it's

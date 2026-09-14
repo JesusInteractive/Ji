@@ -20,7 +20,8 @@ export type StudyToolsStackParamList = {
   // constants/studyLibraryAudio.ts's READ_ALOUD_TITLES ids.
   StudyLibraryEntrance: undefined;
   StudyLibraryShelves: undefined;
-  StudyLibraryReader: { titleId: string };
+  // page: where to open (the page the in-place reading had reached).
+  StudyLibraryReader: { titleId: string; page?: number };
 };
 
 const Stack = createNativeStackNavigator<StudyToolsStackParamList>();
@@ -64,7 +65,9 @@ export default function StudyToolsStack() {
         // Shelves screen's back button before this fix.
         options={{ headerShown: false, title: '' }}
       />
-      <Stack.Screen name="StudyLibraryShelves" component={StudyLibraryShelvesScreen} options={{ title: 'Study Library' }} />
+      {/* The shelves draw their own top bar over the lamp-lit room --
+          no white header. The title still labels the reader's back button. */}
+      <Stack.Screen name="StudyLibraryShelves" component={StudyLibraryShelvesScreen} options={{ headerShown: false, title: 'Study Library' }} />
       <Stack.Screen name="StudyLibraryReader" component={StudyLibraryReaderScreen} options={{ title: '' }} />
     </Stack.Navigator>
   );
