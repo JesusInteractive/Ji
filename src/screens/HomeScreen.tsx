@@ -17,8 +17,11 @@ import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
 
 // Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
 // below) instead of sitting inline in the header -- was 34.
-// 64, down from 82 -- the profile circle was overpowering the greeting.
-const PROFILE_SIZE = 64;
+// 72: down from the original 82, which overpowered the greeting, then back
+// up from 64, which read as too small once a real photo was in it.
+const PROFILE_SIZE = 72;
+// Space between the greeting and the first row of tiles.
+const GREETING_GAP = 24;
 
 // Same default translation the rest of the app's devotional features use
 // (see services/devotions.ts) -- keeps this card's text in the same
@@ -63,6 +66,9 @@ export default function HomeScreen() {
     return 20 + 0.47 * innerWidth + 14 + 0.235 * innerWidth;
   }, [screenWidth]);
   const [profileAnchorCenterX, setProfileAnchorCenterX] = useState<number>(estimatedCenterX);
+  // The greeting's height -- "Welcome, friend" and "Welcome / name" differ,
+  // and the profile circle centers itself on whichever is showing.
+  const [greetingHeight, setGreetingHeight] = useState(60);
   // Pointer hover (iPad/Mac trackpad or mouse) -- a single key covers
   // every hoverable tile on this screen, not per-row state.
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -219,7 +225,7 @@ export default function HomeScreen() {
         scrollEnabled={!scrollbarDragging}
       >
       <View style={styles.headerRow}>
-        <View style={styles.headerText}>
+        <View style={styles.headerText} onLayout={(e) => setGreetingHeight(e.nativeEvent.layout.height)}>
           {displayName ? (
             <>
               <Text style={styles.titleGreeting}>Welcome</Text>
@@ -237,7 +243,14 @@ export default function HomeScreen() {
         {ROW_1.map((tile) => renderTile(tile, tile.key === 'devotions'))}
 
         <TouchableOpacity
-          style={[styles.profileBtn, { left: profileAnchorCenterX - PROFILE_SIZE / 2 }]}
+          style={[
+            styles.profileBtn,
+            {
+              left: profileAnchorCenterX - PROFILE_SIZE / 2,
+              // Level with the middle of the greeting beside it.
+              top: -(GREETING_GAP + greetingHeight / 2) - PROFILE_SIZE / 2,
+            },
+          ]}
           onPress={() => navigation.navigate('Profile')}
           accessibilityRole="button"
           accessibilityLabel={t.tabs.profile}
@@ -311,7 +324,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginBottom: GREETING_GAP,
   },
   headerText: {
     width: '47%',
@@ -319,7 +332,6 @@ const styles = StyleSheet.create({
   },
   profileBtn: {
     position: 'absolute',
-    top: -(PROFILE_SIZE + 10),
     zIndex: 2,
   },
   profilePhoto: {
