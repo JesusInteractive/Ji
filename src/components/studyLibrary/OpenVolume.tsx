@@ -5,9 +5,10 @@
 // that again" sit under the open book, and "Read along" hands off to the
 // full-text reader (StudyLibraryReaderScreen) at the page being read.
 //
-// Same access rules as the reader screen: Read Aloud books need a paid
-// plan (or the trial), the Jesus voice needs Platinum in a language it
-// speaks, and other languages get the free on-device narrator.
+// Same access rules as the reader screen: reading aloud (Jesus AI or the
+// Scholar) is a Platinum feature, per the Platinum plan card in
+// constants/pricing.ts. Other plans and the trial see the Platinum
+// invitation and can still read the text; with no plan, it's Subscribe.
 // Books without audio open to their description and a link to the source.
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {

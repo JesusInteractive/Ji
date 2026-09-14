@@ -17,37 +17,26 @@ export const PLANS: Plan[] = [
     resetsDaily: false,
     features: ['Full access during your 5-day trial'],
   },
-  // Basic/Pro/Platinum unlock the identical feature set today -- there is
-  // no tier-specific enforcement anywhere in the code (useFeatureAccess()
-  // is one binary hasFullAccess flag, not tier-aware; dailyQuestionLimit/
-  // resetsDaily below are unread by anything). Earlier copy claimed
-  // per-tier question caps and a Pro+-only Sermon Writer that were never
-  // real, so all three now say the same thing rather than promise a
-  // difference that doesn't exist. Pro/Platinum are priced higher as a
-  // way to support Jesus Interactive further, not for extra locked
-  // features -- if real tier differentiation gets built later, this is
-  // the place to describe it honestly.
   {
     id: 'basic',
     name: 'Basic',
     priceLabel: '$5.99/month',
-    dailyQuestionLimit: null,
-    resetsDaily: false,
-    features: [
-      'Unlimited Ask Jesus',
-      'Gospel Translator',
-      'Sermon & Bible Study Generator',
-      'Guided Prayer, Daily Devotions, and Multi-Language Bible Tools',
-      'AI Jesus reads select Study Library titles aloud',
-    ],
+    dailyQuestionLimit: 20,
+    resetsDaily: true,
+    features: ['20 questions a day', 'Saved conversation history'],
   },
   {
     id: 'pro',
     name: 'Pro',
     priceLabel: '$9.99/month',
-    dailyQuestionLimit: null,
-    resetsDaily: false,
-    features: ['Everything in Basic', 'Supports Jesus Interactive at a higher level'],
+    dailyQuestionLimit: 50,
+    resetsDaily: true,
+    features: [
+      '50 questions a day',
+      'Priority responses',
+      'Saved conversations across devices',
+      'Bonus: sermon writer for pastors',
+    ],
     badge: 'Most popular',
   },
   {
@@ -55,8 +44,17 @@ export const PLANS: Plan[] = [
     name: 'Platinum',
     priceLabel: '$19.99/month',
     dailyQuestionLimit: null,
-    resetsDaily: false,
-    features: ['Everything in Basic', 'Supports Jesus Interactive at the highest level'],
+    resetsDaily: true,
+    features: [
+      'Everything in Pro',
+      'Unlimited questions',
+      'Highest priority responses',
+      'Maximum conversation memory',
+      'Advanced sermon writer (longer, more detailed sermons)',
+      'AI Jesus reads the Read-Aloud Catalog aloud (availability depends on language support)',
+      'Exclusive features and early access',
+      'Priority support',
+    ],
     badge: 'Full access',
   },
 ];
@@ -64,8 +62,8 @@ export const PLANS: Plan[] = [
 // Plain-language explainer of the whole monetization model, surfaced in
 // PricingScreen and TokenGiftScreen so the mechanics are never a mystery.
 export const MONETIZATION_EXPLAINER = {
-  free: 'Every install gets 5 days of full access, free, no credit card needed. After that, choose a plan to keep going. The Emergency SOS button (Profile) is always free on every plan, including after the trial ends -- it is never paywalled or limited.',
-  paid: 'Basic, Pro, and Platinum are monthly subscriptions that all unlock the same full access: unlimited Ask Jesus, the Gospel Translator, the Sermon & Bible Study Generator, Guided Prayer, Daily Devotions, and Multi-Language Bible Tools. Pro and Platinum cost more as a way to support Jesus Interactive further, not for extra features.',
+  free: 'Every install gets 5 days of full access, free, no credit card needed. After that, choose a plan to keep going.',
+  paid: 'Basic, Pro, and Platinum are monthly subscriptions that raise or remove the daily question limit, add saved conversation history across devices, priority responses, and (Pro & up) the sermon writer for pastors.',
   tokens:
     'Don\'t want an ongoing subscription? Buy a gift certificate instead -- it activates a real plan on your account for a fixed number of months, no auto-renewal.',
   gifting:
