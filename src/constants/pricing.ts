@@ -26,9 +26,14 @@ export const PLANS: Plan[] = [
     features: [
       '20 questions a day',
       'Saved conversation history',
+      '24/7 Praise radio (coming soon)',
       'The Bible',
       'Jesus Interactive Bible Games',
-      '24/7 Praise radio (coming soon)',
+      'Gospel Translator',
+      'Scripture Search',
+      'Prayer Wall',
+      'Daily Devotions',
+      'Resources',
     ],
   },
   {
