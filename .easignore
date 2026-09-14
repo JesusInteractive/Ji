@@ -19,3 +19,19 @@ backend/node_modules/
 /*.mov
 /*.docx
 /jesus-interactive-production.aab
+
+# Not app source either, and big enough to repeat the 871MB failure on
+# their own: screen recordings anywhere (the app plays only .mp4, from
+# assets/video/), the store-listing folder (screenshots, a 113MB review
+# demo), marketing drafts, the backend (deployed separately to Vercel --
+# the app only imports backend/legal-documents.json, which stays), and
+# the art tools (their out/ folder alone is ~70MB).
+*.mov
+*.aab
+assets/store/
+marketing/
+/6.5 apple/
+tools/
+.claude/
+backend/*
+!backend/legal-documents.json
