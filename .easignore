@@ -39,3 +39,9 @@ tools/
 *.bak
 backend/*
 !backend/legal-documents.json
+
+# Loose files in the project root that are not app source: tester lists
+# (personal data -- must never leave this Mac), logo drafts and icon exports.
+/*.csv
+/*.jpg
+/*.png
