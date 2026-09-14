@@ -33,5 +33,9 @@ marketing/
 /6.5 apple/
 tools/
 .claude/
+# Local dev leftovers: Expo's own cache/logs (a 7.7MB xcodebuild.log) and
+# the .bak original of a licensed stock photo.
+.expo/
+*.bak
 backend/*
 !backend/legal-documents.json
