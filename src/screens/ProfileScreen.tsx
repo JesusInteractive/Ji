@@ -256,6 +256,12 @@ export default function ProfileScreen() {
           value={nameInput}
           onChangeText={setNameInput}
           onBlur={handleNameBlur}
+          // Return saves too, not just tapping away; the ⓧ clears the
+          // field in one tap.
+          onSubmitEditing={handleNameBlur}
+          returnKeyType="done"
+          clearButtonMode="while-editing"
+          autoCapitalize="words"
           placeholder={t.profile.namePlaceholder}
           placeholderTextColor="#A0AEC0"
         />
