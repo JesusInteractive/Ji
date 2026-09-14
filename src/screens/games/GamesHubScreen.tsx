@@ -1,11 +1,13 @@
 // "Jesus Interactive Bible Games" hub -- one tile per game, each in its
-// own vivid color (see data/gamesCatalog.ts's own comment on why this
-// screen breaks from the app's usual navy/gold palette: colorful and
-// inviting is the explicit goal here). Every game is fully unlocked --
-// no useFeatureAccess()/PaywallLockScreen anywhere on this screen or any
-// of its 9 children, by design (see the approved plan).
+// own vivid color (see data/gamesCatalog.ts's own comment on why the tiles
+// break from the app's usual navy/gold palette: colorful and inviting is
+// the explicit goal). The screen around them uses the same blue parchment
+// background as Home and Settings, so the hub still reads as part of the
+// app. Every game is fully unlocked -- no useFeatureAccess()/
+// PaywallLockScreen anywhere on this screen or any of its children, by
+// design (see the approved plan).
 import React, { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -26,68 +28,74 @@ export default function GamesHubScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom', 'left', 'right']}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.getParent()?.navigate('HomeTab' as never)}
-          accessibilityLabel="Close Games Hub"
-          accessibilityRole="button"
-        >
-          <Ionicons name="close" size={20} color={Colors.royal} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Jesus Interactive Games Hub</Text>
-        <Text style={styles.subhead}>Tap a game to start playing. Each one has its own difficulty levels.</Text>
-      </View>
-      <View style={{ flex: 1 }}>
-        <ScrollView
-          ref={scrollRef}
-          contentContainerStyle={styles.grid}
-          showsVerticalScrollIndicator={false}
-          onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
-          onContentSizeChange={(_w, h) => setContentHeight(h)}
-          onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
-          scrollEventThrottle={16}
-          scrollEnabled={!scrollbarDragging}
-        >
-          {GAMES_CATALOG.map((game) => (
-            <TouchableOpacity
-              key={game.id}
-              style={[styles.tile, { backgroundColor: game.color }]}
-              onPress={() => navigation.navigate(game.id)}
-              accessibilityRole="button"
-              accessibilityLabel={`${game.title} -- ${game.subtitle}`}
-            >
-              <Ionicons name={game.icon} size={34} color={Colors.white} />
-              <Text style={styles.tileTitle}>{game.title}</Text>
-              <Text style={styles.tileSubtitle}>{game.subtitle}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <DraggableScrollbar
-          contentHeight={contentHeight}
-          viewportHeight={viewportHeight}
-          scrollOffset={scrollOffset}
-          onScrollTo={(offset) => {
-            scrollRef.current?.scrollTo({ y: offset, animated: false });
-            setScrollOffset(offset);
-          }}
-          onDragStart={() => setScrollbarDragging(true)}
-          onDragEnd={() => setScrollbarDragging(false)}
-        />
-      </View>
+      <ImageBackground source={require('../../../assets/textures/parchment-navy.jpg')} style={styles.container} resizeMode="cover">
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => navigation.getParent()?.navigate('HomeTab' as never)}
+            accessibilityLabel="Close Games Hub"
+            accessibilityRole="button"
+          >
+            <Ionicons name="close" size={20} color={Colors.ivory} />
+          </TouchableOpacity>
+          <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
+            Jesus Interactive Games Hub
+          </Text>
+          <Text style={styles.subhead}>Tap a game to start playing. Each one has its own difficulty levels.</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            ref={scrollRef}
+            contentContainerStyle={styles.grid}
+            showsVerticalScrollIndicator={false}
+            onLayout={({ nativeEvent }) => setViewportHeight(nativeEvent.layout.height)}
+            onContentSizeChange={(_w, h) => setContentHeight(h)}
+            onScroll={({ nativeEvent }) => setScrollOffset(nativeEvent.contentOffset.y)}
+            scrollEventThrottle={16}
+            scrollEnabled={!scrollbarDragging}
+          >
+            {GAMES_CATALOG.map((game) => (
+              <TouchableOpacity
+                key={game.id}
+                style={[styles.tile, { backgroundColor: game.color }]}
+                onPress={() => navigation.navigate(game.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`${game.title} -- ${game.subtitle}`}
+              >
+                <Ionicons name={game.icon} size={34} color={Colors.white} />
+                <Text style={styles.tileTitle}>{game.title}</Text>
+                <Text style={styles.tileSubtitle}>{game.subtitle}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <DraggableScrollbar
+            contentHeight={contentHeight}
+            viewportHeight={viewportHeight}
+            scrollOffset={scrollOffset}
+            onScrollTo={(offset) => {
+              scrollRef.current?.scrollTo({ y: offset, animated: false });
+              setScrollOffset(offset);
+            }}
+            onDragStart={() => setScrollbarDragging(true)}
+            onDragEnd={() => setScrollbarDragging(false)}
+            thumbColor={Colors.gold}
+          />
+        </View>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.ivory },
-  header: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12, alignItems: 'center' },
+  safeArea: { flex: 1, backgroundColor: Colors.royal },
+  container: { flex: 1 },
+  header: { paddingHorizontal: 52, paddingTop: 16, paddingBottom: 12, alignItems: 'center' },
   closeButton: {
     position: 'absolute', top: 12, right: 16, width: 32, height: 32, borderRadius: 16,
-    backgroundColor: '#EFE9DA', alignItems: 'center', justifyContent: 'center', zIndex: 1,
+    backgroundColor: 'rgba(255,255,255,0.14)', alignItems: 'center', justifyContent: 'center', zIndex: 1,
   },
-  title: { fontSize: 24, fontWeight: '800', color: Colors.royal, textAlign: 'center' },
-  subhead: { fontSize: 12.5, color: '#8A8577', marginTop: 6, textAlign: 'center' },
+  title: { fontSize: 24, fontWeight: '800', color: Colors.ivory, textAlign: 'center' },
+  subhead: { fontSize: 12.5, color: 'rgba(255,255,255,0.78)', marginTop: 6, textAlign: 'center' },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -105,7 +113,7 @@ const styles = StyleSheet.create({
     padding: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.25,
     shadowRadius: 6,
     elevation: 3,
   },
