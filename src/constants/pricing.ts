@@ -23,7 +23,13 @@ export const PLANS: Plan[] = [
     priceLabel: '$5.99/month',
     dailyQuestionLimit: 20,
     resetsDaily: true,
-    features: ['20 questions a day', 'Saved conversation history'],
+    features: [
+      '20 questions a day',
+      'Saved conversation history',
+      'The Bible',
+      'Jesus Interactive Bible Games',
+      '24/7 Praise radio (coming soon)',
+    ],
   },
   {
     id: 'pro',
@@ -32,6 +38,7 @@ export const PLANS: Plan[] = [
     dailyQuestionLimit: 50,
     resetsDaily: true,
     features: [
+      'Everything in Basic',
       '50 questions a day',
       'Priority responses',
       'Saved conversations across devices',
