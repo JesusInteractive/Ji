@@ -45,9 +45,7 @@ export const PLANS: Plan[] = [
     features: [
       'Everything in Basic',
       '50 questions a day',
-      'Priority responses',
-      'Saved conversations across devices',
-      'Bonus: sermon writer for pastors',
+      'Sermon writer for pastors and teachers',
     ],
     badge: 'Most popular',
   },
@@ -57,15 +55,13 @@ export const PLANS: Plan[] = [
     priceLabel: '$19.99/month',
     dailyQuestionLimit: null,
     resetsDaily: true,
+    // Only what the app actually does today -- this card is the screen
+    // App Review checks each subscription against.
     features: [
       'Everything in Pro',
       'Unlimited questions',
-      'Highest priority responses',
-      'Maximum conversation memory',
+      'Hear 196 books read aloud by Jesus AI and the Scholar',
       'Advanced sermon writer (longer, more detailed sermons)',
-      'AI Jesus reads the Read-Aloud Catalog aloud (availability depends on language support)',
-      'Exclusive features and early access',
-      'Priority support',
     ],
     badge: 'Full access',
   },
@@ -75,7 +71,7 @@ export const PLANS: Plan[] = [
 // PricingScreen and TokenGiftScreen so the mechanics are never a mystery.
 export const MONETIZATION_EXPLAINER = {
   free: 'Every install gets 5 days of full access, free, no credit card needed. After that, choose a plan to keep going.',
-  paid: 'Basic, Pro, and Platinum are monthly subscriptions that raise or remove the daily question limit, add saved conversation history across devices, priority responses, and (Pro & up) the sermon writer for pastors.',
+  paid: 'Basic, Pro, and Platinum are monthly subscriptions. Each raises or removes the daily question limit; Pro adds the sermon writer, and Platinum adds books read aloud.',
   tokens:
     'Don\'t want an ongoing subscription? Buy a gift certificate instead -- it activates a real plan on your account for a fixed number of months, no auto-renewal.',
   gifting:
