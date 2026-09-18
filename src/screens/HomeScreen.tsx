@@ -11,8 +11,9 @@ import { useI18n } from '../i18n';
 import type { MainTabParamList } from '../navigation/MainTabs';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { getDailyPromise, type DailyPromise } from '../services/devotions';
+import { fetchNewsBrief, type NewsBrief } from '../services/newsBriefApi';
 import DraggableScrollbar from '../components/DraggableScrollbar';
-import NewsBriefHomeCard from '../components/NewsBriefHomeCard';
+import NewsBriefCard from '../components/NewsBriefCard';
 import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
 
 // Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
@@ -57,6 +58,9 @@ export default function HomeScreen() {
   const rootNavigation = navigation.getParent<NativeStackNavigationProp<RootStackParamList>>();
   const { width: screenWidth } = useWindowDimensions();
   const [dailyPromise, setDailyPromise] = useState<DailyPromise>(FALLBACK_PROMISE);
+  const [newsBrief, setNewsBrief] = useState<NewsBrief | null>(null);
+  const [newsBriefLoading, setNewsBriefLoading] = useState(true);
+  const [newsBriefError, setNewsBriefError] = useState(false);
   // Estimated from the grid's own layout constants (container padding
   // 20, two 47%-wide columns, 14 gap) so the button has a sane position
   // from the very first frame, then corrected to the exact measured
@@ -97,6 +101,27 @@ export default function HomeScreen() {
       cancelled = true;
     };
   }, []);
+
+  const loadNewsBrief = useCallback(() => {
+    let cancelled = false;
+    setNewsBriefLoading(true);
+    setNewsBriefError(false);
+    fetchNewsBrief()
+      .then((result) => {
+        if (!cancelled) setNewsBrief(result);
+      })
+      .catch(() => {
+        if (!cancelled) setNewsBriefError(true);
+      })
+      .finally(() => {
+        if (!cancelled) setNewsBriefLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => loadNewsBrief(), [loadNewsBrief]);
 
   // Explicit 12-tile layout, per direct request: feature everything
   // Jesus Interactive actually built (Ask Jesus, the atlas, the
@@ -285,7 +310,46 @@ export default function HomeScreen() {
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_5.map((tile) => renderTile(tile))}</View>
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_6.map((tile) => renderTile(tile))}</View>
 
-      <NewsBriefHomeCard onPress={() => rootNavigation?.navigate('NewsWatch')} />
+      {(() => {
+        const heroClip = newsBrief?.videoClips?.[0];
+        const storyCount = newsBrief?.videoClips?.length ?? 0;
+        if (heroClip) {
+          return (
+            <NewsBriefCard
+              headline={heroClip.title}
+              source={heroClip.channelName}
+              publishedAt={heroClip.publishedAt ?? new Date().toISOString()}
+              thumbnailUrl={heroClip.thumbnailUrl}
+              storyCount={storyCount > 1 ? storyCount : undefined}
+              onPress={() => rootNavigation?.navigate('NewsWatch')}
+            />
+          );
+        }
+        if (newsBriefLoading) {
+          return (
+            <View style={styles.newsBriefStateCard}>
+              <Text style={styles.newsBriefKicker}>NEWS BRIEF · TODAY</Text>
+              <View style={styles.newsBriefSkeletonThumb} />
+              <View style={styles.newsBriefSkeletonLine} />
+              <View style={[styles.newsBriefSkeletonLine, { width: '60%' }]} />
+            </View>
+          );
+        }
+        if (newsBriefError) {
+          return (
+            <TouchableOpacity style={styles.newsBriefStateCard} onPress={loadNewsBrief} accessibilityRole="button" accessibilityLabel="Couldn't load brief. Retry.">
+              <Text style={styles.newsBriefKicker}>NEWS BRIEF · TODAY</Text>
+              <Text style={styles.newsBriefStateText}>Couldn't load brief · Retry</Text>
+            </TouchableOpacity>
+          );
+        }
+        return (
+          <Pressable style={styles.newsBriefStateCard} onPress={() => rootNavigation?.navigate('NewsWatch')} accessibilityRole="button" accessibilityLabel="News brief. New brief posts this afternoon.">
+            <Text style={styles.newsBriefKicker}>NEWS BRIEF · TODAY</Text>
+            <Text style={styles.newsBriefStateText}>New brief posts this afternoon</Text>
+          </Pressable>
+        );
+      })()}
       </ScrollView>
       <DraggableScrollbar
         contentHeight={contentHeight}
@@ -310,6 +374,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.royal,
   },
+  // Loading/empty/error variants of the News Brief module -- same
+  // editorial navy/gold system as NewsBriefCard.tsx's loaded state,
+  // not the grid-tile palette.
+  newsBriefStateCard: {
+    backgroundColor: '#0B1B3A',
+    borderRadius: 17,
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(212, 175, 55, 0.4)',
+    minHeight: 96,
+  },
+  newsBriefKicker: { fontSize: 11, fontWeight: '600', color: '#D4AF37', letterSpacing: 1.2, marginBottom: 10 },
+  newsBriefStateText: { fontSize: 13.5, color: 'rgba(201, 194, 176, 0.8)' },
+  newsBriefSkeletonThumb: { width: '36%', aspectRatio: 4 / 5, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.08)', marginBottom: 10 },
+  newsBriefSkeletonLine: { width: '85%', height: 12, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.08)', marginBottom: 8 },
   container: {
     flex: 1,
   },
