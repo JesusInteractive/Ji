@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
     backgroundColor: NAVY,
     borderRadius: 17,
     padding: 15,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(212, 175, 55, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(212, 175, 55, 0.4)',
   },
   cardPressed: { opacity: 0.9 },
   thumbWrap: {
