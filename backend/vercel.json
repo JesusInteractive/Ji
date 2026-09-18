@@ -8,6 +8,7 @@
     }
   },
   "crons": [
+    { "path": "/health", "schedule": "*/15 * * * *" },
     { "path": "/v1/cron/news-brief-refresh", "schedule": "*/15 * * * *" }
   ]
 }
