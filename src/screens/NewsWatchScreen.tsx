@@ -1,109 +1,27 @@
-// "Jesus Interactive News Brief" -- replaces the old static-links-only
-// "24/7 News Watch" screen. Reached the same way (Resources -> News
-// Brief card), same modal/back-button chrome (see RootNavigator.tsx's
-// NewsWatch route).
+// "Jesus Interactive News Brief" -- the video half of the News Brief
+// feature. Reached from Home's NewsBriefHomeCard (the "constant flow of
+// video clips" card). The written half (Now Brief paragraph, On This
+// Day, and the full Headlines list) lives on its own screen,
+// NewsHeadlinesScreen.tsx, reached instead from Resources -- per direct
+// request to split "written news" (Resources) from "video" (this
+// screen) rather than mixing both on every entry point.
 //
-// This is a headline + summary brief with source attribution and
-// outbound links, not a licensed video feed -- there is no CBN/live-TV
-// branding anywhere in this screen, and none should be added back until
-// an actual license exists (see NewsTvPreview.tsx's removal for the
-// same reasoning -- that dev-only "24/7 News TV" placeholder is gone).
-//
-// Three stacked sections, top to bottom:
-//   1. Now Brief    -- an AI-generated ~90-second brief over the
-//                       newest headlines (backend/newsBrief.js), every
-//                       fact attributed to its source.
-//   2. On This Day   -- dated Christian-history commemoration(s) for
-//                       today, from src/data/christianHistory.ts. Never
-//                       "remembered by Jesus" -- a plain history strip,
-//                       sourced or explicitly labeled "Traditional
-//                       commemoration".
-//   3. Headlines     -- the full deduped RSS list, newest first, each
-//                       card crediting its publisher and opening the
-//                       original article via Linking.openURL (same
-//                       "plain outbound link, no embedding" approach the
-//                       old screen used).
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Image, ImageBackground, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// Video clips are public YouTube uploads (backend/newsBriefVideoSources.js),
+// embedded via YouTube's own official player (YouTubePlayer.tsx) -- not a
+// licensed video feed, no CBN/live-TV branding here, none should be
+// added back until an actual license exists (see NewsTvPreview.tsx's
+// removal for the same reasoning).
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../theme/colors';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import YouTubePlayer from '../components/YouTubePlayer';
 import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
-import { fetchNewsBrief, type NewsBrief, type NewsBriefHeadline } from '../services/newsBriefApi';
-import { getOnThisDay, type HistoryEntry } from '../data/christianHistory';
-
-function openLink(url: string) {
-  if (!url) return;
-  Linking.openURL(url).catch(() => {
-    Alert.alert('Could not open link', 'Please try again in a moment.');
-  });
-}
-
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-
-function formatMonthDay(month: number, day: number): string {
-  return `${MONTH_NAMES[month - 1]} ${day}`;
-}
-
-function formatRelativeTime(iso: string | null): string {
-  if (!iso) return '';
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return '';
-  const minutes = Math.max(0, Math.round((Date.now() - then) / 60000));
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.round(hours / 24);
-  return `${days}d ago`;
-}
-
-const STOPWORDS = new Set(['the', 'and', 'for', 'with', 'from', 'this', 'that', 'over', 'into', 'their', 'about', 'after', 'have', 'will']);
-
-function significantWords(text: string): string[] {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter((w) => w.length > 4 && !STOPWORDS.has(w));
-}
-
-// Deliberately conservative -- most headlines won't match any given
-// day's history entry, and that's fine (spec: "If no overlap, show the
-// headline alone"). A match is either a shared tag keyword appearing in
-// the headline text, or a shared significant word between the two
-// titles.
-function findRelatedHeadline(entry: HistoryEntry, headlines: NewsBriefHeadline[]): NewsBriefHeadline | null {
-  const entryWords = new Set(significantWords(entry.title));
-  for (const tag of entry.tags) entryWords.add(tag.toLowerCase());
-  for (const headline of headlines) {
-    const headlineText = `${headline.title} ${headline.summary}`.toLowerCase();
-    for (const word of entryWords) {
-      if (headlineText.includes(word)) return headline;
-    }
-  }
-  return null;
-}
-
-function findRelatedHistoryTitle(headline: NewsBriefHeadline, entries: HistoryEntry[]): string | null {
-  const headlineWords = new Set(significantWords(`${headline.title} ${headline.summary}`));
-  for (const entry of entries) {
-    for (const tag of entry.tags) {
-      if (headlineWords.has(tag.toLowerCase())) return entry.title;
-    }
-    for (const word of significantWords(entry.title)) {
-      if (headlineWords.has(word)) return entry.title;
-    }
-  }
-  return null;
-}
+import { fetchNewsBrief, type NewsBrief } from '../services/newsBriefApi';
 
 export default function NewsWatchScreen() {
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = React.useRef<ScrollView>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
@@ -114,12 +32,6 @@ export default function NewsWatchScreen() {
   const [error, setError] = useState<string | null>(null);
   const [selectedClipIndex, setSelectedClipIndex] = useState(0);
 
-  const today = new Date();
-  const todayMonth = today.getMonth() + 1;
-  const todayDay = today.getDate();
-  const historyEntries = getOnThisDay(today);
-  const isFromArchive = historyEntries.length > 0 && (historyEntries[0].month !== todayMonth || historyEntries[0].day !== todayDay);
-
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -127,9 +39,7 @@ export default function NewsWatchScreen() {
       const result = await fetchNewsBrief();
       setBrief(result);
     } catch {
-      // Keep whatever brief we already have (last-good-cache) -- only
-      // show the error state below if we have nothing at all yet.
-      setError('Could not refresh headlines.');
+      setError('Could not load video clips.');
     } finally {
       setLoading(false);
     }
@@ -144,7 +54,6 @@ export default function NewsWatchScreen() {
     scrollTo: useCallback((y: number) => scrollRef.current?.scrollTo({ y, animated: true }), []),
   });
 
-  const headlines = brief?.headlines ?? [];
   const videoClips = brief?.videoClips ?? [];
   const selectedClip = videoClips[selectedClipIndex] ?? videoClips[0];
 
@@ -162,118 +71,52 @@ export default function NewsWatchScreen() {
       scrollEventThrottle={16}
       scrollEnabled={!scrollbarDragging}
     >
-      {/* --- Video Clips: big, full-bleed hero player up top --- */}
-      {videoClips.length > 0 && selectedClip && (
+      {selectedClip ? (
         <View style={styles.hero}>
           <YouTubePlayer videoId={selectedClip.videoId} title={selectedClip.title} channelName={selectedClip.channelName} big />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clipStrip} contentContainerStyle={styles.clipStripContent}>
-            {videoClips.map((clip, i) => (
-              <TouchableOpacity
-                key={clip.videoId}
-                style={[styles.clipThumbWrap, i === selectedClipIndex && styles.clipThumbWrapActive]}
-                onPress={() => setSelectedClipIndex(i)}
-                accessibilityRole="button"
-                accessibilityLabel={`Play: ${clip.title}`}
-              >
-                <Image source={{ uri: clip.thumbnailUrl }} style={styles.clipThumb} resizeMode="cover" />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-
-      <View style={styles.iconWrap}>
-        <Ionicons name="newspaper" size={56} color={Colors.gold} />
-      </View>
-      <Text style={styles.title}>Jesus Interactive News Brief</Text>
-      <Text style={styles.intro}>Christian headlines with source credit. Tap to read the original.</Text>
-
-      {/* --- Now Brief --- */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionEyebrow}>Now Brief</Text>
-        {loading && !brief ? (
-          <Text style={styles.bodyText}>Updating headlines…</Text>
-        ) : error && !brief ? (
-          <View>
-            <Text style={styles.bodyText}>Could not load the brief right now.</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={load} accessibilityRole="button" accessibilityLabel="Retry">
-              <Text style={styles.retryButtonText}>Try again</Text>
-            </TouchableOpacity>
-          </View>
-        ) : brief && brief.briefText ? (
-          <>
-            <Text style={styles.bodyText}>{brief.briefText}</Text>
-            <Text style={styles.timestamp}>Updated {formatRelativeTime(brief.updatedAt)}</Text>
-          </>
-        ) : (
-          <Text style={styles.bodyText}>Updating headlines…</Text>
-        )}
-      </View>
-
-      {/* --- On This Day --- */}
-      {historyEntries.length > 0 && (
-        <View style={styles.sectionCard}>
-          <Text style={styles.sectionEyebrow}>On This Day</Text>
-          {isFromArchive && (
-            <Text style={styles.archiveLabel}>From the archive · {formatMonthDay(historyEntries[0].month, historyEntries[0].day)}</Text>
+          {videoClips.length > 1 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.clipStrip} contentContainerStyle={styles.clipStripContent}>
+              {videoClips.map((clip, i) => (
+                <TouchableOpacity
+                  key={clip.videoId}
+                  style={[styles.clipThumbWrap, i === selectedClipIndex && styles.clipThumbWrapActive]}
+                  onPress={() => setSelectedClipIndex(i)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Play: ${clip.title}`}
+                >
+                  <Image source={{ uri: clip.thumbnailUrl }} style={styles.clipThumb} resizeMode="cover" />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           )}
-          {historyEntries.map((entry) => {
-            const related = findRelatedHeadline(entry, headlines);
-            return (
-              <View key={entry.title} style={styles.historyItem}>
-                <Text style={styles.historyDate}>{formatMonthDay(entry.month, entry.day)}{entry.year ? `, ${entry.year}` : ''}</Text>
-                <Text style={styles.historyTitle}>{entry.title}</Text>
-                <Text style={styles.bodyText}>{entry.summary}</Text>
-                {entry.scripture && <Text style={styles.scripture}>{entry.scripture}</Text>}
-                <Text style={styles.sourceLine}>Source: {entry.source}</Text>
-                {related && (
-                  <TouchableOpacity onPress={() => openLink(related.link)} accessibilityRole="button" accessibilityLabel={`Related headline: ${related.title}`}>
-                    <Text style={styles.relatedLink}>Related headline: {related.title}</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            );
-          })}
         </View>
-      )}
-
-      {/* --- Headlines --- */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionEyebrow}>Headlines</Text>
-        {headlines.length === 0 ? (
-          <Text style={styles.bodyText}>{loading ? 'Updating headlines…' : 'No headlines available right now.'}</Text>
-        ) : (
-          <View style={styles.secondaryList}>
-            {headlines.map((headline, index) => {
-              const relatedTitle = findRelatedHistoryTitle(headline, historyEntries);
-              return (
-                <View key={`${headline.link}-${index}`} style={styles.headlineCard}>
-                  <Text style={styles.headlineTitle}>{headline.title}</Text>
-                  {headline.summary ? <Text style={styles.headlineSummary}>{headline.summary}</Text> : null}
-                  <View style={styles.headlineMetaRow}>
-                    <Text style={styles.headlineSource}>{headline.source}</Text>
-                    {headline.publishedAt ? <Text style={styles.headlineTime}>· {formatRelativeTime(headline.publishedAt)}</Text> : null}
-                  </View>
-                  {relatedTitle && <Text style={styles.contextLine}>Context · On This Day: {relatedTitle}</Text>}
-                  <TouchableOpacity
-                    style={styles.readOriginalButton}
-                    onPress={() => openLink(headline.link)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Read original: ${headline.title}`}
-                  >
-                    <Text style={styles.readOriginalText}>Read original</Text>
-                    <Ionicons name="open-outline" size={14} color={Colors.gold} />
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
+      ) : (
+        <>
+          <View style={styles.iconWrap}>
+            <Ionicons name="videocam" size={56} color={Colors.gold} />
           </View>
-        )}
-      </View>
+          <Text style={styles.title}>Jesus Interactive News Brief</Text>
+          <Text style={styles.intro}>Christian video clips, updated regularly.</Text>
+          <View style={styles.sectionCard}>
+            {loading ? (
+              <ActivityIndicator color={Colors.gold} />
+            ) : error ? (
+              <View>
+                <Text style={styles.bodyText}>{error}</Text>
+                <TouchableOpacity style={styles.retryButton} onPress={load} accessibilityRole="button" accessibilityLabel="Retry">
+                  <Text style={styles.retryButtonText}>Try again</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <Text style={styles.bodyText}>No video clips available right now.</Text>
+            )}
+          </View>
+        </>
+      )}
 
       <Text style={styles.disclaimer}>
-        Headlines courtesy of each publisher. Jesus Interactive is not affiliated with these outlets
-        unless a license is shown.
+        Clips are public YouTube uploads, played with YouTube's own player. Jesus Interactive is not
+        affiliated with these channels unless a license is shown.
       </Text>
     </ScrollView>
     <DraggableScrollbar
@@ -321,20 +164,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: 14,
     padding: 16,
-    marginBottom: 16,
   },
-  sectionEyebrow: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: Colors.gold,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 10,
+  bodyText: { fontSize: 14, color: Colors.ivory, lineHeight: 21 },
+  retryButton: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.royalLight,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
   },
+  retryButtonText: { color: Colors.gold, fontWeight: '700', fontSize: 13 },
   // Full-bleed: cancels out `content`'s own padding (32 sides, 40 top)
-  // so the hero player spans edge to edge instead of sitting inset like
-  // the other section cards below it.
-  hero: { width: '100%', marginTop: -40, marginHorizontal: -32, marginBottom: 24 },
+  // so the hero player spans edge to edge instead of sitting inset.
+  hero: { width: '100%', marginTop: -40, marginHorizontal: -32, marginBottom: 8 },
   clipStrip: { marginTop: 12, paddingHorizontal: 16 },
   clipStripContent: { gap: 8, paddingRight: 4 },
   clipThumbWrap: {
@@ -348,43 +191,10 @@ const styles = StyleSheet.create({
   },
   clipThumbWrapActive: { borderColor: Colors.gold },
   clipThumb: { width: '100%', height: '100%' },
-  bodyText: { fontSize: 14, color: Colors.ivory, lineHeight: 21 },
-  timestamp: { fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 10 },
-  retryButton: {
-    marginTop: 12,
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.royalLight,
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-  },
-  retryButtonText: { color: Colors.gold, fontWeight: '700', fontSize: 13 },
-  archiveLabel: { fontSize: 12, color: 'rgba(255,255,255,0.55)', marginBottom: 10, fontStyle: 'italic' },
-  historyItem: { marginBottom: 4 },
-  historyDate: { fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.6)', marginBottom: 4 },
-  historyTitle: { fontSize: 16, fontWeight: '700', color: Colors.white, marginBottom: 6 },
-  scripture: { fontSize: 12.5, color: Colors.gold, marginTop: 8, fontStyle: 'italic' },
-  sourceLine: { fontSize: 11.5, color: 'rgba(255,255,255,0.5)', marginTop: 8 },
-  relatedLink: { fontSize: 12.5, color: Colors.gold, marginTop: 8, textDecorationLine: 'underline' },
-  secondaryList: { width: '100%' },
-  headlineCard: {
-    backgroundColor: Colors.royalLight,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-  },
-  headlineTitle: { fontSize: 15, fontWeight: '700', color: Colors.ivory, marginBottom: 6 },
-  headlineSummary: { fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 19, marginBottom: 8 },
-  headlineMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  headlineSource: { fontSize: 12, fontWeight: '700', color: Colors.gold },
-  headlineTime: { fontSize: 12, color: 'rgba(255,255,255,0.5)' },
-  contextLine: { fontSize: 11.5, color: 'rgba(255,255,255,0.6)', marginTop: 6, fontStyle: 'italic' },
-  readOriginalButton: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10 },
-  readOriginalText: { fontSize: 12.5, fontWeight: '700', color: Colors.gold },
   disclaimer: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.55)',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 20,
   },
 });

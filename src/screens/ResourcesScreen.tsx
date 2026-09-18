@@ -95,7 +95,7 @@ export default function ResourcesScreen() {
           <Pressable onHoverIn={() => setHoveredKey('newsWatch')} onHoverOut={() => setHoveredKey(null)}>
             <TouchableOpacity
               style={[styles.aboutCard, hoveredKey === 'newsWatch' && styles.aboutCardHovered]}
-              onPress={() => rootNavigation?.navigate('NewsWatch')}
+              onPress={() => rootNavigation?.navigate('NewsHeadlines')}
               accessibilityRole="button"
               accessibilityLabel="Jesus Interactive News Brief -- Christian headlines with source credit"
             >

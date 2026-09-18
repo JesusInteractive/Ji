@@ -9,6 +9,15 @@ const Parser = require('rss-parser');
 const { NEWS_BRIEF_SOURCES } = require('./newsBriefSources');
 const { NEWS_BRIEF_VIDEO_SOURCES } = require('./newsBriefVideoSources');
 
+// Counter-intuitively confirmed by direct curl testing: YouTube's feed
+// endpoint 404s a real browser User-Agent but 200s rss-parser's own
+// default ("rss-parser") -- it appears to allow known feed-reader UAs
+// and block ones that look like a bare/faked browser. The handful of
+// publisher feeds that also 404 (see newsBriefSources.js) do so
+// regardless of User-Agent -- those are dead/moved URLs, not a header
+// problem, and fetchOneFeed below already skips a failing feed without
+// taking the others down with it. So: no custom headers, just the
+// library default.
 const parser = new Parser({ timeout: 10_000 });
 // YouTube's channel Atom feeds carry the video id in a <yt:videoId>
 // element rss-parser doesn't know about by default -- this maps it onto
@@ -178,13 +187,24 @@ async function refreshNewsBrief({ sql, anthropicApiKey, anthropicModel }) {
   const [headlines, videoClips] = await Promise.all([fetchAllHeadlines(), fetchAllVideoClips()]);
   const briefText = await generateBriefText(headlines, { anthropicApiKey, anthropicModel });
 
+  // YouTube's public feed endpoint has proven flaky toward Vercel's
+  // serverless IPs -- a channel that 404s this cycle often works the
+  // next one. A cycle that comes back with zero clips (but the fetch
+  // itself didn't throw) must not blow away whatever clips are already
+  // cached; only overwrite video_clips when this cycle actually found
+  // some. headlines/brief_text always overwrite since those sources
+  // have been reliable and stale news is worse than an empty section.
   const rows = await sql`
     INSERT INTO news_brief_cache (id, headlines, brief_text, video_clips, updated_at)
     VALUES (1, ${JSON.stringify(headlines)}::jsonb, ${briefText}, ${JSON.stringify(videoClips)}::jsonb, now())
     ON CONFLICT (id) DO UPDATE SET
       headlines = ${JSON.stringify(headlines)}::jsonb,
       brief_text = ${briefText},
-      video_clips = ${JSON.stringify(videoClips)}::jsonb,
+      video_clips = CASE
+        WHEN jsonb_array_length(${JSON.stringify(videoClips)}::jsonb) > 0
+        THEN ${JSON.stringify(videoClips)}::jsonb
+        ELSE news_brief_cache.video_clips
+      END,
       updated_at = now()
     RETURNING headlines, brief_text, video_clips, updated_at
   `;

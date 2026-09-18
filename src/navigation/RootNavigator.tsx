@@ -16,6 +16,7 @@ import BibleTriviaScreen from '../screens/trivia/TriviaScreen';
 import JIRadioScreen from '../screens/JIRadioScreen';
 import SermonsLandingScreen from '../screens/SermonsLandingScreen';
 import NewsWatchScreen from '../screens/NewsWatchScreen';
+import NewsHeadlinesScreen from '../screens/NewsHeadlinesScreen';
 import GlobalMapScreen from '../screens/GlobalMapScreen';
 import SiteDossierScreen from '../screens/SiteDossierScreen';
 import PassionRelicsScreen from '../screens/PassionRelicsScreen';
@@ -74,11 +75,14 @@ export type RootStackParamList = {
   // expo-audio. See JIRadioScreen.tsx's own comment for the
   // backend-hosted stream config this fetches at runtime.
   JIRadio: undefined;
-  // Same root-level-modal pattern as JIRadio above, reached from a card
-  // directly below it on Home (between JIRadio and SermonsLanding). See
-  // NewsWatchScreen.tsx's own comment for the two source swaps made
-  // after checking each URL.
+  // Same root-level-modal pattern as JIRadio above -- the video half of
+  // the News Brief, reached from Home's NewsBriefHomeCard. See
+  // NewsWatchScreen.tsx's own comment on the written/video split.
   NewsWatch: undefined;
+  // The written half of the News Brief (Now Brief, On This Day,
+  // Headlines) -- reached from Resources instead. See
+  // NewsHeadlinesScreen.tsx's own comment on the split.
+  NewsHeadlines: undefined;
   // Same root-level-modal pattern as JIRadio above, reached from a card
   // directly below it on Home. See SermonsLandingScreen.tsx's own
   // comment on why this is a landing screen, not a raw outbound jump.
@@ -268,6 +272,22 @@ export default function RootNavigator() {
           <Stack.Screen
             name="NewsWatch"
             component={NewsWatchScreen}
+            options={({ navigation }) => ({
+              headerShown: true,
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              title: 'Jesus Interactive News Brief',
+              headerTintColor: Colors.royal,
+              headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">
+                  <Ionicons name="close" size={26} color={Colors.royal} />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen
+            name="NewsHeadlines"
+            component={NewsHeadlinesScreen}
             options={({ navigation }) => ({
               headerShown: true,
               presentation: 'modal',
