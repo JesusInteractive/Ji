@@ -323,6 +323,15 @@ export default function SettingsScreen({ navigation }: Props) {
             navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('AboutApp', ABOUT_APP)
           }
         />
+        <Row
+          icon="globe-outline"
+          label="Jesus Interactive Website"
+          onPress={() => {
+            Linking.openURL('https://jesusinteractive.com').catch(() => {
+              Alert.alert('Could not open link', 'jesusinteractive.com');
+            });
+          }}
+        />
         <Row icon="information-circle-outline" label={t.settings.version} value="2.0.0" />
         <Row icon="shield-checkmark-outline" label={t.settings.privacyPolicy} onPress={() => navigation.navigate('LegalDoc', PRIVACY_POLICY)} />
         <Row icon="document-text-outline" label={t.settings.terms} onPress={() => navigation.navigate('LegalDoc', USER_AGREEMENT)} />

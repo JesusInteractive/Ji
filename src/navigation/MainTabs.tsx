@@ -159,7 +159,7 @@ export default function MainTabs() {
         name="TestimonyStream"
         component={FadedTestimonyStream}
         options={({ navigation }) => ({
-          title: 'Testimony Stream',
+          title: 'Testimony & Prayer Stream',
           headerShown: true,
           headerTintColor: Colors.royal,
           headerLeft: () => <HeaderBackToHome navigation={navigation} />,

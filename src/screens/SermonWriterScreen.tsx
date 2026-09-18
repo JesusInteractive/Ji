@@ -4,9 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Colors from '../theme/colors';
-import { useApp } from '../context/AppContext';
 import { generateSermon, exportSermonAsFile, type SermonLength } from '../services/sermonWriter';
-import { presentProPaywall } from '../services/purchases';
 import DraggableScrollbar from '../components/DraggableScrollbar';
 import AiGeneratedLabel from '../components/AiGeneratedLabel';
 import { useI18n } from '../i18n';
@@ -16,13 +14,12 @@ import type { RootStackParamList } from '../navigation/RootNavigator';
 
 // Study Tools > Sermon Writer -- a real, on-demand sermon/Bible-study
 // generator, not just the "sermon writer for pastors" line in
-// constants/pricing.ts's feature list. Gated to Pro/Platinum here (Free/
-// Basic see an upsell instead of the form), matching what those plans
-// actually promise. "Extended" length is further gated to Platinum only
-// ("Advanced sermon writer (longer, more detailed sermons)" in
-// pricing.ts) -- Pro gets the standard-length option only.
+// constants/pricing.ts's feature list. Basic/Pro/Platinum all unlock the
+// identical feature set app-wide (see pricing.ts's own comment on why --
+// there's no tier-specific enforcement anywhere else, so this screen no
+// longer restricts itself to Pro/Platinum or gates "extended" length to
+// Platinum only; any paid plan (or the 5-day trial) gets everything.
 export default function SermonWriterScreen() {
-  const { plan } = useApp();
   const { language, t } = useI18n();
   // Two levels up: StudyToolsStack -> MainTabs' StudyTools tab ->
   // RootNavigator -- same double-getParent chain SettingsScreen.tsx and
@@ -30,8 +27,6 @@ export default function SermonWriterScreen() {
   // modal from a screen nested this deep.
   const navigation = useNavigation();
   const { hasAccess } = useFeatureAccess();
-  const hasProAccess = plan === 'pro' || plan === 'platinum';
-  const canUseExtended = plan === 'platinum';
 
   const [topic, setTopic] = useState('');
   const [passageReference, setPassageReference] = useState('');
@@ -39,7 +34,6 @@ export default function SermonWriterScreen() {
   const [length, setLength] = useState<SermonLength>('standard');
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [upgrading, setUpgrading] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   const scrollRef = useRef<ScrollView>(null);
@@ -48,20 +42,6 @@ export default function SermonWriterScreen() {
   const [viewportHeight, setViewportHeight] = useState(0);
   // Disabled while dragging the custom scrollbar thumb -- see DraggableScrollbar.tsx's onDragStart/onDragEnd comment.
   const [scrollbarDragging, setScrollbarDragging] = useState(false);
-
-  const handleUpgrade = async () => {
-    setUpgrading(true);
-    // The only post-onboarding purchase entry point today -- presents
-    // RevenueCat's Platinum paywall (see PricingScreen.tsx's identical
-    // use). Basic/Pro have no standalone upgrade flow outside onboarding
-    // yet, so Platinum (which also includes this feature) is what's
-    // actually offered here.
-    const outcome = await presentProPaywall();
-    setUpgrading(false);
-    if (outcome === 'error') {
-      Alert.alert(t.sermonWriter.upgradeErrorTitle, t.sermonWriter.upgradeErrorMessage);
-    }
-  };
 
   const handleGenerate = async () => {
     const trimmedTopic = topic.trim();
@@ -102,33 +82,16 @@ export default function SermonWriterScreen() {
     }
   };
 
-  // Two-layer gate: the broad 5-day-trial/subscription check first
-  // (same as every other feature), THEN the existing Pro/Platinum-tier
-  // upsell below for trial/Basic users who reach the screen but haven't
-  // paid for Pro specifically. Nested StudyToolsStack -> MainTabs ->
-  // RootStack -- two getParent() hops, same as this file's own comment
-  // on handleUpgrade's paywall.
+  // Single gate: the same broad 5-day-trial/subscription check every
+  // other paid feature uses. Nested StudyToolsStack -> MainTabs ->
+  // RootStack -- two getParent() hops, same as this screen's own
+  // GospelTranslator hand-off below.
   if (!hasAccess) {
     return (
       <PaywallLockScreen
         featureName="Sermon & Bible Study Writer"
         onSubscribe={() => navigation.getParent()?.getParent<NativeStackNavigationProp<RootStackParamList>>()?.navigate('Pricing')}
       />
-    );
-  }
-
-  if (!hasProAccess) {
-    return (
-      <ImageBackground source={require('../../assets/textures/parchment.jpg')} style={styles.upsellContainer} resizeMode="cover">
-        <Ionicons name="create-outline" size={40} color={Colors.goldOnLight} />
-        <Text style={styles.upsellTitle}>{t.sermonWriter.upsellTitle}</Text>
-        <Text style={styles.upsellBody}>
-          {t.sermonWriter.upsellBody}
-        </Text>
-        <TouchableOpacity style={styles.upsellBtn} onPress={handleUpgrade} disabled={upgrading}>
-          {upgrading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.upsellBtnText}>{t.sermonWriter.upgradeButton}</Text>}
-        </TouchableOpacity>
-      </ImageBackground>
     );
   }
 
@@ -179,31 +142,27 @@ export default function SermonWriterScreen() {
           editable={!generating}
         />
 
-        {canUseExtended && (
-          <>
-            <Text style={styles.label}>{t.sermonWriter.lengthLabel}</Text>
-            <View style={styles.lengthRow}>
-              <TouchableOpacity
-                style={[styles.lengthOption, length === 'standard' && styles.lengthOptionActive]}
-                onPress={() => setLength('standard')}
-                disabled={generating}
-              >
-                <Text style={[styles.lengthOptionText, length === 'standard' && styles.lengthOptionTextActive]}>
-                  {t.sermonWriter.lengthStandard}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.lengthOption, length === 'extended' && styles.lengthOptionActive]}
-                onPress={() => setLength('extended')}
-                disabled={generating}
-              >
-                <Text style={[styles.lengthOptionText, length === 'extended' && styles.lengthOptionTextActive]}>
-                  {t.sermonWriter.lengthExtended}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
+        <Text style={styles.label}>{t.sermonWriter.lengthLabel}</Text>
+        <View style={styles.lengthRow}>
+          <TouchableOpacity
+            style={[styles.lengthOption, length === 'standard' && styles.lengthOptionActive]}
+            onPress={() => setLength('standard')}
+            disabled={generating}
+          >
+            <Text style={[styles.lengthOptionText, length === 'standard' && styles.lengthOptionTextActive]}>
+              {t.sermonWriter.lengthStandard}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.lengthOption, length === 'extended' && styles.lengthOptionActive]}
+            onPress={() => setLength('extended')}
+            disabled={generating}
+          >
+            <Text style={[styles.lengthOptionText, length === 'extended' && styles.lengthOptionTextActive]}>
+              {t.sermonWriter.lengthExtended}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           style={[styles.generateBtn, (!topic.trim() || generating) && styles.generateBtnDisabled]}
@@ -352,22 +311,4 @@ const styles = StyleSheet.create({
   },
   downloadBtnDisabled: { opacity: 0.6 },
   downloadBtnText: { fontSize: 12.5, fontWeight: '700', color: Colors.royal },
-  upsellContainer: {
-    flex: 1,
-    backgroundColor: Colors.ivory,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-    gap: 12,
-  },
-  upsellTitle: { fontSize: 19, fontWeight: '800', color: Colors.royal, textAlign: 'center' },
-  upsellBody: { fontSize: 14, lineHeight: 21, color: '#5C5446', textAlign: 'center' },
-  upsellBtn: {
-    backgroundColor: Colors.royal,
-    borderRadius: 22,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    marginTop: 8,
-  },
-  upsellBtnText: { color: Colors.white, fontWeight: '700', fontSize: 15 },
 });

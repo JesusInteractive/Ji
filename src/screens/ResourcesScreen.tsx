@@ -97,12 +97,12 @@ export default function ResourcesScreen() {
               style={[styles.aboutCard, hoveredKey === 'newsWatch' && styles.aboutCardHovered]}
               onPress={() => rootNavigation?.navigate('NewsWatch')}
               accessibilityRole="button"
-              accessibilityLabel="24/7 News Watch -- Christian headlines and live reporting"
+              accessibilityLabel="Jesus Interactive News Brief -- Christian headlines with source credit"
             >
               <Ionicons name="newspaper-outline" size={16} color={Colors.gold} />
               <View style={{ flex: 1 }}>
-                <Text style={styles.aboutCardTitle}>24/7 News Watch</Text>
-                <Text style={styles.aboutCardSubtitle}>Christian headlines and live reporting</Text>
+                <Text style={styles.aboutCardTitle}>Jesus Interactive News Brief</Text>
+                <Text style={styles.aboutCardSubtitle}>Christian headlines with source credit</Text>
               </View>
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>

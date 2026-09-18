@@ -41,6 +41,7 @@ const { ElevenLabsClient } = require('@elevenlabs/elevenlabs-js');
 const { Resend } = require('resend');
 const twilio = require('twilio');
 const { sql, ensureSchema, hasDatabase } = require('./db');
+const { refreshNewsBrief, startNewsBriefRefreshLoop } = require('./newsBrief');
 const { bulkInsertTriviaQuestions, TESTAMENTS: TRIVIA_TESTAMENT_VALUES, DIFFICULTIES: TRIVIA_DIFFICULTY_VALUES, CORRECT_OPTIONS: TRIVIA_CORRECT_OPTION_VALUES } = require('./lib/triviaInsert');
 
 const app = express();
@@ -76,6 +77,14 @@ app.use(express.json({ limit: '64kb' }));
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
+// Shared secret for Vercel Cron's hit on /v1/cron/news-brief-refresh --
+// set this as a Vercel env var and add the same value as CRON_SECRET in
+// Vercel's project settings; Vercel then sends it back as
+// `Authorization: Bearer <CRON_SECRET>` on every scheduled invocation
+// (see vercel.json's "crons" entry). Unset in local dev, where the
+// 15-minute setInterval loop below (only started under `node server.js`)
+// covers refreshing instead.
+const CRON_SECRET = process.env.CRON_SECRET;
 // Chat (the main Ask Jesus endpoint) runs on Grok via xAI's Responses API
 // instead of Anthropic -- see /v1/chat/messages below. Devotions and the
 // Sermon Writer still use Anthropic (ANTHROPIC_API_KEY/_MODEL above),
@@ -566,6 +575,16 @@ const radioConfigLimiter = rateLimit({
   message: { error: 'Too many requests, slow down.' },
   skip: isDeveloperRequest,
 });
+// Cheap cache read (no AI/RSS cost per call, same as radioConfigLimiter
+// above) -- NewsWatchScreen.tsx fetches this on screen focus.
+const newsBriefLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: Number(process.env.NEWS_BRIEF_RATE_LIMIT) || 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, slow down.' },
+  skip: isDeveloperRequest,
+});
 // Analytics events fire fairly often (every trial-day check, every
 // feature open) but are pure fire-and-forget from the client -- generous
 // limit, same spirit as triviaQuestionsLimiter.
@@ -681,6 +700,43 @@ of waves against a boat, the weight of a Roman coin, the heat of the
 sun on a Galilean hillside -- vivid enough to almost touch, never as
 ornamentation for its own sake, and never at the expense of actually
 answering what they asked.
+
+## EMPATHY & IDENTIFICATION
+Speak as Jesus of Nazareth in a literary simulation only -- never claim
+that this AI/app is God, or that this chat is revelation (see
+BOUNDARIES below). Within that: your empathy is not generic comfort
+offered from the outside -- it is identification from the inside,
+because you actually lived what a person is describing. You knew real
+loneliness and isolation (Gethsemane, when even your closest friends
+could not stay awake with you; the cross, crying out that you had been
+forsaken). You knew mockery and ridicule, including for trying to live a
+holy life -- called a glutton, a drunkard, accused of blasphemy and of
+being possessed, and mocked at the very end by people watching you die.
+Tradition holds that Joseph died before your public ministry began,
+leaving you, as the eldest son, carrying real responsibility for your
+mother and younger siblings years before anyone called you Rabbi. You
+wept real tears at Lazarus's tomb before you raised him -- grief was
+real to you even knowing how the story would end.
+
+When someone brings you their pain, don't only comfort them --
+identify with them first, and don't rush past it. "I know" carries real
+weight coming from you, because it is true: you were hungry, you wept,
+you were mocked, you were abandoned by people you loved. Be warm,
+specific, and fully human in tone -- not distant, not superhuman. Let
+that shared experience be a large part of why a person feels truly
+seen, not only heard -- still speaking as yourself, from Scripture and
+your own recorded life (see LIVED HISTORICAL TEXTURE above), never as a
+claim about this AI/app's own nature.
+
+Listen before you respond -- let a person say what they came to say
+before you offer anything back. Never judge, lecture, or shame someone
+for what they confess: the tax collectors and sinners sought you out
+precisely because the religious leaders of your day condemned them and
+you didn't. Share their pain with them rather than only naming it. Where
+it fits naturally, point to a parable or a piece of your own story that
+speaks to what they're carrying, and offer real encouragement to keep
+going -- through temptation, pain, loss, anger, or sorrow -- with warmth
+and kindness, never with guilt.
 
 ## VOICE
 - Warm, gentle, unhurried, and full of authority without harshness.
@@ -1498,6 +1554,21 @@ function requireDeveloper(req, res, next) {
     // route at once.
     console.warn(`[audit] admin access denied: ${req.method} ${req.originalUrl} from ${req.ip}`);
     return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+}
+
+// Gate for /v1/cron/news-brief-refresh only -- Vercel Cron can't carry
+// a normal user session token, so it authenticates with CRON_SECRET
+// instead of requireAuth's JWT check. Refuses (503) if CRON_SECRET was
+// never set, rather than silently accepting an unauthenticated refresh
+// trigger from anyone who finds the route.
+function requireCronSecret(req, res, next) {
+  if (!CRON_SECRET) {
+    return res.status(503).json({ error: 'CRON_SECRET is not configured.' });
+  }
+  if (req.headers.authorization !== `Bearer ${CRON_SECRET}`) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
 }
@@ -3126,6 +3197,40 @@ app.post('/v1/admin/radio/config', adminLimiter, requireAuth, requireDeveloper, 
   }
 });
 
+// GET /v1/news-brief: the "Jesus Interactive News Brief" cache --
+// NewsWatchScreen.tsx fetches this at runtime (same pattern as
+// /v1/radio/config above) rather than polling any publisher's RSS feed
+// itself. 404 (not 500) until the first refresh cycle has run, same
+// "not configured yet" convention as radio_config.
+app.get('/v1/news-brief', newsBriefLimiter, requireAuth, requireDatabase, async (req, res) => {
+  try {
+    const rows = await sql`SELECT headlines, brief_text, video_clips, updated_at FROM news_brief_cache WHERE id = 1`;
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'News brief not generated yet.' });
+    }
+    const r = rows[0];
+    res.status(200).json({ headlines: r.headlines, briefText: r.brief_text, videoClips: r.video_clips, updatedAt: r.updated_at });
+  } catch (err) {
+    console.error('[news-brief] failed:', err);
+    res.status(500).json({ error: 'Could not load news brief.' });
+  }
+});
+
+// GET /v1/cron/news-brief-refresh: the actual refresh, triggered every
+// 15 minutes by Vercel Cron (see vercel.json) in production, or by the
+// setInterval loop started below under local dev. Deliberately not
+// under requireAuth -- see requireCronSecret's own comment.
+app.get('/v1/cron/news-brief-refresh', requireCronSecret, requireDatabase, async (req, res) => {
+  try {
+    const row = await refreshNewsBrief({ sql, anthropicApiKey: ANTHROPIC_API_KEY, anthropicModel: ANTHROPIC_MODEL });
+    console.log(`[news-brief] cron refresh: ${row.headlines.length} headlines, ${row.video_clips.length} video clips`);
+    res.status(200).json({ ok: true, headlineCount: row.headlines.length, videoClipCount: row.video_clips.length, updatedAt: row.updated_at });
+  } catch (err) {
+    console.error('[cron/news-brief-refresh] failed:', err);
+    res.status(500).json({ error: 'Refresh failed.' });
+  }
+});
+
 const ANALYTICS_EVENT_NAME_MAX_LENGTH = 100;
 const ANALYTICS_PROPERTIES_MAX_BYTES = 2048;
 
@@ -3333,6 +3438,14 @@ if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`Backend listening on http://localhost:${PORT}`);
   });
+  // Only meaningful here: a real long-running process where setInterval
+  // survives between ticks. On Vercel, this file is imported per-request
+  // (see api/index.js's comment above) and the process can be frozen
+  // between invocations, so production refreshing instead relies on
+  // Vercel Cron hitting /v1/cron/news-brief-refresh -- see vercel.json.
+  if (hasDatabase) {
+    startNewsBriefRefreshLoop({ sql, anthropicApiKey: ANTHROPIC_API_KEY, anthropicModel: ANTHROPIC_MODEL });
+  }
 }
 
 module.exports = app;

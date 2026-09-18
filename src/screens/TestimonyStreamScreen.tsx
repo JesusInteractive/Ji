@@ -57,16 +57,26 @@ function CommunityBanner({ stats }: { stats: TestimonyStats | null }) {
         <Ionicons name="earth" size={20} color={Colors.gold} />
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={styles.bannerTitle}>Live Testimony Stream</Text>
+        <Text style={styles.bannerTitle}>Live Testimony &amp; Prayer Stream</Text>
         <Text style={styles.bannerSubtitle}>
           {stats
-            ? `${stats.total.toLocaleString()} shared by believers everywhere${stats.today > 0 ? ` · ${stats.today} today` : ''}`
-            : 'Believers everywhere, sharing in real time'}
+            ? `${stats.total.toLocaleString()} shared by believers everywhere${stats.today > 0 ? ` · ${stats.today} today` : ''} -- tap 🙏 to pray for someone`
+            : 'Believers everywhere, sharing and praying in real time'}
         </Text>
       </View>
     </View>
   );
 }
+
+// 🙏 gets pulled out of the generic reaction row into its own dedicated
+// button -- it's the one that actually means "I'm praying for you" here,
+// not just a reaction, so it deserves its own weight (icon + label +
+// count) rather than sitting as a same-size pill next to ❤️🙌🔥✨. Same
+// underlying mechanism as every other reaction (testimony_reactions in
+// db.js, toggled via reactToTestimony) -- no new backend needed, just a
+// different UI treatment for one specific emoji.
+const PRAYER_EMOJI: ReactionEmoji = '🙏';
+const SECONDARY_REACTIONS = REACTION_EMOJI.filter((emoji) => emoji !== PRAYER_EMOJI);
 
 function TestimonyCard({
   item,
@@ -78,6 +88,8 @@ function TestimonyCard({
   onReport: (id: string) => void;
 }) {
   const countFor = (emoji: string) => item.reactions.find((r) => r.emoji === emoji)?.count ?? 0;
+  const praying = item.myReactions.includes(PRAYER_EMOJI);
+  const prayerCount = countFor(PRAYER_EMOJI);
   return (
     <TouchableOpacity style={styles.card} onLongPress={() => onReport(item.id)} activeOpacity={0.9}>
       <View style={styles.cardHeader}>
@@ -85,8 +97,24 @@ function TestimonyCard({
         <Text style={styles.cardTime}>{timeAgo(item.createdAt)}</Text>
       </View>
       <Text style={styles.cardText}>{item.text}</Text>
+
+      <TouchableOpacity
+        style={[styles.prayButton, praying && styles.prayButtonActive]}
+        onPress={() => onReact(item.id, PRAYER_EMOJI)}
+        accessibilityRole="button"
+        accessibilityLabel={praying ? `Stop praying for this -- ${prayerCount} praying` : `Pray for this${prayerCount ? `, ${prayerCount} already praying` : ''}`}
+      >
+        <Text style={styles.prayButtonEmoji}>🙏</Text>
+        <Text style={[styles.prayButtonText, praying && styles.prayButtonTextActive]}>
+          {praying ? 'Praying' : 'Pray for this'}
+        </Text>
+        {prayerCount > 0 && (
+          <Text style={[styles.prayButtonCount, praying && styles.prayButtonTextActive]}>{prayerCount}</Text>
+        )}
+      </TouchableOpacity>
+
       <View style={styles.reactionRow}>
-        {REACTION_EMOJI.map((emoji) => {
+        {SECONDARY_REACTIONS.map((emoji) => {
           const active = item.myReactions.includes(emoji);
           const count = countFor(emoji);
           return (
@@ -246,7 +274,7 @@ export default function TestimonyStreamScreen() {
           ) : (
             <View style={styles.emptyState}>
               <Ionicons name="sparkles" size={22} color={Colors.gold} />
-              <Text style={styles.emptyText}>No testimonies shared yet. Be the first.</Text>
+              <Text style={styles.emptyText}>No testimonies shared yet. Be the first to share, or the first to pray.</Text>
             </View>
           )
         }
@@ -318,6 +346,22 @@ const styles = StyleSheet.create({
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   cardTime: { fontSize: 11, color: '#A0AEC0', fontWeight: '600' },
   cardText: { fontSize: 14.5, color: Colors.ink, lineHeight: 21, marginBottom: 10 },
+  prayButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    backgroundColor: '#F1F1EC',
+    borderRadius: 16,
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  prayButtonActive: { backgroundColor: '#B8933E' },
+  prayButtonEmoji: { fontSize: 15 },
+  prayButtonText: { fontSize: 12.5, fontWeight: '700', color: '#5C5446' },
+  prayButtonTextActive: { color: Colors.white },
+  prayButtonCount: { fontSize: 12.5, fontWeight: '700', color: '#5C5446' },
   reactionRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   reactionPill: {
     flexDirection: 'row',

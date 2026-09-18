@@ -96,7 +96,7 @@ export type RootStackParamList = {
   // making them re-type or re-speak it from memory.
   GospelTranslator: { initialText: string; initialLabel: string } | undefined;
   // Same root-level-modal pattern as the others above, reached from a
-  // card directly below 24/7 News Watch on Home. See GlobalMapScreen.tsx's
+  // card directly below the News Brief on Home. See GlobalMapScreen.tsx's
   // own comment -- a reference atlas, not part of the Games Hub.
   GlobalMap: undefined;
   // One shared detail screen for every site in src/data/bibleSites.ts,
@@ -272,7 +272,7 @@ export default function RootNavigator() {
               headerShown: true,
               presentation: 'modal',
               animation: 'slide_from_bottom',
-              title: '24/7 News Watch',
+              title: 'Jesus Interactive News Brief',
               headerTintColor: Colors.royal,
               headerRight: () => (
                 <TouchableOpacity onPress={() => navigation.goBack()} accessibilityRole="button" accessibilityLabel="Close">

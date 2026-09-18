@@ -82,15 +82,15 @@ export default function PrayerWallScreen() {
   }, [prayerNotes]);
 
   // A brief shofar blast when a prayer is placed -- the sound of the
-  // ram's horn at the Western Wall, kept deliberately quiet/short (same
-  // ~0.14 target volume as the entrance wind cue, no fade-out) so it
-  // reads as a gentle received-confirmation rather than a literal
+  // ram's horn at the Western Wall, kept deliberately quiet/short
+  // (lowered from an original 0.14 target volume, still no fade-out) so
+  // it reads as a gentle received-confirmation rather than a literal
   // trumpet blast.
   async function playShofarSound() {
     try {
       await setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers' });
       const shofar = createAudioPlayer(require('../../assets/sounds/shofar.mp3'));
-      playFadedWindCue(shofar, 0.14);
+      playFadedWindCue(shofar, 0.08);
     } catch (e) {
       console.error('Shofar sound error:', e);
     }
@@ -140,10 +140,10 @@ export default function PrayerWallScreen() {
           style={styles.testimonyLink}
           onPress={() => navigation.navigate('TestimonyStream')}
           accessibilityRole="button"
-          accessibilityLabel="Open Testimony Stream"
+          accessibilityLabel="Open Testimony and Prayer Stream"
         >
           <Ionicons name="sparkles" size={13} color={Colors.gold} />
-          <Text style={styles.testimonyLinkText}>Testimony Stream</Text>
+          <Text style={styles.testimonyLinkText}>Testimony & Prayer Stream</Text>
           <Ionicons name="chevron-forward" size={13} color={Colors.gold} />
         </TouchableOpacity>
       </View>

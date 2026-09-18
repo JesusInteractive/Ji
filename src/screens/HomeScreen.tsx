@@ -12,7 +12,7 @@ import type { MainTabParamList } from '../navigation/MainTabs';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import { getDailyPromise, type DailyPromise } from '../services/devotions';
 import DraggableScrollbar from '../components/DraggableScrollbar';
-import NewsTvPreview from '../components/NewsTvPreview';
+import NewsBriefHomeCard from '../components/NewsBriefHomeCard';
 import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll';
 
 // Enlarged and floated over the Prayer Wall card (see prayerCardCenterX
@@ -102,7 +102,8 @@ export default function HomeScreen() {
   // Jesus Interactive actually built (Ask Jesus, the atlas, the
   // translator, the Sermon Generator, the Games Hub, Scripture) as its
   // own first-class tile; complimentary/third-party content (24/7
-  // Sermons and News Watch both link to other ministries, the JESUS film
+  // Sermons and the News Brief's headlines both link out to other
+  // ministries/publishers, the JESUS film
   // is the Jesus Film Project's own work) plus a couple of personal
   // utility shortcuts (Journal, My Library) live one tap away inside the
   // single "Resources" tile instead -- see ResourcesScreen.tsx.
@@ -284,10 +285,7 @@ export default function HomeScreen() {
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_5.map((tile) => renderTile(tile))}</View>
       <View style={[styles.grid, styles.gridRowSpacing]}>{ROW_6.map((tile) => renderTile(tile))}</View>
 
-      {/* The planned 24/7 News TV player, reached by scrolling down.
-          Development builds only until the affiliate agreement is signed --
-          see NewsTvPreview.tsx. */}
-      {__DEV__ && <NewsTvPreview />}
+      <NewsBriefHomeCard onPress={() => rootNavigation?.navigate('NewsWatch')} />
       </ScrollView>
       <DraggableScrollbar
         contentHeight={contentHeight}

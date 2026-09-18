@@ -1,27 +1,50 @@
 Short description (80 char limit)
-Ask Jesus, Bible atlas, live translator, 10 free games, and 24/7 praise radio.
+Ask Jesus, read the Bible, explore the Holy Land and play 10 Bible games.
 
 ---
 Full description (4000 char limit)
 
-PLUS
-Ask Jesus unlimited · Journeys Through the Bible full atlas · live Gospel Translator
+Ask Jesus is your AI companion in the Word — with a whole library around it.
 
-FREE
-10 games we built · 24/7 Praise and Worship · 24/7 sermons · Prayer Wall · journal · search · JESUS film · study links (The Passion Relics and more)
+FREE FOR EVERYONE
+• The Bible, Scripture Search and the Prayer Wall
+• Journeys Through the Bible: a biblical atlas of 42 sites and 6 journeys
+• 10 Bible games: crossword, trivia, word search, mazes and more
+• The Passion Relics, the JESUS film, sermons and Christian news
+• Your journal, bookmarks and notes
+• Emergency SOS, always free
+• In 117 languages
 
-Read, pray, play, and worship free. Plus is the atlas, the translator, and Ask Jesus without limits.
+WITH ANY PLAN — START WITH 5 DAYS FREE
+• Ask Jesus by text or voice, answered in the Jesus AI voice
+• Daily Devotions and Guided Prayer
+• Gospel Translator
+• Bibles in more than 1,000 languages
+• Read the Study Library's books
 
-It's time. Heaven at your fingertips.
+PRO
+• The Sermon & Bible Study Writer, for pastors and teachers
+
+PLATINUM
+• Hear 196 books read aloud: Scripture and the classics by Jesus AI, commentaries and history by the Scholar
+• Longer, more detailed sermons
+
+Jesus Interactive is an AI that points to Jesus. It is not Jesus Himself.
+
+Heaven at your fingertips. Ask, and it will be given to you.
+
+---
+Release notes -- "What's new in this version" (500 char limit)
+Goes on the release page (Production > Releases), not the store listing.
+Only use these with a build made after 2026-09-13 -- build 11 and earlier
+don't include the Study Library or the new prayer notes.
+
+• Study Library: 196 books read aloud by Jesus AI or the Scholar, including the whole King James Bible
+• Prayer Wall notes now show your prayer, handwritten and signed
+• Journeys Through the Bible: an interactive atlas of the Holy Land
+• 10 Bible games in the Games Hub
+• Fixes and polish
 
 ---
 Pricing note (do not put in the listing copy itself)
-NEEDS FINAL CONFIRMATION -- see app-store-description.txt's own Pricing note for the three conflicting numbers currently in play. Never paywall Scripture, sermons, praise radio, games, film, Prayer Wall, or relics regardless of which numbers are final. Pricing itself is shown on the purchase screen, not asserted in the listing.
-
----
-Note: Google Play doesn't have a separate "What's New" field submitted alongside the store listing the way Apple does -- release notes go in the Play Console's own "What's new in this version" field on the release page (Production > Releases), not the Store Listing page. Use the same release notes as the Apple "What's New" (see app-store-description.txt):
-
-* Journeys Through the Bible -- a real interactive biblical atlas: pinch-zoom satellite map, prophets, and the Holy Land
-* The Passion Relics -- the Shroud of Turin and other traditional relics, with sourced history and an honest science file
-* 10 free Bible games in the new Games Hub
-* Assorted fixes and polish
+Plans (src/constants/pricing.ts): Basic $5.99/mo, Pro $9.99/mo, Platinum $19.99/mo, a 5-day free trial, and Basic gift certificates ($5.99 / $14.99 / $59.99 for 1 / 3 / 12 months). Confirm these against the Play Console's configured products before launch. Pricing is shown on the purchase screen, not in the listing. 24/7 Praise radio is left out of the listing until it's live.

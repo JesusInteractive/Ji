@@ -176,6 +176,33 @@ function ensureSchema() {
           CONSTRAINT radio_config_singleton_chk CHECK (id = 1)
         )
       `;
+      // Singleton (id always 1): the "Jesus Interactive News Brief"
+      // cache -- newsBrief.js's refresh loop fetches/parses the RSS
+      // sources in newsBriefSources.js every 15 minutes and writes the
+      // result here; GET /v1/news-brief just reads this row rather than
+      // hitting every publisher's feed on every app request. headlines
+      // is the deduped, newest-first list (title/summary/link/source/
+      // publishedAt); brief_text is the generated "Now Brief" paragraph.
+      // No seed row -- 404 (same "not configured yet" convention as
+      // radio_config) until the first refresh cycle completes.
+      await sql`
+        CREATE TABLE IF NOT EXISTS news_brief_cache (
+          id SMALLINT PRIMARY KEY DEFAULT 1,
+          headlines JSONB NOT NULL DEFAULT '[]'::jsonb,
+          brief_text TEXT NOT NULL DEFAULT '',
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT news_brief_cache_singleton_chk CHECK (id = 1)
+        )
+      `;
+      // Added after news_brief_cache already existed in production --
+      // CREATE TABLE IF NOT EXISTS above won't retroactively add a
+      // column to a table that's already there, so this covers that
+      // case explicitly. video_clips: public YouTube clips from
+      // newsBriefVideoSources.js, embedded via YouTube's own player
+      // (see YouTubePlayer.tsx) -- never re-hosted.
+      await sql`
+        ALTER TABLE news_brief_cache ADD COLUMN IF NOT EXISTS video_clips JSONB NOT NULL DEFAULT '[]'::jsonb
+      `;
       // General-purpose analytics event log -- backs BOTH the specific
       // 10-event trial/paywall funnel (activation, day-2 return, trial
       // completion, trial-to-paid conversion) AND general product events
